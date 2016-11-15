@@ -1,0 +1,55 @@
+{
+  "name": "odata-v4-server-mongodb-example",
+  "version": "0.1.0",
+  "description": "OData V4 Server with MongoDB example",
+  "main": "build/lib/index.js",
+  "typings": "build/lib/index",
+  "author": "JayStack",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "build:w": "tsc -w",
+    "lint": "tslint src/**/*.ts -t verbose --force > .tslint",
+    "pretest": "tsc",
+    "test": "mocha build/test/**/*.spec.js --reporter mochawesome --reporter-options reportDir=report,reportName=odata-v4-server,reportTitle=\"OData V4 Server\"",
+    "precoverage": "tsc",
+    "coverage": "rm -rf coverage && node node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha build/test/**/*.spec.js --config=.istanbul.yaml -x config/**/*.js && node node_modules/remap-istanbul/bin/remap-istanbul -i coverage/coverage.json -o coverage/html-report -t html"
+  },
+  "watch": {
+    "coverage": "{lib,test}/*.js",
+    "lint": "{lib}/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaystack/odata-v4-server-mongodb-example.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jaystack/odata-v4-server-mongodb-example/issues"
+  },
+  "homepage": "https://github.com/jaystack/odata-v4-server-mongodb-example#readme",
+  "keywords": [
+    "OData",
+    "V4",
+    "server",
+    "mongodb",
+    "example"
+  ],
+  "dependencies": {
+    "@types/mongodb": "^2.1.34",
+    "mongodb": "^2.2.11",
+    "odata-v4-mongodb": "^0.1.7",
+    "odata-v4-server": "rc"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.32",
+    "chai": "^3.5.0",
+    "extend": "^3.0.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.1.2",
+    "mochawesome": "^1.5.3",
+    "npm-watch": "^0.1.6",
+    "remap-istanbul": "^0.7.0",
+    "tslint": "^3.15.1",
+    "typescript": "^2.0.8"
+  }
+}
