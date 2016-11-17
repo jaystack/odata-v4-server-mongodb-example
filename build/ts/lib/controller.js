@@ -84,13 +84,13 @@ let ProductsController = class ProductsController extends odata_v4_server_1.ODat
             let db = yield exports.mongodb();
             if (data.CategoryId)
                 data.CategoryId = new mongodb_1.ObjectID(data.CategoryId);
-            return yield db.collection("Products").insert(data).then((result) => {
+            return yield db.collection("Products").insertOne(data).then((result) => {
                 data._id = result.insertedId;
                 return data;
             });
         });
     }
-    upsert(key, data) {
+    upsert(key, data, context) {
         return __awaiter(this, void 0, void 0, function* () {
             let db = yield exports.mongodb();
             if (data.CategoryId)
@@ -149,7 +149,8 @@ __decorate([
 __decorate([
     odata_v4_server_1.odata.PUT,
     __param(0, odata_v4_server_1.odata.key),
-    __param(1, odata_v4_server_1.odata.body)
+    __param(1, odata_v4_server_1.odata.body),
+    __param(2, odata_v4_server_1.odata.context)
 ], ProductsController.prototype, "upsert", null);
 __decorate([
     odata_v4_server_1.odata.PATCH,
@@ -211,7 +212,6 @@ let CategoriesController = class CategoriesController extends odata_v4_server_1.
     }
     setCategory(key, link) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(key, link);
             let db = yield exports.mongodb();
             return yield db.collection("Products").updateOne({
                 _id: new mongodb_1.ObjectID(link)
@@ -237,7 +237,7 @@ let CategoriesController = class CategoriesController extends odata_v4_server_1.
     insert(data) {
         return __awaiter(this, void 0, void 0, function* () {
             let db = yield exports.mongodb();
-            return yield db.collection("Categories").insert(data).then((result) => {
+            return yield db.collection("Categories").insertOne(data).then((result) => {
                 data._id = result.insertedId;
                 return data;
             });

@@ -5,6 +5,7 @@
     "module": "commonjs",
     "declaration": true,
     "experimentalDecorators": true,
-    "outDir": "build"
-  }
+    "outDir": "build/ts"
+  },
+  "include": ["src/ts/**/*"]
 }
