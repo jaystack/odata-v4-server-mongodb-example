@@ -1,6 +1,6 @@
 "use strict";
 
-let expect = require("chai").expect;
+const expect = require("chai").expect;
 const { ObjectID } = require("mongodb");
 const extend = require("extend");
 
@@ -15,7 +15,7 @@ function coreTest(NorthwindServer, {Product, Category}, {products, categories}) 
 		});
 	}
 
-	function createOnlyTest(testcase, command, compare, body) {
+	createTest.only = function(testcase, command, compare, body) {
 		it.only(`${testcase} (${command})`, () => {
 			let test = command.split(" ");
 			return NorthwindServer.execute(test.slice(1).join(" "), test[0], body).then((result) => {

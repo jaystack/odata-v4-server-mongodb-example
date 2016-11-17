@@ -2,4 +2,4 @@
 
 var _server = require("./server");
 
-_server.NorthwindServer.create("/odata2", 3001);
+_server.NorthwindServer.create("/odata", 3000);
