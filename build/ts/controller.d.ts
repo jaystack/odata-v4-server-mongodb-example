@@ -1,7 +1,5 @@
-import { Db } from "mongodb";
 import { ODataController, ODataQuery } from "odata-v4-server";
 import { Product, Category } from "./model";
-export declare const mongodb: () => Promise<Db>;
 export declare class ProductsController extends ODataController {
     find(query: ODataQuery): Promise<Product[]>;
     findOne(key: string, query: ODataQuery): Promise<Product>;
@@ -12,6 +10,9 @@ export declare class ProductsController extends ODataController {
     upsert(key: string, data: any, context: any): Promise<Product>;
     update(key: string, delta: any): Promise<number>;
     remove(key: string): Promise<number>;
+    getCheapest(): Promise<Product>;
+    getInPriceRange(min: number, max: number): Promise<Product[]>;
+    swapPrice(a: string, b: string): Promise<void>;
 }
 export declare class CategoriesController extends ODataController {
     find(query: ODataQuery): Promise<Category[]>;

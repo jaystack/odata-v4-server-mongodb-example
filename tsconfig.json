@@ -7,5 +7,6 @@
     "experimentalDecorators": true,
     "outDir": "build/ts"
   },
-  "include": ["src/ts/**/*"]
+  "include": ["src/ts/**/*"],
+  "exclude": ["src/js/*"]
 }

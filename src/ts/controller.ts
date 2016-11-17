@@ -1,11 +1,8 @@
-import { MongoClient, Collection, Db, ObjectID } from "mongodb";
+import { Collection, ObjectID } from "mongodb";
 import { createQuery } from "odata-v4-mongodb";
 import { ODataController, Edm, odata, ODataQuery } from "odata-v4-server";
 import { Product, Category } from "./model";
-
-export const mongodb = async function():Promise<Db>{
-    return await MongoClient.connect("mongodb://localhost:27017/odata-v4-server-mongodb-example");
-};
+import mongodb from "./connection";
 
 @odata.type(Product)
 export class ProductsController extends ODataController{
@@ -99,6 +96,30 @@ export class ProductsController extends ODataController{
     async remove(@odata.key key:string):Promise<number>{
         let db = await mongodb();
         return await db.collection("Products").deleteOne({ _id: new ObjectID(key) }).then(result => result.deletedCount);
+    }
+
+    @Edm.Function
+    @Edm.EntityType(Product)
+    async getCheapest():Promise<Product> {
+        let db = await mongodb();
+        return (await db.collection("Products").find().sort({UnitPrice: 1}).limit(1).toArray())[0];
+    }
+
+    @Edm.Function
+    @Edm.Collection(Edm.EntityType(Product))
+    async getInPriceRange(@Edm.Decimal min:number, @Edm.Decimal max:number):Promise<Product[]> {
+        let db = await mongodb();
+        return await db.collection("Products").find({UnitPrice: {$gte: 5, $lte: 8}}).toArray();
+    }
+
+    @Edm.Action
+    async swapPrice(@Edm.String a:string, @Edm.String b:string) {
+        let db = await mongodb();
+        const products = await db.collection("Products").find({_id: {$in: [new ObjectID(a), new ObjectID(b)]}}, {UnitPrice: 1}).toArray();
+        const aProduct = products.find(product => product._id.toHexString() === a);
+        const bProduct = products.find(product => product._id.toHexString() === b);
+        await db.collection("Products").update({_id: new ObjectID(a)}, {$set: {UnitPrice: bProduct.UnitPrice}});
+        await db.collection("Products").update({_id: new ObjectID(b)}, {$set: {UnitPrice: aProduct.UnitPrice}});
     }
 }
 

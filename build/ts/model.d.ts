@@ -7,6 +7,9 @@ export declare class Product {
     Name: string;
     QuantityPerUnit: string;
     UnitPrice: number;
+    getUnitPrice(result: Product): number;
+    invertDiscontinued(result: Product): Promise<void>;
+    setDiscontinued(result: Product, value: boolean): Promise<void>;
 }
 export declare class Category {
     _id: ObjectID;

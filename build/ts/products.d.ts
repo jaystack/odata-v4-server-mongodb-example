@@ -7,4 +7,4 @@ declare var _default: {
     "Name": string;
     "Discontinued": boolean;
 }[];
-export = _default;
+export default _default;

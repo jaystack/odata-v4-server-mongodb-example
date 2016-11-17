@@ -1,5 +1,6 @@
 import { ObjectID } from "mongodb";
 import { Edm, odata } from "odata-v4-server";
+import mongodb from "./connection";
 
 @Edm.Annotate({
     term: "UI.DisplayName",
@@ -58,6 +59,28 @@ export class Product{
         string: "Decimal"
     })
     UnitPrice
+
+    @Edm.Function
+    @Edm.Decimal
+    getUnitPrice(@odata.result result) {
+        return result.UnitPrice;
+    }
+
+    @Edm.Action
+    async invertDiscontinued(@odata.result result) {
+        let db = await mongodb();
+        await db.collection('Products').findOneAndUpdate(
+                {_id: result._id},
+                {$set: {Discontinued: !result.Discontinued}});
+    }
+
+    @Edm.Action
+    async setDiscontinued(@odata.result result, @Edm.Boolean value) {
+        let db = await mongodb();
+        await db.collection('Products').findOneAndUpdate(
+                {_id: result._id},
+                {$set: {Discontinued: value}});
+    }
 }
 
 @Edm.Annotate({

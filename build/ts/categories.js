@@ -1,6 +1,7 @@
 "use strict";
 const mongodb_1 = require("mongodb");
-module.exports = [
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = [
     { "_id": new mongodb_1.ObjectID("578f2baa12eaebabec4af289"), "Description": "Soft drinks", "Name": "Beverages" },
     { "_id": new mongodb_1.ObjectID("578f2baa12eaebabec4af28a"), "Description": "Breads", "Name": "Grains/Cereals" },
     { "_id": new mongodb_1.ObjectID("578f2baa12eaebabec4af28b"), "Description": "Prepared meats", "Name": "Meat/Poultry" },

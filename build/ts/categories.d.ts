@@ -4,4 +4,4 @@ declare var _default: {
     "Description": string;
     "Name": string;
 }[];
-export = _default;
+export default _default;

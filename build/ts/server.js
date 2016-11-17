@@ -15,17 +15,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const odata_v4_server_1 = require("odata-v4-server");
 const controller_1 = require("./controller");
-let categories = require("./categories");
-let products = require("./products");
+const connection_1 = require("./connection");
+const categories_1 = require("./categories");
+const products_1 = require("./products");
 let NorthwindServer = class NorthwindServer extends odata_v4_server_1.ODataServer {
     initDb() {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield controller_1.mongodb();
+            let db = yield connection_1.default();
             yield db.dropDatabase();
             let categoryCollection = db.collection("Categories");
             let productsCollection = db.collection("Products");
-            yield categoryCollection.insertMany(categories);
-            yield productsCollection.insertMany(products);
+            yield categoryCollection.insertMany(categories_1.default);
+            yield productsCollection.insertMany(products_1.default);
         });
     }
 };

@@ -1,6 +1,7 @@
 "use strict";
 const mongodb_1 = require("mongodb");
-module.exports = [
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = [
     { "_id": new mongodb_1.ObjectID("578f2b8c12eaebabec4af23c"), "QuantityPerUnit": "10 boxes x 20 bags", "UnitPrice": 39, "CategoryId": new mongodb_1.ObjectID("578f2baa12eaebabec4af289"), "Name": "Chai", "Discontinued": false },
     { "_id": new mongodb_1.ObjectID("578f2b8c12eaebabec4af23d"), "QuantityPerUnit": "24 - 12 oz bottles", "UnitPrice": 19.0, "CategoryId": new mongodb_1.ObjectID("578f2baa12eaebabec4af289"), "Name": "Chang", "Discontinued": true },
     { "_id": new mongodb_1.ObjectID("578f2b8c12eaebabec4af23e"), "QuantityPerUnit": "12 - 550 ml bottles", "UnitPrice": 10.0, "CategoryId": new mongodb_1.ObjectID("578f2baa12eaebabec4af28e"), "Name": "Aniseed Syrup", "Discontinued": false },

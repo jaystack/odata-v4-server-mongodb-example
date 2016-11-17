@@ -20,15 +20,11 @@ const mongodb_1 = require("mongodb");
 const odata_v4_mongodb_1 = require("odata-v4-mongodb");
 const odata_v4_server_1 = require("odata-v4-server");
 const model_1 = require("./model");
-exports.mongodb = function () {
-    return __awaiter(this, void 0, void 0, function* () {
-        return yield mongodb_1.MongoClient.connect("mongodb://localhost:27017/odata-v4-server-mongodb-example");
-    });
-};
+const connection_1 = require("./connection");
 let ProductsController = class ProductsController extends odata_v4_server_1.ODataController {
     find(query) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             let mongodbQuery = odata_v4_mongodb_1.createQuery(query);
             if (typeof mongodbQuery.query._id == "string")
                 mongodbQuery.query._id = new mongodb_1.ObjectID(mongodbQuery.query._id);
@@ -39,7 +35,7 @@ let ProductsController = class ProductsController extends odata_v4_server_1.ODat
     }
     findOne(key, query) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             let mongodbQuery = odata_v4_mongodb_1.createQuery(query);
             return db.collection("Products").findOne({ _id: new mongodb_1.ObjectID(key) }, {
                 fields: mongodbQuery.projection
@@ -48,7 +44,7 @@ let ProductsController = class ProductsController extends odata_v4_server_1.ODat
     }
     getCategory(result, query) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             let mongodbQuery = odata_v4_mongodb_1.createQuery(query);
             return db.collection("Categories").findOne({ _id: new mongodb_1.ObjectID(result.CategoryId) }, {
                 fields: mongodbQuery.projection
@@ -57,7 +53,7 @@ let ProductsController = class ProductsController extends odata_v4_server_1.ODat
     }
     setCategory(key, link) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             return yield db.collection("Products").updateOne({
                 _id: new mongodb_1.ObjectID(key)
             }, {
@@ -69,7 +65,7 @@ let ProductsController = class ProductsController extends odata_v4_server_1.ODat
     }
     unsetCategory(key) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             return yield db.collection("Products").updateOne({
                 _id: new mongodb_1.ObjectID(key)
             }, {
@@ -81,7 +77,7 @@ let ProductsController = class ProductsController extends odata_v4_server_1.ODat
     }
     insert(data) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             if (data.CategoryId)
                 data.CategoryId = new mongodb_1.ObjectID(data.CategoryId);
             return yield db.collection("Products").insertOne(data).then((result) => {
@@ -92,7 +88,7 @@ let ProductsController = class ProductsController extends odata_v4_server_1.ODat
     }
     upsert(key, data, context) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             if (data.CategoryId)
                 data.CategoryId = new mongodb_1.ObjectID(data.CategoryId);
             return yield db.collection("Products").updateOne({ _id: new mongodb_1.ObjectID(key) }, data, {
@@ -105,7 +101,7 @@ let ProductsController = class ProductsController extends odata_v4_server_1.ODat
     }
     update(key, delta) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             if (delta.CategoryId)
                 delta.CategoryId = new mongodb_1.ObjectID(delta.CategoryId);
             return yield db.collection("Products").updateOne({ _id: new mongodb_1.ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);
@@ -113,8 +109,30 @@ let ProductsController = class ProductsController extends odata_v4_server_1.ODat
     }
     remove(key) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             return yield db.collection("Products").deleteOne({ _id: new mongodb_1.ObjectID(key) }).then(result => result.deletedCount);
+        });
+    }
+    getCheapest() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let db = yield connection_1.default();
+            return (yield db.collection("Products").find().sort({ UnitPrice: 1 }).limit(1).toArray())[0];
+        });
+    }
+    getInPriceRange(min, max) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let db = yield connection_1.default();
+            return yield db.collection("Products").find({ UnitPrice: { $gte: 5, $lte: 8 } }).toArray();
+        });
+    }
+    swapPrice(a, b) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let db = yield connection_1.default();
+            const products = yield db.collection("Products").find({ _id: { $in: [new mongodb_1.ObjectID(a), new mongodb_1.ObjectID(b)] } }, { UnitPrice: 1 }).toArray();
+            const aProduct = products.find(product => product._id.toHexString() === a);
+            const bProduct = products.find(product => product._id.toHexString() === b);
+            yield db.collection("Products").update({ _id: new mongodb_1.ObjectID(a) }, { $set: { UnitPrice: bProduct.UnitPrice } });
+            yield db.collection("Products").update({ _id: new mongodb_1.ObjectID(b) }, { $set: { UnitPrice: aProduct.UnitPrice } });
         });
     }
 };
@@ -161,6 +179,21 @@ __decorate([
     odata_v4_server_1.odata.DELETE,
     __param(0, odata_v4_server_1.odata.key)
 ], ProductsController.prototype, "remove", null);
+__decorate([
+    odata_v4_server_1.Edm.Function,
+    odata_v4_server_1.Edm.EntityType(model_1.Product)
+], ProductsController.prototype, "getCheapest", null);
+__decorate([
+    odata_v4_server_1.Edm.Function,
+    odata_v4_server_1.Edm.Collection(odata_v4_server_1.Edm.EntityType(model_1.Product)),
+    __param(0, odata_v4_server_1.Edm.Decimal),
+    __param(1, odata_v4_server_1.Edm.Decimal)
+], ProductsController.prototype, "getInPriceRange", null);
+__decorate([
+    odata_v4_server_1.Edm.Action,
+    __param(0, odata_v4_server_1.Edm.String),
+    __param(1, odata_v4_server_1.Edm.String)
+], ProductsController.prototype, "swapPrice", null);
 ProductsController = __decorate([
     odata_v4_server_1.odata.type(model_1.Product)
 ], ProductsController);
@@ -168,7 +201,7 @@ exports.ProductsController = ProductsController;
 let CategoriesController = class CategoriesController extends odata_v4_server_1.ODataController {
     find(query) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             let mongodbQuery = odata_v4_mongodb_1.createQuery(query);
             if (typeof mongodbQuery.query._id == "string")
                 mongodbQuery.query._id = new mongodb_1.ObjectID(mongodbQuery.query._id);
@@ -177,7 +210,7 @@ let CategoriesController = class CategoriesController extends odata_v4_server_1.
     }
     findOne(key, query) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             let mongodbQuery = odata_v4_mongodb_1.createQuery(query);
             return db.collection("Categories").findOne({ _id: new mongodb_1.ObjectID(key) }, {
                 fields: mongodbQuery.projection
@@ -186,7 +219,7 @@ let CategoriesController = class CategoriesController extends odata_v4_server_1.
     }
     getProducts(result, query) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             let mongodbQuery = odata_v4_mongodb_1.createQuery(query);
             if (typeof mongodbQuery.query._id == "string")
                 mongodbQuery.query._id = new mongodb_1.ObjectID(mongodbQuery.query._id);
@@ -197,7 +230,7 @@ let CategoriesController = class CategoriesController extends odata_v4_server_1.
     }
     getProduct(key, result, query) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             let mongodbQuery = odata_v4_mongodb_1.createQuery(query);
             if (typeof mongodbQuery.query._id == "string")
                 mongodbQuery.query._id = new mongodb_1.ObjectID(mongodbQuery.query._id);
@@ -212,7 +245,7 @@ let CategoriesController = class CategoriesController extends odata_v4_server_1.
     }
     setCategory(key, link) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             return yield db.collection("Products").updateOne({
                 _id: new mongodb_1.ObjectID(link)
             }, {
@@ -224,7 +257,7 @@ let CategoriesController = class CategoriesController extends odata_v4_server_1.
     }
     unsetCategory(key, link) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             return yield db.collection("Products").updateOne({
                 _id: new mongodb_1.ObjectID(link)
             }, {
@@ -236,7 +269,7 @@ let CategoriesController = class CategoriesController extends odata_v4_server_1.
     }
     insert(data) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             return yield db.collection("Categories").insertOne(data).then((result) => {
                 data._id = result.insertedId;
                 return data;
@@ -245,7 +278,7 @@ let CategoriesController = class CategoriesController extends odata_v4_server_1.
     }
     upsert(key, data) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             return yield db.collection("Categories").updateOne({ _id: new mongodb_1.ObjectID(key) }, data, {
                 upsert: true
             }).then((result) => {
@@ -256,7 +289,7 @@ let CategoriesController = class CategoriesController extends odata_v4_server_1.
     }
     update(key, delta) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             if (delta.CategoryId)
                 delta.CategoryId = new mongodb_1.ObjectID(delta.CategoryId);
             return yield db.collection("Categories").updateOne({ _id: new mongodb_1.ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);
@@ -264,7 +297,7 @@ let CategoriesController = class CategoriesController extends odata_v4_server_1.
     }
     remove(key) {
         return __awaiter(this, void 0, void 0, function* () {
-            let db = yield exports.mongodb();
+            let db = yield connection_1.default();
             return yield db.collection("Categories").deleteOne({ _id: new mongodb_1.ObjectID(key) }).then(result => result.deletedCount);
         });
     }
