@@ -4,7 +4,7 @@ const expect = require("chai").expect;
 const { ObjectID } = require("mongodb");
 const extend = require("extend");
 
-function coreTest(NorthwindServer, {Product, Category}, {products, categories}) {
+function testCases(NorthwindServer, {Product, Category}, {products, categories}) {
 
 	function createTest(testcase, command, compare, body){
 		it(`${testcase} (${command})`, () => {
@@ -607,4 +607,4 @@ function coreTest(NorthwindServer, {Product, Category}, {products, categories}) 
 	});
 }
 
-module.exports = coreTest;
+module.exports = testCases;
