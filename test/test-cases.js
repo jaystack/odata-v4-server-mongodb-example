@@ -287,7 +287,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 					"@odata.context": "http://localhost/$metadata#Edm.Decimal"
 				},
 				elementType: "Edm.Decimal",
-				contentType: "application/json"
+				contentType: "text/plain"
 			});
 
 			it("should invert Discontinued value on a product", () => {
@@ -379,6 +379,31 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							})
 						})
 					});
+				});
+			});
+
+			it("should discount a product", () => {
+				return NorthwindServer.execute("/Products/Northwind.discountProduct", "POST", {productId: "578f2b8c12eaebabec4af23e", percent: 10})
+				.then((result) => {
+					expect(result).to.deep.equal({
+						statusCode: 204
+					});
+
+					return NorthwindServer.execute("/Products('578f2b8c12eaebabec4af23e')", "GET").then((result) => {
+						expect(result).to.deep.equal({
+							statusCode: 200,
+							body: extend({
+								"@odata.context": "http://localhost/$metadata#Products/$entity"
+							}, products.filter(product => product._id.toString() == "578f2b8c12eaebabec4af23e").map(product => Object.assign({}, product, {
+									"@odata.id": `http://localhost/Products('${product._id}')`,
+									"@odata.editLink": `http://localhost/Products('${product._id}')`,
+									UnitPrice: 9
+								}))[0]
+							),
+							elementType: Product,
+							contentType: "application/json"
+						})
+					})
 				});
 			});
 		});

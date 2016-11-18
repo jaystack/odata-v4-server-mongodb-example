@@ -13,6 +13,7 @@ export declare class ProductsController extends ODataController {
     getCheapest(): Promise<Product>;
     getInPriceRange(min: number, max: number): Promise<Product[]>;
     swapPrice(a: string, b: string): Promise<void>;
+    discountProduct(productId: string, percent: number): Promise<void>;
 }
 export declare class CategoriesController extends ODataController {
     find(query: ODataQuery): Promise<Category[]>;
