@@ -2,8 +2,8 @@
   "name": "odata-v4-server-mongodb-example",
   "version": "0.1.0",
   "description": "OData V4 Server with MongoDB example",
-  "main": "build/ts/index.js",
-  "typings": "build/ts/index",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "author": "JayStack",
   "license": "MIT",
   "scripts": {
@@ -39,6 +39,7 @@
   ],
   "dependencies": {
     "@types/mongodb": "^2.1.34",
+    "express": "^4.14.0",
     "mongodb": "^2.2.11",
     "odata-v4-mongodb": "^0.1.7",
     "odata-v4-server": "rc"

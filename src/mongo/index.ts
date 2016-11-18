@@ -1,3 +1,4 @@
+import * as express from "express";
 import { NorthwindServer } from "./server";
 
-NorthwindServer.create("/odata", 3000);
+export default NorthwindServer.create();
