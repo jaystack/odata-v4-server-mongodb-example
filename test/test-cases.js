@@ -287,7 +287,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 					"@odata.context": "http://localhost/$metadata#Edm.Decimal"
 				},
 				elementType: "Edm.Decimal",
-				contentType: "text/plain"
+				contentType: "application/json"
 			});
 
 			it("should invert Discontinued value on a product", () => {
