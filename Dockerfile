@@ -4,8 +4,6 @@ FROM node:latest
 ENV DEBIAN_FRONTEND noninteractive
 RUN ln -sf /bin/bash /bin/sh
 
-ENV NODE_ENV production
-
 # Configure standard environment
 WORKDIR /root/app
 
@@ -21,6 +19,8 @@ RUN npm config set @types:registry https://registry.npmjs.org
 RUN npm install -q
 RUN npm cache clean
 RUN npm run build
+
+ENV NODE_ENV production
 
 CMD /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
 
