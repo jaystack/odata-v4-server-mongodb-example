@@ -4,6 +4,8 @@ FROM node:latest
 ENV DEBIAN_FRONTEND noninteractive
 RUN ln -sf /bin/bash /bin/sh
 
+ENV NODE_ENV production
+
 # Configure standard environment
 WORKDIR /root/app
 
