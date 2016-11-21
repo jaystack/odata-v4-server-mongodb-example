@@ -4,7 +4,7 @@ const expect = require("chai").expect;
 const { ObjectID } = require("mongodb");
 const extend = require("extend");
 
-function testCases(NorthwindServer, {Product, Category}, {products, categories}) {
+function testCases(NorthwindServer, {Product, Category}, {products, categories}, Id = ObjectID) {
 
 	function createTest(testcase, command, compare, body){
 		it(`${testcase} (${command})`, () => {
@@ -25,7 +25,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 	}
 
 	describe("OData V4 MongoDB example server", () => {
-		
+
 		beforeEach(() => {
 			return NorthwindServer.execute("/initDb", "POST");
 		});
@@ -93,7 +93,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 					Name: "New product",
 					CategoryId: categories[0]._id
 				}).then((result) => {
-					expect(result.body._id instanceof ObjectID).to.be.true;
+					expect(result.body._id instanceof Id).to.be.true;
 					expect(result).to.deep.equal({
 						statusCode: 201,
 						body: {
@@ -126,7 +126,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 								"@odata.id": `http://localhost/Products('578f2b8c12eaebabec4af23c')`,
 								"@odata.editLink": `http://localhost/Products('578f2b8c12eaebabec4af23c')`,
 								Name: "Chai (updated)",
-								_id: new ObjectID("578f2b8c12eaebabec4af23c")
+								_id: new Id("578f2b8c12eaebabec4af23c")
 							},
 							elementType: Product,
 							contentType: "application/json"
@@ -471,7 +471,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 					Name: "New category",
 					Description: "Test category"
 				}).then((result) => {
-					expect(result.body._id instanceof ObjectID).to.be.true;
+					expect(result.body._id instanceof Id).to.be.true;
 					expect(result).to.deep.equal({
 						statusCode: 201,
 						body: {
@@ -504,7 +504,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 								"@odata.id": `http://localhost/Categories('578f2baa12eaebabec4af289')`,
 								"@odata.editLink": `http://localhost/Categories('578f2baa12eaebabec4af289')`,
 								Name: "Beverages (updated)",
-								_id: new ObjectID("578f2baa12eaebabec4af289")
+								_id: new Id("578f2baa12eaebabec4af289")
 							},
 							elementType: Category,
 							contentType: "application/json"

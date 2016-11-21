@@ -1,13 +1,12 @@
 var sql = require('mssql');
 
-var dbConfig = {
-    server: "localhost\\MSSQLSERVER", //"localhost\\INFORMATION_SCHEMA", //"localhost\\dbo", //localhost\\SQLEXPRESS", //localhost\\SQL2K",
+var dbConfig = { //Data Source=HARIHARAN-PC\\SQLEXPRESS;Initial Catalog=yourDataBaseName;Integrated Security=True
+    server: "localhost\\MSSQLSERVER",
     database: "mytest",
     user: "sa",
     password: "QWEasd123%",
-    port: 1433
-    , options: {
-        //tdsVersion: '7_1'
+    port: 1433,
+    options: {
         encrypt: true
     }
 };
