@@ -16,7 +16,9 @@
     "pretest": "npm run build",
     "test": "mocha test/*.spec.js --reporter mochawesome --reporter-options reportDir=report,reportName=odata-v4-server,reportTitle=\"OData V4 Server\"",
     "precoverage": "tsc",
-    "coverage": "rm -rf coverage && node node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha test/*.spec.js --config=.istanbul.yaml -x config/**/*.js && node node_modules/remap-istanbul/bin/remap-istanbul -i coverage/coverage.json -o coverage/html-report -t html"
+    "coverage": "rm -rf coverage && node node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha test/*.spec.js --config=.istanbul.yaml -x config/**/*.js && node node_modules/remap-istanbul/bin/remap-istanbul -i coverage/coverage.json -o coverage/html-report -t html",
+    "docker-build": "docker build -t odata-v4-server-example .",
+    "docker-run": "docker run --name odata-v4-server-example -p 3000:3000 odata-v4-server-example"
   },
   "watch": {
     "coverage": "{lib,test}/*.js",
