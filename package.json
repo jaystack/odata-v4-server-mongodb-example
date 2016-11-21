@@ -7,7 +7,7 @@
   "author": "JayStack",
   "license": "MIT",
   "scripts": {
-    "build": "npm run tsc && npm run babel",
+    "build": "npm run tsc",
     "tsc": "tsc",
     "tsc:w": "tsc -w",
     "babel": "babel src/mongo-es -d lib/mongo-es",
