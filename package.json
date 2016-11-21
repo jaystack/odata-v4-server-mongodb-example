@@ -18,7 +18,9 @@
     "precoverage": "tsc",
     "coverage": "rm -rf coverage && node node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha test/*.spec.js --config=.istanbul.yaml -x config/**/*.js && node node_modules/remap-istanbul/bin/remap-istanbul -i coverage/coverage.json -o coverage/html-report -t html",
     "docker-build": "docker build -t odata-v4-server-example .",
-    "docker-run": "docker run --name odata-v4-server-example -p 3000:3000 odata-v4-server-example"
+    "docker-run": "docker run --name odata-v4-server-example -p 3000:3000 -d odata-v4-server-example",
+    "docker-clear": "docker stop odata-v4-server-example && docker rm -f odata-v4-server-example",
+    "docker-enter": "docker exec -ti odata-v4-server-example bash"
   },
   "watch": {
     "coverage": "{lib,test}/*.js",
