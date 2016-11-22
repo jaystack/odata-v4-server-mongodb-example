@@ -12,11 +12,9 @@ import products from "./products";
 export class NorthwindServer extends ODataServer{
     @Edm.ActionImport
     async initDb(){
-        let db = await mongodb();
+        const db = await mongodb();
         await db.dropDatabase();
-        let categoryCollection = db.collection("Categories");
-        let productsCollection = db.collection("Products");
-        await categoryCollection.insertMany(categories);
-        await productsCollection.insertMany(products);
+        await db.collection("Categories").insertMany(categories);
+        await db.collection("Products").insertMany(products);
     }
 }
