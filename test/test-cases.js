@@ -31,9 +31,6 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 		});
 
 		describe("Products", () => {
-			it("PROBA NIGGA", () => {
-				console.log("fakabát");
-			});
 			/*createTest("should get all products", "GET /Products", {
 				statusCode: 200,
 				body: {
@@ -89,9 +86,9 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 				),
 				elementType: Product,
 				contentType: "application/json"
-			});
+			});*/
 
-			it("should create new product", () => {
+			it.only("should create new product", () => {
 				return NorthwindServer.execute("/Products", "POST", {
 					Name: "New product",
 					CategoryId: categories[0]._id
@@ -177,7 +174,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 				});
 			});
 
-			createTest("should get category by product", "GET /Products('578f2b8c12eaebabec4af23c')/Category", {
+			/*createTest("should get category by product", "GET /Products('578f2b8c12eaebabec4af23c')/Category", {
 				statusCode: 200,
 				body: extend({
 					"@odata.context": "http://localhost/$metadata#Categories/$entity"
@@ -188,7 +185,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 				),
 				elementType: Category,
 				contentType: "application/json"
-			});
+			});*/
 
 			it("should create category reference on product", () => {
 				return NorthwindServer.execute("/Products('578f2b8c12eaebabec4af23c')/Category/$ref", "POST", {
@@ -408,7 +405,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 						})
 					})
 				});
-			});*/
+			});
 		});
 
 		/*describe("Categories", () => {

@@ -1,0 +1,1 @@
+{"version":3,"file":"connection.js","sourceRoot":"","sources":["../../src/mongo/connection.ts"],"names":[],"mappings":";;;;;;;;;AAAA,qCAA0C;AAE1C;;QACI,MAAM,GAAG,GAAG,OAAO,CAAC,GAAG,CAAC,QAAQ,KAAK,YAAY;YAC7C,yCAAyC;YACzC,mDAAmD,CAAC;QACxD,MAAM,CAAC,MAAM,qBAAW,CAAC,OAAO,CAAC,GAAG,CAAC,CAAC;IAC1C,CAAC;CAAA;;AALD,4BAKC;AAAA,CAAC"}

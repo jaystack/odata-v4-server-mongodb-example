@@ -4,8 +4,7 @@ export default async function (): Promise<mysql.IConnection> {
     const db: mysql.IConnectionConfig = <mysql.IConnectionConfig>{
         "host": "localhost",
         "user": "root",
-        "password": "mysql"/*,
-        "database": "northwind_mysql_test_db"*/
+        "password": "mysql"
     };
     return await mysql.createConnection(db);
 };
