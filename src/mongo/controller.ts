@@ -17,7 +17,7 @@ export class ProductsController extends ODataController {
             mongodbQuery.projection,
             mongodbQuery.skip,
             mongodbQuery.limit
-        ).toArray();
+        ).sort(mongodbQuery.sort).toArray();
     }
 
     @odata.GET
@@ -143,7 +143,7 @@ export class CategoriesController extends ODataController {
             mongodbQuery.projection,
             mongodbQuery.skip,
             mongodbQuery.limit
-        ).toArray();
+        ).sort(mongodbQuery.sort).toArray();
     }
 
     @odata.GET
@@ -166,7 +166,7 @@ export class CategoriesController extends ODataController {
             mongodbQuery.projection,
             mongodbQuery.skip,
             mongodbQuery.limit
-        ).toArray();
+        ).sort(mongodbQuery.sort).toArray();
     }
 
     @odata.GET("Products")

@@ -1,1 +1,0 @@
-{"version":3,"file":"connection.js","sourceRoot":"","sources":["../../src/mysql/connection.ts"],"names":[],"mappings":";;;;;;;;;AAAA,+BAA+B;AAE/B;;QACI,MAAM,EAAE,GAAqD;YACzD,MAAM,EAAE,WAAW;YACnB,MAAM,EAAE,MAAM;YACd,UAAU,EAAE,OAAO,CAAA;mDACoB;SAC1C,CAAC;QACF,MAAM,CAAC,MAAM,KAAK,CAAC,gBAAgB,CAAC,EAAE,CAAC,CAAC;IAC5C,CAAC;CAAA;;AARD,4BAQC;AAAA,CAAC"}
