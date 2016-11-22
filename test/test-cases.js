@@ -3,6 +3,7 @@
 const expect = require("chai").expect;
 const { ObjectID } = require("mongodb");
 const extend = require("extend");
+const { odata } = require("odata-v4-server")
 
 function testCases(NorthwindServer, {Product, Category}, {products, categories}) {
 
@@ -27,7 +28,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 	describe("OData V4 MongoDB example server", () => {
 
 		beforeEach(() => {
-			return NorthwindServer.execute("/initDb", "POST").then(_ => console.log("INIT DB"));
+			return NorthwindServer.execute("/initDb", "POST"); //.then(_ => console.log("INIT DB"));
 		});
 
 		describe("Products", () => {

@@ -2,6 +2,7 @@ import { ObjectID } from "mongodb";
 import { Edm, odata } from "odata-v4-server";
 import mongodb from "./connection";
 
+@odata.namespace("NorthwindES")
 @Edm.Annotate({
     term: "UI.DisplayName",
     string: "Products"
@@ -87,6 +88,7 @@ export class Product{
     }
 }
 
+@odata.namespace("NorthwindES")
 @Edm.Annotate({
     term: "UI.DisplayName",
     string: "Categories"
