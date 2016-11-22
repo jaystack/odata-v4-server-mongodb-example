@@ -31,7 +31,10 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 		});
 
 		describe("Products", () => {
-			createTest("should get all products", "GET /Products", {
+			it("PROBA NIGGA", () => {
+				console.log("fakabát");
+			});
+			/*createTest("should get all products", "GET /Products", {
 				statusCode: 200,
 				body: {
 					"@odata.context": "http://localhost/$metadata#Products",
@@ -405,10 +408,10 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 						})
 					})
 				});
-			});
+			});*/
 		});
 
-		describe("Categories", () => {
+		/*describe("Categories", () => {
 			createTest("should get all categories", "GET /Categories", {
 				statusCode: 200,
 				body: {
@@ -628,7 +631,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 					});
 				});
 			});
-		});
+		});*/
 	});
 }
 

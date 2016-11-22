@@ -1,0 +1,42 @@
+[
+  {
+    "Description": "Soft drinks",
+    "Name": "Beverages",
+    "id": 1
+  },
+  {
+    "Description": "Breads",
+    "Name": "Grains/Cereals",
+    "id": 2
+  },
+  {
+    "Description": "Prepared meats",
+    "Name": "Meat/Poultry",
+    "id": 3
+  },
+  {
+    "Description": "Dried fruit and bean curd",
+    "Name": "Produce",
+    "id": 4
+  },
+  {
+    "Description": "Seaweed and fish",
+    "Name": "Seafood",
+    "id": 5
+  },
+  {
+    "Description": "Sweet and savory sauces",
+    "Name": "Condiments",
+    "id": 6
+  },
+  {
+    "Description": "Cheeses",
+    "Name": "Dairy Products",
+    "id": 7
+  },
+  {
+    "Description": "Desserts",
+    "Name": "Confections",
+    "id": 8
+  }
+]
