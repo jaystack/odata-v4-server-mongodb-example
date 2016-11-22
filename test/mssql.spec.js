@@ -7,5 +7,5 @@ const categories = require("../lib/mssql/categories").default;
 const testCases = require("./test-cases.js");
 
 describe("MS SQL Server", () => {
-    testCases(NorthwindServer, {Product, Category}, {products, categories}, String);
+    testCases(NorthwindServer, {Product, Category}, {products, categories});
 });
