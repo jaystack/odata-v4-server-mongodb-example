@@ -7,7 +7,8 @@ import mongodb from "./connection";
 @odata.type(Product)
 export class ProductsController extends ODataController{
     @odata.GET
-    async find(@odata.query query) {
+    @odata.parameter("query", odata.query)
+    async find(query) {
         let db = await mongodb();
         let mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
@@ -21,7 +22,9 @@ export class ProductsController extends ODataController{
     }
 
     @odata.GET
-    async findOne(@odata.key key, @odata.query query) {
+    @odata.parameter("key", odata.key)
+    @odata.parameter("query", odata.query)
+    async findOne(key, query) {
         let db = await mongodb();
         let mongodbQuery = createQuery(query);
         return await db.collection("Products").findOne({ _id: new ObjectID(key) }, {
@@ -30,7 +33,9 @@ export class ProductsController extends ODataController{
     }
 
     @odata.GET("Category")
-    async getCategory(@odata.result result, @odata.query query) {
+    @odata.parameter("result", odata.result)
+    @odata.parameter("query", odata.query)
+    async getCategory(result, query) {
         let db = await mongodb();
         let mongodbQuery = createQuery(query);
         return await db.collection("Categories").findOne({ _id: new ObjectID(result.CategoryId) }, {
@@ -40,7 +45,9 @@ export class ProductsController extends ODataController{
 
     @odata.POST("Category").$ref
     @odata.PUT("Category").$ref
-    async setCategory(@odata.key key, @odata.link link) {
+    @odata.parameter("key", odata.key)
+    @odata.parameter("link", odata.link)
+    async setCategory(key, link) {
         let db = await mongodb();
         return await db.collection("Products").updateOne({
             _id: new ObjectID(key)
@@ -52,7 +59,8 @@ export class ProductsController extends ODataController{
     }
 
     @odata.DELETE("Category").$ref
-    async unsetCategory(@odata.key key) {
+    @odata.parameter("key", odata.key)
+    async unsetCategory(key) {
         let db = await mongodb();
         return await db.collection("Products").updateOne({
             _id: new ObjectID(key)
@@ -64,7 +72,8 @@ export class ProductsController extends ODataController{
     }
 
     @odata.POST
-    async insert(@odata.body data) {
+    @odata.parameter("data", odata.body)
+    async insert(data) {
         let db = await mongodb();
         if (data.CategoryId) data.CategoryId = new ObjectID(data.CategoryId);
         return await db.collection("Products").insertOne(data).then((result) => {
@@ -74,7 +83,10 @@ export class ProductsController extends ODataController{
     }
 
     @odata.PUT
-    async upsert(@odata.key key, @odata.body data, @odata.context context) {
+    @odata.parameter("key", odata.key)
+    @odata.parameter("data", odata.body)
+    @odata.parameter("context", odata.context)
+    async upsert(key, data, context) {
         let db = await mongodb();
         if (data.CategoryId) data.CategoryId = new ObjectID(data.CategoryId);
         return await db.collection("Products").updateOne({ _id: new ObjectID(key) }, data, {
@@ -86,14 +98,17 @@ export class ProductsController extends ODataController{
     }
 
     @odata.PATCH
-    async update(@odata.key key, @odata.body delta) {
+    @odata.parameter("key", odata.key)
+    @odata.parameter("delta", odata.body)
+    async update(key, delta) {
         let db = await mongodb();
         if (delta.CategoryId) delta.CategoryId = new ObjectID(delta.CategoryId);
         return await db.collection("Products").updateOne({ _id: new ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);
     }
 
     @odata.DELETE
-    async remove(@odata.key key) {
+    @odata.parameter("key", odata.key)
+    async remove(key) {
         let db = await mongodb();
         return await db.collection("Products").deleteOne({ _id: new ObjectID(key) }).then(result => result.deletedCount);
     }
@@ -107,13 +122,15 @@ export class ProductsController extends ODataController{
 
     @Edm.Function
     @Edm.Collection(Edm.EntityType(Product))
-    async getInPriceRange(@Edm.Decimal min, @Edm.Decimal max) {
+    @odata.parameter("min", Edm.Decimal, "max", Edm.Decimal)
+    async getInPriceRange(min, max) {
         let db = await mongodb();
         return await db.collection("Products").find({UnitPrice: {$gte: 5, $lte: 8}}).toArray();
     }
 
     @Edm.Action
-    async swapPrice(@Edm.String a, @Edm.String b) {
+    @odata.parameter("a", Edm.String, "b", Edm.String)
+    async swapPrice(a, b) {
         let db = await mongodb();
         const products = await db.collection("Products").find({_id: {$in: [new ObjectID(a), new ObjectID(b)]}}, {UnitPrice: 1}).toArray();
         const aProduct = products.find(product => product._id.toHexString() === a);
@@ -121,12 +138,23 @@ export class ProductsController extends ODataController{
         await db.collection("Products").update({_id: new ObjectID(a)}, {$set: {UnitPrice: bProduct.UnitPrice}});
         await db.collection("Products").update({_id: new ObjectID(b)}, {$set: {UnitPrice: aProduct.UnitPrice}});
     }
+
+    @Edm.Action
+    @odata.parameter("productId", Edm.String)
+    @odata.parameter("percent", Edm.Int32)
+    async discountProduct(productId, percent) {
+        let db = await mongodb();
+        const product = await db.collection("Products").findOne({ _id: new ObjectID(productId) });
+        const discountedPrice = ((100 - percent) / 100) * product.UnitPrice;
+        await db.collection("Products").update({ _id: new ObjectID(productId) }, { $set: { UnitPrice: discountedPrice } });
+    }
 }
 
 @odata.type(Category)
 export class CategoriesController extends ODataController{
     @odata.GET
-    async find(@odata.query query) {
+    @odata.parameter("query", odata.query)
+    async find(query) {
         let db = await mongodb();
         let mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
@@ -139,7 +167,9 @@ export class CategoriesController extends ODataController{
     }
 
     @odata.GET
-    async findOne(@odata.key key, @odata.query query) {
+    @odata.parameter("key", odata.key)
+    @odata.parameter("query", odata.query)
+    async findOne(key, query) {
         let db = await mongodb();
         let mongodbQuery = createQuery(query);
         return await db.collection("Categories").findOne({ _id: new ObjectID(key) }, {
@@ -148,7 +178,9 @@ export class CategoriesController extends ODataController{
     }
 
     @odata.GET("Products")
-    async getProducts(@odata.result result, @odata.query query) {
+    @odata.parameter("result", odata.result)
+    @odata.parameter("query", odata.query)
+    async getProducts(result, query) {
         let db = await mongodb();
         let mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
@@ -162,7 +194,10 @@ export class CategoriesController extends ODataController{
     }
 
     @odata.GET("Products")
-    async getProduct(@odata.key key, @odata.result result, @odata.query query) {
+    @odata.parameter("key", odata.key)
+    @odata.parameter("result", odata.result)
+    @odata.parameter("query", odata.query)
+    async getProduct(key, result, query) {
         let db = await mongodb();
         let mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
@@ -176,7 +211,9 @@ export class CategoriesController extends ODataController{
 
     @odata.POST("Products").$ref
     @odata.PUT("Products").$ref
-    async setCategory(@odata.key key, @odata.link link) {
+    @odata.parameter("key", odata.key)
+    @odata.parameter("link", odata.link)
+    async setCategory(key, link) {
         let db = await mongodb();
         return await db.collection("Products").updateOne({
             _id: new ObjectID(link)
@@ -188,7 +225,9 @@ export class CategoriesController extends ODataController{
     }
 
     @odata.DELETE("Products").$ref
-    async unsetCategory(@odata.key key, @odata.link link) {
+    @odata.parameter("key", odata.key)
+    @odata.parameter("link", odata.link)
+    async unsetCategory(key, link) {
         let db = await mongodb();
         return await db.collection("Products").updateOne({
             _id: new ObjectID(link)
@@ -200,7 +239,8 @@ export class CategoriesController extends ODataController{
     }
 
     @odata.POST
-    async insert(@odata.body data) {
+    @odata.parameter("data", odata.body)
+    async insert(data) {
         let db = await mongodb();
         return await db.collection("Categories").insertOne(data).then((result) => {
             data._id = result.insertedId;
@@ -209,7 +249,9 @@ export class CategoriesController extends ODataController{
     }
 
     @odata.PUT
-    async upsert(@odata.key key, @odata.body data) {
+    @odata.parameter("key", odata.key)
+    @odata.parameter("data", odata.body)
+    async upsert(key, data) {
         let db = await mongodb();
         return await db.collection("Categories").updateOne({ _id: new ObjectID(key) }, data, {
             upsert: true
@@ -220,14 +262,17 @@ export class CategoriesController extends ODataController{
     }
 
     @odata.PATCH
-    async update(@odata.key key, @odata.body delta) {
+    @odata.parameter("key", odata.key)
+    @odata.parameter("delta", odata.body)
+    async update(key, delta) {
         let db = await mongodb();
         if (delta.CategoryId) delta.CategoryId = new ObjectID(delta.CategoryId);
         return await db.collection("Categories").updateOne({ _id: new ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);
     }
 
     @odata.DELETE
-    async remove(@odata.key key) {
+    @odata.parameter("key", odata.key)
+    async remove(key) {
         let db = await mongodb();
         return await db.collection("Categories").deleteOne({ _id: new ObjectID(key) }).then(result => result.deletedCount);
     }

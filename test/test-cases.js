@@ -27,7 +27,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 	describe("OData V4 MongoDB example server", () => {
 
 		beforeEach(() => {
-			return NorthwindServer.execute("/initDb", "POST");
+			return NorthwindServer.execute("/initDb", "POST").then(_ => console.log("INIT"));
 		});
 
 		describe("Products", () => {
