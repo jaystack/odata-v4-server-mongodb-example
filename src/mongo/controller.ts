@@ -12,12 +12,13 @@ export class ProductsController extends ODataController {
         let mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
         if (typeof mongodbQuery.query.CategoryId == "string") mongodbQuery.query.CategoryId = new ObjectID(mongodbQuery.query.CategoryId);
-        return db.collection("Products").find(
-            mongodbQuery.query,
-            mongodbQuery.projection,
-            mongodbQuery.skip,
-            mongodbQuery.limit
-        ).sort(mongodbQuery.sort).toArray();
+        return db.collection("Products")
+                .find(mongodbQuery.query)
+                .project(mongodbQuery.projection)
+                .skip(mongodbQuery.skip || 0)
+                .limit(mongodbQuery.limit || 0)
+                .sort(mongodbQuery.sort)
+                .toArray();
     }
 
     @odata.GET
@@ -143,7 +144,7 @@ export class CategoriesController extends ODataController {
             mongodbQuery.projection,
             mongodbQuery.skip,
             mongodbQuery.limit
-        ).sort(mongodbQuery.sort).toArray();
+        ).toArray();
     }
 
     @odata.GET
@@ -166,7 +167,7 @@ export class CategoriesController extends ODataController {
             mongodbQuery.projection,
             mongodbQuery.skip,
             mongodbQuery.limit
-        ).sort(mongodbQuery.sort).toArray();
+        ).toArray();
     }
 
     @odata.GET("Products")

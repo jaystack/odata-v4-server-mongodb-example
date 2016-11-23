@@ -1,5 +1,8 @@
-import { MongoClient, Db } from "mongodb";
+import { MongoClient } from "mongodb";
 
 export default async function(){
-    return await MongoClient.connect("mongodb://localhost:27017/odata-v4-server-mongodb-example");
+    const uri = process.env.NODE_ENV === "production" ?
+        "mongodb://mongo/odata-v4-server-example" :
+        "mongodb://localhost:27017/odata-v4-server-example";
+    return await MongoClient.connect(uri);
 };
