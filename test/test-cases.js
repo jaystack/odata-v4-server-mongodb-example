@@ -3,8 +3,9 @@
 const expect = require("chai").expect;
 const { ObjectID } = require("mongodb");
 const extend = require("extend");
+const { odata } = require("odata-v4-server")
 
-function testCases(NorthwindServer, {Product, Category}, {products, categories}, Id = ObjectID) {
+function testCases(NorthwindServer, {Product, Category}, {products, categories}) {
 
 	function createTest(testcase, command, compare, body){
 		it(`${testcase} (${command})`, () => {
@@ -27,7 +28,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 	describe("OData V4 MongoDB example server", () => {
 
 		beforeEach(() => {
-			return NorthwindServer.execute("/initDb", "POST");
+			return NorthwindServer.execute("/initDb", "POST"); //.then(_ => console.log("INIT DB"));
 		});
 
 		describe("Products", () => {
@@ -93,7 +94,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 					Name: "New product",
 					CategoryId: categories[0]._id
 				}).then((result) => {
-					expect(result.body._id instanceof Id).to.be.true;
+					expect(result.body._id instanceof ObjectID).to.be.true;
 					expect(result).to.deep.equal({
 						statusCode: 201,
 						body: {
@@ -126,7 +127,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 								"@odata.id": `http://localhost/Products('578f2b8c12eaebabec4af23c')`,
 								"@odata.editLink": `http://localhost/Products('578f2b8c12eaebabec4af23c')`,
 								Name: "Chai (updated)",
-								_id: new Id("578f2b8c12eaebabec4af23c")
+								_id: new ObjectID("578f2b8c12eaebabec4af23c")
 							},
 							elementType: Product,
 							contentType: "application/json"
@@ -176,12 +177,12 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 
 			createTest("should get category by product", "GET /Products('578f2b8c12eaebabec4af23c')/Category", {
 				statusCode: 200,
-				body: extend({
+				body: Object.assign({
 					"@odata.context": "http://localhost/$metadata#Categories/$entity"
-				}, categories.filter(category => category._id.toString() == "578f2baa12eaebabec4af289").map(category => extend({
+				}, categories.filter(category => category._id.toString() == "578f2baa12eaebabec4af289").map(category => Object.assign({}, category, {
 						"@odata.id": `http://localhost/Categories('${category._id}')`,
 						"@odata.editLink": `http://localhost/Categories('${category._id}')`
-					}, category))[0]
+					}))[0]
 				),
 				elementType: Category,
 				contentType: "application/json"
@@ -342,12 +343,13 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 
 			it("should swap two products UnitPrice", () => {
 				return NorthwindServer.execute("/Products/Northwind.swapPrice", "POST", {a: "578f2b8c12eaebabec4af286", b: "578f2b8c12eaebabec4af287"})
-				.then((result) => {
-					expect(result).to.deep.equal({
-						statusCode: 204
-					});
-
-					return NorthwindServer.execute("/Products('578f2b8c12eaebabec4af286')", "GET").then((result) => {
+					.then((result) => {
+						expect(result).to.deep.equal({
+							statusCode: 204
+						});
+					})
+					.then(() => NorthwindServer.execute("/Products('578f2b8c12eaebabec4af286')", "GET"))
+					.then((result) => {
 						expect(result).to.deep.equal({
 							statusCode: 200,
 							body: extend({
@@ -362,34 +364,33 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 							contentType: "application/json"
 						})
 					})
-					.then(() => {
-						return NorthwindServer.execute("/Products('578f2b8c12eaebabec4af287')", "GET").then((result) => {
-							expect(result).to.deep.equal({
-								statusCode: 200,
-								body: extend({
-									"@odata.context": "http://localhost/$metadata#Products/$entity"
-								}, products.filter(product => product._id.toString() == "578f2b8c12eaebabec4af287").map(product => Object.assign({}, product, {
-										"@odata.id": `http://localhost/Products('${product._id}')`,
-										"@odata.editLink": `http://localhost/Products('${product._id}')`,
-										UnitPrice: 7.75
-									}))[0]
-								),
-								elementType: Product,
-								contentType: "application/json"
-							})
+					.then(() => NorthwindServer.execute("/Products('578f2b8c12eaebabec4af287')", "GET"))
+					.then((result) => {
+						expect(result).to.deep.equal({
+							statusCode: 200,
+							body: extend({
+								"@odata.context": "http://localhost/$metadata#Products/$entity"
+							}, products.filter(product => product._id.toString() == "578f2b8c12eaebabec4af287").map(product => Object.assign({}, product, {
+									"@odata.id": `http://localhost/Products('${product._id}')`,
+									"@odata.editLink": `http://localhost/Products('${product._id}')`,
+									UnitPrice: 7.75
+								}))[0]
+							),
+							elementType: Product,
+							contentType: "application/json"
 						})
 					});
-				});
 			});
 
 			it("should discount a product", () => {
 				return NorthwindServer.execute("/Products/Northwind.discountProduct", "POST", {productId: "578f2b8c12eaebabec4af23e", percent: 10})
-				.then((result) => {
-					expect(result).to.deep.equal({
-						statusCode: 204
-					});
-
-					return NorthwindServer.execute("/Products('578f2b8c12eaebabec4af23e')", "GET").then((result) => {
+					.then((result) => {
+						expect(result).to.deep.equal({
+							statusCode: 204
+						});
+					})
+					.then(() => NorthwindServer.execute("/Products('578f2b8c12eaebabec4af23e')", "GET"))
+					.then(result => {
 						expect(result).to.deep.equal({
 							statusCode: 200,
 							body: extend({
@@ -403,9 +404,9 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 							elementType: Product,
 							contentType: "application/json"
 						})
-					})
-				});
+					});
 			});
+		
 		});
 
 		describe("Categories", () => {
@@ -457,10 +458,10 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 				statusCode: 200,
 				body: extend({
 					"@odata.context": "http://localhost/$metadata#Categories/$entity"
-				}, categories.filter(category => category._id.toString() == "578f2baa12eaebabec4af289").map(category => extend({
+				}, categories.filter(category => category._id.toString() == "578f2baa12eaebabec4af289").map(category => Object.assign({}, category, {
 						"@odata.id": `http://localhost/Categories('${category._id}')`,
 						"@odata.editLink": `http://localhost/Categories('${category._id}')`
-					}, category))[0]
+					}))[0]
 				),
 				elementType: Category,
 				contentType: "application/json"
@@ -471,7 +472,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 					Name: "New category",
 					Description: "Test category"
 				}).then((result) => {
-					expect(result.body._id instanceof Id).to.be.true;
+					expect(result.body._id instanceof ObjectID).to.be.true;
 					expect(result).to.deep.equal({
 						statusCode: 201,
 						body: {
@@ -504,7 +505,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 								"@odata.id": `http://localhost/Categories('578f2baa12eaebabec4af289')`,
 								"@odata.editLink": `http://localhost/Categories('578f2baa12eaebabec4af289')`,
 								Name: "Beverages (updated)",
-								_id: new Id("578f2baa12eaebabec4af289")
+								_id: new ObjectID("578f2baa12eaebabec4af289")
 							},
 							elementType: Category,
 							contentType: "application/json"
@@ -524,11 +525,10 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 					return NorthwindServer.execute("/Categories('578f2baa12eaebabec4af289')", "GET").then((result) => {
 						expect(result).to.deep.equal({
 							statusCode: 200,
-							body:  categories.filter(category => category._id.toString() == "578f2baa12eaebabec4af289").map(category => extend({
+							body:  categories.filter(category => category._id.toString() == "578f2baa12eaebabec4af289").map(category => Object.assign({}, category, {
 								"@odata.context": "http://localhost/$metadata#Categories/$entity",
 								"@odata.id": `http://localhost/Categories('${category._id}')`,
-								"@odata.editLink": `http://localhost/Categories('${category._id}')`
-							}, category, {
+								"@odata.editLink": `http://localhost/Categories('${category._id}')`,
 								Name: "Beverages (updated)"
 							}))[0],
 							elementType: Category,
@@ -556,10 +556,10 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 				statusCode: 200,
 				body: {
 					"@odata.context": "http://localhost/$metadata#Categories('578f2baa12eaebabec4af289')/Products",
-					value: products.filter(product => product.CategoryId.toString() == "578f2baa12eaebabec4af289").map(product => extend({
+					value: products.filter(product => product.CategoryId.toString() == "578f2baa12eaebabec4af289").map(product => Object.assign({}, product, {
 						"@odata.id": `http://localhost/Products('${product._id}')`,
 						"@odata.editLink": `http://localhost/Products('${product._id}')`
-					}, product))
+					}))
 				},
 				elementType: Product,
 				contentType: "application/json"
