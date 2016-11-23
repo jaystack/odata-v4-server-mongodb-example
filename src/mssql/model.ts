@@ -10,7 +10,7 @@ import mssql from "./connection";
 export class Product{
     @Edm.Key
     @Edm.Computed
-    @Edm.String
+    @Edm.Int32
     @Edm.Annotate({
         term: "UI.DisplayName",
         string: "Product identifier"
@@ -18,11 +18,11 @@ export class Product{
         term: "UI.ControlHint",
         string: "ReadOnly"
     })
-    _id:string
+    id:number
 
-    @Edm.String
+    @Edm.Int32
     @Edm.Required
-    CategoryId:string
+    CategoryId:number
 
     @Edm.EntityType("Category")
     @Edm.Partner("Products")
@@ -72,7 +72,7 @@ export class Product{
         //let db = await mongodb();
         let db = await mssql();
         await db.collection('Products').findOneAndUpdate(
-                {_id: result._id},
+                {id: result.id},
                 {$set: {Discontinued: !result.Discontinued}});
     }
 
@@ -81,7 +81,7 @@ export class Product{
         //let db = await mongodb();
         let db = await mssql();
         await db.collection('Products').findOneAndUpdate(
-                {_id: result._id},
+                {id: result.id},
                 {$set: {Discontinued: value}});
     }
 }
@@ -93,7 +93,7 @@ export class Product{
 export class Category{
     @Edm.Key
     @Edm.Computed
-    @Edm.String
+    @Edm.Int32
     @Edm.Annotate({
         term: "UI.DisplayName",
         string: "Category identifier"
@@ -102,7 +102,7 @@ export class Category{
         term: "UI.ControlHint",
         string: "ReadOnly"
     })
-    _id:string
+    id:number
 
     @Edm.String
     Description:string

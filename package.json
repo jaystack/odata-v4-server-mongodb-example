@@ -46,11 +46,14 @@
   ],
   "dependencies": {
     "@types/mongodb": "^2.1.34",
+    "@types/mssql": "^3.1.29",
     "@types/mysql": "0.0.30",
     "express": "^4.14.0",
     "mongodb": "^2.2.11",
+    "mssql": "^3.3.0",
     "mysql": "^2.12.0",
     "odata-v4-mongodb": "^0.1.7",
+    "odata-v4-mssql": "^0.1.0",
     "odata-v4-mysql": "^0.1.0",
     "odata-v4-server": "rc"
   },

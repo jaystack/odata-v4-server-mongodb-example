@@ -3,7 +3,7 @@ const sql = require("mssql");
 
 var dbConfig = { //Data Source=localhost\\SQLEXPRESS;Initial Catalog=mytest;Integrated Security=True
     server: "localhost\\MSSQLSERVER",
-    database: "mytest",
+    database: "",
     user: "sa",
     password: "QWEasd123%",
     port: 1433,
