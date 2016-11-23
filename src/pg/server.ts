@@ -10,7 +10,8 @@ import multipleInsert from "./utils/multipleInsert";
 //@odata.controller(ProductsController, true)
 //@odata.controller(CategoriesController, true)
 export class NorthwindServer extends ODataServer {
-    @Edm.ActionImport
+    
+	@Edm.ActionImport
     async initDb(){
         const db = await connect();
 		

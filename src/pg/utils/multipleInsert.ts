@@ -3,13 +3,12 @@ import {flatten} from "ramda";
 
 /**
  * This function provides a statement string such as:
- * ($1:int, $2:varchar, $3:boolean),
- * ($2:int, $3:varchar, $4:boolean),
- * ($5:int, $5:varchar, $7:boolean)
+ * ($1, $2, $3),
+ * ($2, $3, $4),
+ * ($5, $5, $7)
  * 
- * The parameters are The
+ * The parameters are the
  * 	1) the items in Object[] format: [{Id: 1, Name: 'foo', Active: true}]
- * 	2) the types in String[] format: ['int', 'varchar', 'boolean']
  */
 
 function createPrepareStatementForMultipleInsertion(items: any[]): string {
@@ -21,10 +20,6 @@ function createPrepareStatementForMultipleInsertion(items: any[]): string {
 						(_, j) => `$${i*metaColumns.length + j + 1}`
 					).join(', ') + ')'
 			).join(',\n');
-
-	/*return items.map(
-				(item, i) => '(' + metaColumns.map(_ => `?`).join(', ') + ')'
-			).join(',\n');*/
 }
 
 export default async function(db: pg.Client, tableName: string, items: any[], propertyNameProjection?: string[]) {
