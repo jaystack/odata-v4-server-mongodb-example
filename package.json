@@ -52,6 +52,7 @@
     "mysql": "^2.12.0",
     "odata-v4-mongodb": "^0.1.7",
     "odata-v4-mysql": "^0.1.0",
+    "odata-v4-pg": "^0.1.0",
     "odata-v4-server": "rc",
     "pg": "^6.1.0",
     "ramda": "^0.22.1"

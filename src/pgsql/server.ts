@@ -1,13 +1,13 @@
 import { ObjectID } from "mongodb";
 import { ODataServer, ODataController, Edm, odata, ODataQuery } from "odata-v4-server";
-//import { ProductsController, CategoriesController } from "./controller";
+import { ProductsController, /*CategoriesController*/ } from "./controller";
 import connect from "./connect";
 import categories  from "./categories";
 import products from "./products";
 import multipleInsert from "./utils/multipleInsert";
 
 @odata.namespace("Northwind")
-//@odata.controller(ProductsController, true)
+@odata.controller(ProductsController, true)
 //@odata.controller(CategoriesController, true)
 export class NorthwindServer extends ODataServer {
     
