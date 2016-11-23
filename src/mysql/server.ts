@@ -11,10 +11,6 @@ const products: Product[] = require("../../src/mysql/products");
 @odata.controller(CategoriesController, true)
 export class NorthwindServer extends ODataServer {
 
-    /*async executeQuery() {
-        return await new Promise<any>((resolve, reject) => connection.query(`DROP DATABASE IF EXISTS northwind_mysql_test_db`, (err, result) => err ? reject(err) : resolve(result)));
-    }*/
-
     @Edm.ActionImport
     async initDb() {
         const connection = await mysqlConnection();

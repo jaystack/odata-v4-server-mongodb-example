@@ -6,6 +6,7 @@ export declare class ProductsController extends ODataController {
     getCategory(result: Product, query: ODataQuery): Promise<Category>;
     setCategory(key: string, link: string): Promise<number>;
     insert(data: any): Promise<Product>;
+    getDeltaObjectInSQL(delta: any): string;
     update(key: string, delta: any): Promise<number>;
 }
 export declare class CategoriesController extends ODataController {

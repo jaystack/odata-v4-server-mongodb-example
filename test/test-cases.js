@@ -88,11 +88,13 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 				contentType: "application/json"
 			});*/
 
-			it.only("should create new product", () => {
+			it("should create new product", () => {
 				return NorthwindServer.execute("/Products", "POST", {
 					Name: "New product",
-					CategoryId: categories[0]._id
+					CategoryId: /*categories[0]._id*/2
 				}).then((result) => {
+					console.log("+++++++++++++++++++");
+					console.log(result);
 					expect(result.body._id instanceof Id).to.be.true;
 					expect(result).to.deep.equal({
 						statusCode: 201,
@@ -135,8 +137,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories},
 				});
 			});
 
-			it("should delta update product", () => {
-				return NorthwindServer.execute("/Products('578f2b8c12eaebabec4af23c')", "PATCH", {
+			it.only("should delta update product", () => {
+				return NorthwindServer.execute("/Products('1')", "PATCH", {
 					Name: "Chai (updated)"
 				}).then((result) => {
 					expect(result).to.deep.equal({

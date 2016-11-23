@@ -59,10 +59,12 @@ export class ProductsController extends ODataController {
         const connection = await mysqlConnection();
         await new Promise<any>((resolve, reject) => connection.query(`USE northwind_mysql_test_db`, (err, result) => err ? reject(err) : resolve(result)));
         return await new Promise<Product>((resolve, reject) => {
-        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        console.log(data);
-            connection.query(`INSERT INTO Products VALUES (?,?,?,?,?,?);`, [data.QuantityPerUnit||null, data.UnitPrice||null, data.CategoryId||null, data.Name||null, data.Discontinued||null, data.id||null], (err, result) =>
-                (err) ? reject(err) : resolve(result[0]))});
+            console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+            console.log(data);
+            console.log([data.QuantityPerUnit || null, data.UnitPrice || null, data.CategoryId || null, data.Name || null, data.Discontinued || null, data.id || null]);
+            connection.query(`INSERT INTO Products VALUES (?,?,?,?,?,?);`, [data.QuantityPerUnit || null, data.UnitPrice || null, data.CategoryId || null, data.Name || null, data.Discontinued || null, data.id || null], (err, result) =>
+                (err) ? reject(err) : resolve(result[0]))
+        });
     }
 
     /*@odata.PUT
@@ -77,14 +79,23 @@ export class ProductsController extends ODataController {
         });
     }*/
 
+    getDeltaObjectInSQL(delta: any): string {
+        const deltaKeys = Object.keys(delta);
+        if (deltaKeys.length == 1) return `${deltaKeys[0]}=${delta[deltaKeys[0]]}`;
+        return deltaKeys.reduce((prev, current) => `${prev}=${delta[prev]}, ${current}=${delta[current]}`);
+    }
+
     @odata.PATCH
     async update( @odata.key key: string, @odata.body delta: any): Promise<number> {
         /*let db = await mongodb();
         if (delta.CategoryId) delta.CategoryId = new ObjectID(delta.CategoryId);
         return await db.collection("Products").updateOne({ _id: new ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);*/
+        console.log("++++++++++++++++++");
+        console.log(delta);
+        console.log(key);
         const connection = await mysqlConnection();
         return await new Promise<number>((resolve, reject) =>
-            connection.query(`UPDATE Products SET ${delta} WHERE _id = ? `, key, (err, result) =>
+            connection.query(`UPDATE Products SET ${this.getDeltaObjectInSQL(delta)} WHERE _id = ? `, [key], (err, result) =>
                 (err) ? reject(err) : resolve(result[0])));
     }
 
