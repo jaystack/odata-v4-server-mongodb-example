@@ -4,6 +4,40 @@ import { ODataController, Edm, odata, ODataQuery } from "odata-v4-server";
 import { Product, Category } from "./model";
 import mysqlConnection from "./connection";
 
+function getDeltaObjectInSQL(delta: any): string {
+    const deltaKeys = Object.keys(delta);
+    if (deltaKeys.length == 1) return `${deltaKeys[0]}=${delta[deltaKeys[0]]}`;
+    return deltaKeys.reduce((prev, current) => `${prev}=${delta[prev]}, ${current}=${delta[current]}`);
+}
+
+function mapDiscontinued(results: any[]): any[] {
+    return results.map(result => {
+        result.Discontinued = (result.Discontinued == 1) ? true : false;
+        return result;
+    });
+}
+
+function promisifyWithDdName(client) {
+    return new Proxy(client, {
+        get(target, name) {
+            if (name !== 'query')
+                return target[name];
+
+            return function (...args) {
+                return new Promise((resolve, reject) => {
+                    target.query(`USE northwind_mysql_test_db`, (error, res) => {
+                        if (error) return reject(error);
+                        target.query(...args, (err, result) => {
+                            if (err) return reject(err);
+                            resolve(result);
+                        })
+                    })
+                });
+            }
+        }
+    });
+}
+
 @odata.type(Product)
 export class ProductsController extends ODataController {
     @odata.GET
@@ -17,11 +51,10 @@ export class ProductsController extends ODataController {
 
     @odata.GET
     async findOne( @odata.key key: string, @odata.query query: ODataQuery): Promise<Product> {
-        const connection = await mysqlConnection();
+        const connection = promisifyWithDdName(await mysqlConnection());
         const sqlQuery = createQuery(query);
-        return await new Promise<Product>((resolve, reject) =>
-            connection.query(`SELECT ${sqlQuery.select} FROM Products WHERE _id = ? AND (${sqlQuery.where})`, [key, ...sqlQuery.parameters], (err, result) =>
-                (err) ? reject(err) : resolve(result[0])));
+        const results = await connection.query(`SELECT ${sqlQuery.select} FROM Products WHERE id = ? AND (${sqlQuery.where})`, [key, ...sqlQuery.parameters]);
+        return mapDiscontinued(results)[0];
     }
 
     @odata.GET("Category")
@@ -29,7 +62,7 @@ export class ProductsController extends ODataController {
         const connection = await mysqlConnection();
         const sqlQuery = createQuery(query);
         return await new Promise<Category>((resolve, reject) =>
-            connection.query(`SELECT ${sqlQuery.select} FROM Categories WHERE _id = ? AND (${sqlQuery.where})`, [result.CategoryId, ...sqlQuery.parameters], (err, result) =>
+            connection.query(`SELECT ${sqlQuery.select} FROM Categories WHERE id = ? AND (${sqlQuery.where})`, [result.CategoryId, ...sqlQuery.parameters], (err, result) =>
                 (err) ? reject(err) : resolve(result[0])));
     }
 
@@ -38,21 +71,17 @@ export class ProductsController extends ODataController {
     async setCategory( @odata.key key: string, @odata.link link: string): Promise<number> {
         const connection = await mysqlConnection();
         return await new Promise<number>((resolve, reject) =>
-            connection.query(`UPDATE Categories SET CategoryId = link WHERE _id = ? `, [key], (err, result) =>
+            connection.query(`UPDATE Categories SET CategoryId = ${link} WHERE id = ? `, [key], (err, result) =>
                 (err) ? reject(err) : resolve(result[0])));
     }
 
-    /*@odata.DELETE("Category").$ref
+    @odata.DELETE("Category").$ref
     async unsetCategory( @odata.key key: string): Promise<number> {
-        let db = await mongodb();
-        return await db.collection("Products").updateOne({
-            _id: new ObjectID(key)
-        }, {
-                $unset: { CategoryId: 1 }
-            }).then((result) => {
-                return result.modifiedCount;
-            });
-    }*/
+        const connection = await mysqlConnection();
+        return await new Promise<number>((resolve, reject) =>
+            connection.query(`UPDATE Products SET CategoryId = NULL WHERE id = ?`, [key], (err, result) =>
+                (err) ? reject(err) : resolve(result[0])));
+    }
 
     @odata.POST
     async insert( @odata.body data: any): Promise<Product> {
@@ -71,41 +100,38 @@ export class ProductsController extends ODataController {
     async upsert( @odata.key key: string, @odata.body data: any, @odata.context context: any): Promise<Product> {
         let db = await mongodb();
         if (data.CategoryId) data.CategoryId = new ObjectID(data.CategoryId);
-        return await db.collection("Products").updateOne({ _id: new ObjectID(key) }, data, {
+        return await db.collection("Products").updateOne({ id: new ObjectID(key) }, data, {
             upsert: true
         }).then((result) => {
-            data._id = result.upsertedId
+            data.id = result.upsertedId
             return data;
         });
     }*/
 
-    getDeltaObjectInSQL(delta: any): string {
-        const deltaKeys = Object.keys(delta);
-        if (deltaKeys.length == 1) return `${deltaKeys[0]}=${delta[deltaKeys[0]]}`;
-        return deltaKeys.reduce((prev, current) => `${prev}=${delta[prev]}, ${current}=${delta[current]}`);
-    }
-
     @odata.PATCH
     async update( @odata.key key: string, @odata.body delta: any): Promise<number> {
-        /*let db = await mongodb();
-        if (delta.CategoryId) delta.CategoryId = new ObjectID(delta.CategoryId);
-        return await db.collection("Products").updateOne({ _id: new ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);*/
         console.log("++++++++++++++++++");
         console.log(delta);
         console.log(key);
         const connection = await mysqlConnection();
-        return await new Promise<number>((resolve, reject) =>
-            connection.query(`UPDATE Products SET ${this.getDeltaObjectInSQL(delta)} WHERE _id = ? `, [key], (err, result) =>
-                (err) ? reject(err) : resolve(result[0])));
+        return await new Promise<number>((resolve, reject) => {
+            connection.query(`USE northwind_mysql_test_db`, (error, res) => {
+
+                connection.query(`UPDATE Products SET ${getDeltaObjectInSQL(delta)} WHERE id = ? `, [key], (err, result) =>
+                    (err) ? reject(err) : resolve(result[0]))
+
+            })
+
+        });
     }
 
-    /*@odata.DELETE
+    @odata.DELETE
     async remove( @odata.key key: string): Promise<number> {
-        let db = await mongodb();
-        return await db.collection("Products").deleteOne({ _id: new ObjectID(key) }).then(result => result.deletedCount);
+        const connection = promisifyWithDdName(await mysqlConnection());
+        return await connection.query(`DELETE FROM Products WHERE id = ?`, [key]);
     }
 
-    @Edm.Function
+    /*@Edm.Function
     @Edm.EntityType(Product)
     async getCheapest(): Promise<Product> {
         let db = await mongodb();

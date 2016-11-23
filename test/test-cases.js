@@ -32,7 +32,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 		});
 
 		describe("Products", () => {
-			/*createTest("should get all products", "GET /Products", {
+			createTest("should get all products", "GET /Products", {
 				statusCode: 200,
 				body: {
 					"@odata.context": "http://localhost/$metadata#Products",
@@ -87,7 +87,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				),
 				elementType: Product,
 				contentType: "application/json"
-			});*/
+			});
 
 			it("should create new product", () => {
 				return NorthwindServer.execute("/Products", "POST", {
@@ -140,6 +140,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				return NorthwindServer.execute("/Products('1')", "PATCH", {
 					Name: "Chai (updated)"
 				}).then((result) => {
+					console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%");
+					console.log(result);
 					expect(result).to.deep.equal({
 						statusCode: 204
 					});
@@ -175,7 +177,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
-			/*createTest("should get category by product", "GET /Products('578f2b8c12eaebabec4af23c')/Category", {
+			createTest("should get category by product", "GET /Products('578f2b8c12eaebabec4af23c')/Category", {
 				statusCode: 200,
 				body: Object.assign({
 					"@odata.context": "http://localhost/$metadata#Categories/$entity"
@@ -186,7 +188,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				),
 				elementType: Category,
 				contentType: "application/json"
-			});*/
+			});
 
 			it("should create category reference on product", () => {
 				return NorthwindServer.execute("/Products('578f2b8c12eaebabec4af23c')/Category/$ref", "POST", {
