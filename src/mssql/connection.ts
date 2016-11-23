@@ -9,7 +9,8 @@ var dbConfig = { //Data Source=localhost\\SQLEXPRESS;Initial Catalog=mytest;Inte
     port: 1433,
     options: {
         encrypt: true
-    }
+    },
+    requestTimeout: 1000
 };
 
 var msSqlConnection = new sql.Connection(dbConfig);

@@ -27,7 +27,7 @@
     "QuantityPerUnit": "48 - 6 oz jars",
     "UnitPrice": 22,
     "CategoryId": 6,
-    "Name": "Chef Anton's Cajun Seasoning",
+    "Name": "Chef Anton`s Cajun Seasoning",
     "Discontinued": true,
     "id": 4
   },
@@ -35,7 +35,7 @@
     "QuantityPerUnit": "36 boxes",
     "UnitPrice": 21.35,
     "CategoryId": 6,
-    "Name": "Chef Anton's Gumbo Mix",
+    "Name": "Chef Anton`s Gumbo Mix",
     "Discontinued": false,
     "id": 5
   },
@@ -43,7 +43,7 @@
     "QuantityPerUnit": "12 - 8 oz jars",
     "UnitPrice": 25,
     "CategoryId": 6,
-    "Name": "Grandma's Boysenberry Spread",
+    "Name": "Grandma`s Boysenberry Spread",
     "Discontinued": false,
     "id": 6
   },
@@ -131,7 +131,7 @@
     "QuantityPerUnit": "30 gift boxes",
     "UnitPrice": 81,
     "CategoryId": 8,
-    "Name": "Sir Rodney's Marmalade",
+    "Name": "Sir Rodney`s Marmalade",
     "Discontinued": false,
     "id": 17
   },
@@ -139,7 +139,7 @@
     "QuantityPerUnit": "24 pkgs. x 4 pieces",
     "UnitPrice": 10,
     "CategoryId": 8,
-    "Name": "Sir Rodney's Scones",
+    "Name": "Sir Rodney`s Scones",
     "Discontinued": false,
     "id": 18
   },
@@ -147,7 +147,7 @@
     "QuantityPerUnit": "12 - 1 lb pkgs.",
     "UnitPrice": 30,
     "CategoryId": 4,
-    "Name": "Uncle Bob's Organic Dried Pears",
+    "Name": "Uncle Bob`s Organic Dried Pears",
     "Discontinued": true,
     "id": 19
   },
@@ -171,7 +171,7 @@
     "QuantityPerUnit": "24 - 500 g pkgs.",
     "UnitPrice": 21,
     "CategoryId": 2,
-    "Name": "Gustaf's Knäckebröd",
+    "Name": "Gustaf`s Knäckebröd",
     "Discontinued": false,
     "id": 22
   },
@@ -299,7 +299,7 @@
     "QuantityPerUnit": "12 - 12 oz cans",
     "UnitPrice": 9.65,
     "CategoryId": 5,
-    "Name": "Jack's New England Clam Chowder",
+    "Name": "Jack`s New England Clam Chowder",
     "Discontinued": true,
     "id": 38
   },
@@ -451,7 +451,7 @@
     "QuantityPerUnit": "24 - 500 ml bottles",
     "UnitPrice": 28.5,
     "CategoryId": 6,
-    "Name": "Sirop d'érable",
+    "Name": "Sirop d`érable",
     "Discontinued": true,
     "id": 57
   },

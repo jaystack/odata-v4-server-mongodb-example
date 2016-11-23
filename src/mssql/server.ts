@@ -14,23 +14,32 @@ export class NorthwindServer extends ODataServer {
     @Edm.ActionImport
     async initDb() {
         const connection = await mssqlConnection();
-        console.log("=== AFTER connection");
-        await new Promise<any>((resolve, reject) => (new mssql.Request(connection)).query("USE master", (err, result) => err ? reject(err) : resolve(result)));
-        await new Promise<any>((resolve, reject) => (new mssql.Request(connection)).query("DROP DATABASE IF EXISTS northwind_mssql_test_db", (err, result) => err ? reject(err) : resolve(result)));
-        await new Promise<any>((resolve, reject) => (new mssql.Request(connection)).query("CREATE DATABASE northwind_mssql_test_db", (err, result) => err ? reject(err) : resolve(result)));
-        await new Promise<any>((resolve, reject) => (new mssql.Request(connection)).query("USE northwind_mssql_test_db", (err, result) => err ? reject(err) : resolve(result)));
-        await new Promise<any>((resolve, reject) => (new mssql.Request(connection)).query("CREATE TABLE categories (Description NVARCHAR(25), Name NVARCHAR(14), id INT);", (err, result) => err ? reject(err) : resolve(result)));
-        await new Promise<any>((resolve, reject) => (new mssql.Request(connection)).query("CREATE TABLE products (QuantityPerUnit NVARCHAR(20), UnitPrice DECIMAL(5, 2), CategoryId INT, Name NVARCHAR(32), Discontinued BIT, id INT);", (err, result) => err ? reject(err) : resolve(result)));
+        //await new Promise<any>((resolve, reject) => (new mssql.Request(connection)).query("USE master", (err, result) => err ? reject(err) : resolve(result)));
+        await new Promise<any>((resolve, reject) => runQuery(mssql, connection, resolve, reject, "USE master"))
+        await new Promise<any>((resolve, reject) => runQuery(mssql, connection, resolve, reject, "DROP DATABASE IF EXISTS northwind_mssql_test_db", true))
+        await new Promise<any>((resolve, reject) => runQuery(mssql, connection, resolve, reject, "CREATE DATABASE northwind_mssql_test_db", true))
+        await new Promise<any>((resolve, reject) => runQuery(mssql, connection, resolve, reject, "USE northwind_mssql_test_db", true)
+        await new Promise<any>((resolve, reject) => runQuery(mssql, connection, resolve, reject, "CREATE TABLE categories (Description NVARCHAR(25), Name NVARCHAR(14), id INT)", true))
+        await new Promise<any>((resolve, reject) => runQuery(mssql, connection, resolve, reject, "CREATE TABLE products (QuantityPerUnit NVARCHAR(20), UnitPrice DECIMAL(5, 2), CategoryId INT, Name NVARCHAR(32), Discontinued BIT, id INT)", true));
         await Promise.all(categories.map(category =>
             new Promise<any>((resolve, reject) =>
-                (new mssql.Request(connection)).query(`INSERT INTO categories VALUES ('${category.Description}','${category.Name}',${category.id});`, (err, result) =>
-                    (err) ? reject(err) : resolve(result))
+                runQuery(mssql, connection, resolve, reject, `INSERT INTO categories VALUES ('${category.Description}','${category.Name}',${category.id});`, true)
             )));
         await Promise.all(products.map(product =>
             new Promise<any>((resolve, reject) =>
-                (new mssql.Request(connection)).query(`INSERT INTO products VALUES ('${product.QuantityPerUnit}',${product.UnitPrice},${product.CategoryId},'${product.Name}',${product.Discontinued},${product.id});`, (err, result) =>
-                    (err) ? reject(err) : resolve(result))
+                runQuery(mssql, connection, resolve, reject, `INSERT INTO products VALUES ('${product.QuantityPerUnit}',${product.UnitPrice},${product.CategoryId},'${product.Name}',${(product.Discontinued ? 1 : 0)},${product.id});`, true)
             )));
-        console.log("DB init done");
     }
+}
+
+function runQuery(mssql: any, connection: any, resolve: Function, reject: Function, query: string, goOn: boolean = false) {
+  return (new mssql.Request(connection)).query(query, (err, result) => {
+    if (err) {
+        console.log("ERR:", query, ":\n", err);
+        return (goOn) ? resolve(err) : reject(err);
+    }
+    console.log("OK:", query);
+    if (result) { console.log(result); }
+    return resolve(result);
+  });
 }
