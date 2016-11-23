@@ -2,6 +2,7 @@ import { ObjectID } from "mongodb";
 import { Edm, odata } from "odata-v4-server";
 import mongodb from "./connection";
 
+@odata.namespace("NorthwindES")
 @Edm.Annotate({
     term: "UI.DisplayName",
     string: "Products"
@@ -62,12 +63,14 @@ export class Product{
 
     @Edm.Function
     @Edm.Decimal
-    getUnitPrice(@odata.result result) {
+    @odata.parameter("result", odata.result)
+    getUnitPrice(result) {
         return result.UnitPrice;
     }
 
     @Edm.Action
-    async invertDiscontinued(@odata.result result) {
+    @odata.parameter("result", odata.result)
+    async invertDiscontinued(result) {
         let db = await mongodb();
         await db.collection('Products').findOneAndUpdate(
                 {_id: result._id},
@@ -75,7 +78,9 @@ export class Product{
     }
 
     @Edm.Action
-    async setDiscontinued(@odata.result result, @Edm.Boolean value) {
+    @odata.parameter("result", odata.result)
+    @odata.parameter("value", Edm.Boolean)
+    async setDiscontinued(result, @Edm.Boolean value) {
         let db = await mongodb();
         await db.collection('Products').findOneAndUpdate(
                 {_id: result._id},
@@ -83,6 +88,7 @@ export class Product{
     }
 }
 
+@odata.namespace("NorthwindES")
 @Edm.Annotate({
     term: "UI.DisplayName",
     string: "Categories"
