@@ -1,4 +1,5 @@
-import { Collection, ObjectID } from "mongodb";
+//import { Collection, ObjectID } from "mongodb";
+import * as mssql from "mssql";
 import { createQuery } from "odata-v4-mssql";
 import { ODataController, Edm, odata, ODataQuery } from "odata-v4-server";
 import { Product, Category } from "./model";
@@ -9,37 +10,52 @@ export class ProductsController extends ODataController {
     @odata.GET
     async find( @odata.query query: ODataQuery): Promise<Product[]> {
         const connection = await mssqlConnection();
+        const request = new mssql.Request(connection);
         const sqlQuery = createQuery(query);
         return await new Promise<Product[]>((resolve, reject) =>
-            connection.query(`SELECT ${sqlQuery.select} FROM Products WHERE ${sqlQuery.where}`/*, [...sqlQuery.parameters]*/, (err, result) =>
-                (err) ? reject(err) : resolve(result[0])));
+            request.query(`SELECT ${sqlQuery.select} FROM Products WHERE ${sqlQuery.where}`/*, [...sqlQuery.parameters]*/, (err, result) => {
+                //connection.close();
+                return (err) ? reject(err) : resolve(result[0]);
+            }));
     }
 
     @odata.GET
     async findOne( @odata.key key: string, @odata.query query: ODataQuery): Promise<Product> {
         const connection = await mssqlConnection();
+        const request = new mssql.Request(connection);
         const sqlQuery = createQuery(query);
         return await new Promise<Product>((resolve, reject) =>
-            connection.query(`SELECT ${sqlQuery.select} FROM Products WHERE _id = ? AND (${sqlQuery.where})`, [key, ...sqlQuery.parameters], (err, result) =>
-                (err) ? reject(err) : resolve(result[0])));
+            //request.query(`SELECT ${sqlQuery.select} FROM Products WHERE _id = ? AND (${sqlQuery.where})`, [key, ...sqlQuery.parameters], (err, result) =>
+            request.query(`SELECT ${sqlQuery.select} FROM Products WHERE _id = '${key}' AND (${sqlQuery.where})`, (err, result) => {
+                //connection.close();
+                return (err) ? reject(err) : resolve(result[0]);
+            }));
     }
 
     @odata.GET("Category")
     async getCategory( @odata.result result: Product, @odata.query query: ODataQuery): Promise<Category> {
         const connection = await mssqlConnection();
+        const request = new mssql.Request(connection);
         const sqlQuery = createQuery(query);
         return await new Promise<Category>((resolve, reject) =>
-            connection.query(`SELECT ${sqlQuery.select} FROM Categories WHERE _id = ? AND (${sqlQuery.where})`, [result.CategoryId, ...sqlQuery.parameters], (err, result) =>
-                (err) ? reject(err) : resolve(result[0])));
+            //request.query(`SELECT ${sqlQuery.select} FROM Categories WHERE _id = ? AND (${sqlQuery.where})`, [result.CategoryId, ...sqlQuery.parameters], (err, result) =>
+            request.query(`SELECT ${sqlQuery.select} FROM Categories WHERE _id = '${result.CategoryId}' AND (${sqlQuery.where})`, (err, result) => {
+                //connection.close();
+                return (err) ? reject(err) : resolve(result[0]);
+            }));
     }
 
     @odata.POST("Category").$ref
     @odata.PUT("Category").$ref
     async setCategory( @odata.key key: string, @odata.link link: string): Promise<number> {
         const connection = await mssqlConnection();
+        const request = new mssql.Request(connection);
         return await new Promise<number>((resolve, reject) =>
-            connection.query(`UPDATE Categories SET CategoryId = link WHERE _id = ? `, [key], (err, result) =>
-                (err) ? reject(err) : resolve(result[0])));
+            //request.query(`UPDATE Categories SET CategoryId = link WHERE _id = ? `, [key], (err, result) =>
+            request.query(`UPDATE Categories SET CategoryId = link WHERE _id = '${key}'`, (err, result) => {
+                //connection.close();
+                return (err) ? reject(err) : resolve(result[0]);
+            }));
     }
 
     /*@odata.DELETE("Category").$ref
@@ -57,13 +73,18 @@ export class ProductsController extends ODataController {
     @odata.POST
     async insert( @odata.body data: any): Promise<Product> {
         const connection = await mssqlConnection();
-        await new Promise<any>((resolve, reject) => connection.query(`USE northwind_mssql_test_db`, (err, result) => err ? reject(err) : resolve(result)));
+        const request1 = new mssql.Request(connection);
+        await new Promise<any>((resolve, reject) => request1.query(`USE northwind_mssql_test_db`, (err, result) => err ? reject(err) : resolve(result)));
         return await new Promise<Product>((resolve, reject) => {
             console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
             console.log(data);
             console.log([data.QuantityPerUnit || null, data.UnitPrice || null, data.CategoryId || null, data.Name || null, data.Discontinued || null, data.id || null]);
-            connection.query(`INSERT INTO Products VALUES (?,?,?,?,?,?);`, [data.QuantityPerUnit || null, data.UnitPrice || null, data.CategoryId || null, data.Name || null, data.Discontinued || null, data.id || null], (err, result) =>
-                (err) ? reject(err) : resolve(result[0]))
+            const request2 = new mssql.Request(connection);
+            //request2.query(`INSERT INTO Products VALUES (?,?,?,?,?,?);`, [data.QuantityPerUnit || null, data.UnitPrice || null, data.CategoryId || null, data.Name || null, data.Discontinued || null, data.id || null], (err, result) =>
+            request2.query(`INSERT INTO Products VALUES (${(data.QuantityPerUnit || null)}, ${(data.UnitPrice || null)}, ${(data.CategoryId || null)}, ${(data.Name || null)}, ${(data.Discontinued || null)}, ${(data.id || null)});`, (err, result) => {
+                //connection.close();
+                return (err) ? reject(err) : resolve(result[0]);
+            });
         });
     }
 
@@ -94,9 +115,13 @@ export class ProductsController extends ODataController {
         console.log(delta);
         console.log(key);
         const connection = await mssqlConnection();
+        const request = new mssql.Request(connection);
         return await new Promise<number>((resolve, reject) =>
-            connection.query(`UPDATE Products SET ${this.getDeltaObjectInSQL(delta)} WHERE _id = ? `, [key], (err, result) =>
-                (err) ? reject(err) : resolve(result[0])));
+            //request.query(`UPDATE Products SET ${this.getDeltaObjectInSQL(delta)} WHERE _id = ? `, [key], (err, result) =>
+            request.query(`UPDATE Products SET ${this.getDeltaObjectInSQL(delta)} WHERE _id = ${key}`, (err, result) => {
+                //connection.close();
+                return (err) ? reject(err) : resolve(result[0]);
+            }));
     }
 
     /*@odata.DELETE

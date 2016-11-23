@@ -40,6 +40,9 @@ conn.connect().then(async function () {
     const recordset = await new Promise<any>((resolve, reject) => (new mssql.Request(connection)).query("SELECT * FROM mytest.dbo.t1", (err, result) => err ? reject(err) : resolve(result)));
     console.log(recordset);
 
+    let myResults = await new Promise<any>((resolve, reject) => (new mssql.Request(connection)).query("Select 42 as number", (err, result) => err ? reject(err) : resolve(result)));
+    console.log("\n\n\n==================== myresults:", myResults, "\n\n");
+
     //await new Promise<any>((resolve, reject) => (new mssql.Request(connection)).query("USE master", (err, result) => err ? (console.log(err), reject(err)) : resolve(result)));
     await new Promise<any>((resolve, reject) => runQuery(mssql, connection, resolve, reject, "USE master"))
     await new Promise<any>((resolve, reject) => runQuery(mssql, connection, resolve, reject, "DROP DATABASE IF EXISTS northwind_mssql_test_db", true))

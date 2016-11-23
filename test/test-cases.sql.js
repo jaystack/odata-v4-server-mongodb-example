@@ -1,8 +1,8 @@
 "use strict";
 
 const expect = require("chai").expect;
-const { ObjectID } = require("mongodb");
 const extend = require("extend");
+const { odata } = require("odata-v4-server")
 
 function testCases(NorthwindServer, {Product, Category}, {products, categories}) {
 
@@ -31,7 +31,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 		});
 
 		describe("Products", () => {
-			createTest("should get all products", "GET /Products", {
+			createTest.only("should get all products", "GET /Products", {
 				statusCode: 200,
 				body: {
 					"@odata.context": "http://localhost/$metadata#Products",

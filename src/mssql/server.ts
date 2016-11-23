@@ -6,7 +6,7 @@ import { Category, Product } from "./model";
 const categories: Category[] = require("../../src/mssql/categories");
 const products: Product[] = require("../../src/mssql/products");
 
-@odata.namespace("Northwinds")
+@odata.namespace("Northwind")
 @odata.controller(ProductsController, true)
 @odata.controller(CategoriesController, true)
 export class NorthwindServer extends ODataServer {
@@ -35,11 +35,11 @@ export class NorthwindServer extends ODataServer {
 function runQuery(mssql: any, connection: any, resolve: Function, reject: Function, query: string, goOn: boolean = false) {
   return (new mssql.Request(connection)).query(query, (err, result) => {
     if (err) {
-        console.log("ERR:", query, ":\n", err);
+        //console.log("ERR:", query, ":\n", err);
         return (goOn) ? resolve(err) : reject(err);
     }
-    console.log("OK:", query);
-    if (result) { console.log(result); }
+    // console.log("OK:", query);
+    // if (result) { console.log(result); }
     return resolve(result);
   });
 }
