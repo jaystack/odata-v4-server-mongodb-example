@@ -1,42 +1,42 @@
 export default [
   {
-    "Description": "Soft drinks",
+    "Id": 1,
     "Name": "Beverages",
-    "Id": 1
+    "Description": "Soft drinks"
   },
   {
-    "Description": "Breads",
+    "Id": 2,
     "Name": "Grains/Cereals",
-    "Id": 2
+    "Description": "Breads"
   },
   {
-    "Description": "Prepared meats",
+    "Id": 3,
     "Name": "Meat/Poultry",
-    "Id": 3
+    "Description": "Prepared meats"
   },
   {
-    "Description": "Dried fruit and bean curd",
+    "Id": 4,
     "Name": "Produce",
-    "Id": 4
+    "Description": "Dried fruit and bean curd"
   },
   {
-    "Description": "Seaweed and fish",
+    "Id": 5,
     "Name": "Seafood",
-    "Id": 5
+    "Description": "Seaweed and fish"
   },
   {
-    "Description": "Sweet and savory sauces",
+    "Id": 6,
     "Name": "Condiments",
-    "Id": 6
+    "Description": "Sweet and savory sauces"
   },
   {
-    "Description": "Cheeses",
+    "Id": 7,
     "Name": "Dairy Products",
-    "Id": 7
+    "Description": "Cheeses"
   },
   {
-    "Description": "Desserts",
+    "Id": 8,
     "Name": "Confections",
-    "Id": 8
+    "Description": "Desserts"
   }
 ]
