@@ -406,6 +406,27 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 						})
 					});
 			});
+
+			createTest("should get products in name order", "GET /Products?$orderby=Name", {
+				statusCode: 200,
+				body: {
+					"@odata.context": "http://localhost/$metadata#Products",
+					value: products.map((product) => {
+						return Object.assign({}, product, {
+							"@odata.id": `http://localhost/Products('${product._id}')`,
+							"@odata.editLink": `http://localhost/Products('${product._id}')`,
+						});
+					}).sort((a, b) => {
+						if (a.Name < b.Name)
+							return -1;
+						if (a.Name > b.Name)
+							return 1;
+						return 0;
+					})
+				},
+				elementType: Product,
+				contentType: "application/json"
+			});
 		
 		});
 
