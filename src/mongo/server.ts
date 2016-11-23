@@ -2,7 +2,6 @@ import { ObjectID } from "mongodb";
 import { ODataServer, ODataController, Edm, odata, ODataQuery } from "odata-v4-server";
 import { ProductsController, CategoriesController } from "./controller";
 import mongodb from "./connection";
-import { Category } from "./model";
 import categories from "./categories";
 import products from "./products";
 
