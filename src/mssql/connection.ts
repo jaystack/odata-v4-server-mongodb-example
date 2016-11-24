@@ -16,7 +16,6 @@ var dbConfig = { //Data Source=localhost\\SQLEXPRESS;Initial Catalog=mytest;Inte
 var msSqlConnection = new sql.Connection(dbConfig);
 const connection = msSqlConnection.connect();
 
-export default async function():Promise<any>{  // ??? connection type ???
-    //return await msSqlConnection.connect();
+export default async function():Promise<any> {
     return connection;
 };
