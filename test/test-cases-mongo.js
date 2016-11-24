@@ -316,7 +316,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
-			it("should invert Discontinued value on a product", () => {
+			it("should set Discontinued value on a product", () => {
 				return NorthwindServer.execute("/Products('578f2b8c12eaebabec4af23d')/Northwind.setDiscontinued", "POST", {value: true})
 				.then((result) => {
 					expect(result).to.deep.equal({

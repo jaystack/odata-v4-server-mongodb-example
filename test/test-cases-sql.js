@@ -199,7 +199,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							statusCode: 200,
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Categories/$entity"
-							}, categories.filter(category => category.id == 2).map(category => extend({ //'"578f2baa12eaebabec4af28a"'=>2
+							}, categories.filter(category => category.Id == 2).map(category => extend({ //'"578f2baa12eaebabec4af28a"'=>2
 									"@odata.id": `http://localhost/Categories(${category.Id})`,
 									"@odata.editLink": `http://localhost/Categories(${category.Id})`
 								}, category))[0]
@@ -224,7 +224,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							statusCode: 200,
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Categories/$entity"
-							}, categories.filter(category => category.id == 2).map(category => extend({ //'"578f2baa12eaebabec4af28a"'=>2
+							}, categories.filter(category => category.Id == 2).map(category => extend({ //'"578f2baa12eaebabec4af28a"'=>2
 									"@odata.id": `http://localhost/Categories(${category.Id})`,
 									"@odata.editLink": `http://localhost/Categories(${category.Id})`
 								}, category))[0]
@@ -289,7 +289,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
-			it("should invert Discontinued value on a product", () => {
+			it.only("should invert Discontinued value on a product", () => {
 				return NorthwindServer.execute("/Products(76)/Northwind.invertDiscontinued", "POST") //''578f2b8c12eaebabec4af288''->76
 				.then((result) => {
 					expect(result).to.deep.equal({
@@ -314,7 +314,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
-			it("should invert Discontinued value on a product", () => {
+			it("should set Discontinued value on a product", () => {
 				return NorthwindServer.execute("/Products(2)/Northwind.setDiscontinued", "POST", {value: true}) //''578f2b8c12eaebabec4af23d''->2
 				.then((result) => {
 					expect(result).to.deep.equal({
@@ -340,7 +340,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 			});
 
 			it("should swap two products UnitPrice", () => {
-				return NorthwindServer.execute("/Products/Northwind.swapPrice", "POST", {a: "578f2b8c12eaebabec4af286", b: 75}) //'"578f2b8c12eaebabec4af287"'=>75
+				return NorthwindServer.execute("/Products/Northwind.swapPrice", "POST", {a: 74, b: 75}) //'"578f2b8c12eaebabec4af287"'=>75
 				.then((result) => {
 					expect(result).to.deep.equal({
 						statusCode: 204
@@ -351,7 +351,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							statusCode: 200,
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Products/$entity"
-							}, products.filter(product => product.id.toString() == 74).map(product => Object.assign({}, product, { //'"578f2b8c12eaebabec4af286"'=>74
+							}, products.filter(product => product.Id == 74).map(product => Object.assign({}, product, { //'"578f2b8c12eaebabec4af286"'=>74
 									"@odata.id": `http://localhost/Products(${product.Id})`,
 									"@odata.editLink": `http://localhost/Products(${product.Id})`,
 									UnitPrice: 18
@@ -367,7 +367,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 								statusCode: 200,
 								body: extend({
 									"@odata.context": "http://localhost/$metadata#Products/$entity"
-								}, products.filter(product => product.id.toString() == 75).map(product => Object.assign({}, product, { //'"578f2b8c12eaebabec4af287"'=>75
+								}, products.filter(product => product.Id == 75).map(product => Object.assign({}, product, { //'"578f2b8c12eaebabec4af287"'=>75
 										"@odata.id": `http://localhost/Products(${product.Id})`,
 										"@odata.editLink": `http://localhost/Products(${product.Id})`,
 										UnitPrice: 7.75
@@ -560,6 +560,20 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
+			createTest("should get products by category", "GET /Categories(1)/Products(1)", { //''578f2baa12eaebabec4af289''->1
+				statusCode: 200,
+				body: Object.assign({}, {
+						"@odata.context": "http://localhost/$metadata#Products/$entity", //''578f2baa12eaebabec4af289''->1
+					},
+					products.filter(product => product.Id == 1 && product.CategoryId == 1).map(product => Object.assign({}, product, { //'"578f2baa12eaebabec4af289"'=>1
+						"@odata.id": `http://localhost/Products(${product.Id})`,
+						"@odata.editLink": `http://localhost/Products(${product.Id})`
+					}))[0]
+				),
+				elementType: Product,
+				contentType: "application/json"
+			});
+
 			it("should create product reference on category", () => {
 				return NorthwindServer.execute("/Categories(2)/Products/$ref", "POST", { //''578f2baa12eaebabec4af28a''->2
 					"@odata.id": "http://localhost/Products(1)" //''578f2b8c12eaebabec4af23c''->1
@@ -573,7 +587,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							statusCode: 200,
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Categories/$entity"
-							}, categories.filter(category => category.id == 2).map(category => extend({ //'"578f2baa12eaebabec4af28a"'=>2
+							}, categories.filter(category => category.Id == 2).map(category => extend({ //'"578f2baa12eaebabec4af28a"'=>2
 									"@odata.id": `http://localhost/Categories(${category.Id})`,
 									"@odata.editLink": `http://localhost/Categories(${category.Id})`
 								}, category))[0]
@@ -598,7 +612,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							statusCode: 200,
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Categories/$entity"
-							}, categories.filter(category => category.id == 2).map(category => extend({ //'"578f2baa12eaebabec4af28a"'=>2
+							}, categories.filter(category => category.Id == 2).map(category => extend({ //'"578f2baa12eaebabec4af28a"'=>2
 									"@odata.id": `http://localhost/Categories(${category.Id})`,
 									"@odata.editLink": `http://localhost/Categories(${category.Id})`
 								}, category))[0]
@@ -611,7 +625,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 			});
 
 			it("should delete product reference on category", () => {
-				return NorthwindServer.execute("/Categories('578f2baa12eaebabec4af289')/Products/$ref?$id=http://localhost/Products(1)", "DELETE").then((result) => { //''578f2b8c12eaebabec4af23c''->1
+				return NorthwindServer.execute("/Categories(1)/Products/$ref?$id=http://localhost/Products(1)", "DELETE").then((result) => { //''578f2b8c12eaebabec4af23c''->1
 					expect(result).to.deep.equal({
 						statusCode: 204
 					});

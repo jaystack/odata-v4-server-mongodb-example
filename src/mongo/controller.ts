@@ -110,7 +110,7 @@ export class ProductsController extends ODataController {
     @Edm.Collection(Edm.EntityType(Product))
     async getInPriceRange( @Edm.Decimal min: number, @Edm.Decimal max: number): Promise<Product[]> {
         let db = await mongodb();
-        return await db.collection("Products").find({ UnitPrice: { $gte: 5, $lte: 8 } }).toArray();
+        return await db.collection("Products").find({ UnitPrice: { $gte: min, $lte: max } }).toArray();
     }
 
     @Edm.Action

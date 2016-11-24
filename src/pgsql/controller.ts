@@ -44,7 +44,7 @@ export class ProductsController extends ODataController {
     @odata.PUT("Category").$ref
     async setCategory( @odata.key key: number, @odata.link link: number ): Promise<number> {
         const db = await connect();
-        const {rowCount} = await db.query(`UPDATE "Products" SET CategoryId = $2 WHERE Id = $1`, [key, link]);
+        const {rowCount} = await db.query(`UPDATE "Products" SET "CategoryId" = $2 WHERE "Id" = $1`, [key, link]);
         return rowCount;
     }
 
@@ -82,6 +82,33 @@ export class ProductsController extends ODataController {
         const {rowCount} = await db.query(`DELETE FROM "Products" WHERE "Id" = $1`, [key]);
         return rowCount;
     }
+
+    @Edm.Function
+    @Edm.EntityType(Product)
+    async getCheapest(): Promise<Product> {
+        const db = await connect();
+        const {rows} = await db.query(`SELECT * FROM "Products" ORDER BY "UnitPrice"`);
+        return convertResults(rows)[0];
+    }
+
+    @Edm.Function
+    @Edm.Collection(Edm.EntityType(Product))
+    async getInPriceRange( @Edm.Decimal min: number, @Edm.Decimal max: number ): Promise<Product[]> {
+        const db = await connect();
+        const {rows} = await db.query(`SELECT * FROM "Products" WHERE "UnitPrice" >= $1 AND "UnitPrice" <= $2`, [min, max]);
+        return convertResults(rows);
+    }
+
+    @Edm.Action
+    async swapPrice( @Edm.String a: number, @Edm.String b: number ) {
+        const db = await connect();
+        const {rows} = await db.query(`SELECT "Id", "UnitPrice" FROM "Products" WHERE "Id" IN ($1, $2)`, [a, b]);
+        const products = convertResults(rows);
+        const aProduct = products.find(product => product.Id === a);
+        const bProduct = products.find(product => product.Id === b);
+        await db.query(`UPDATE "Products" SET "UnitPrice" = $1 WHERE "Id" = $2`, [bProduct.UnitPrice, aProduct.Id]);
+        await db.query(`UPDATE "Products" SET "UnitPrice" = $1 WHERE "Id" = $2`, [aProduct.UnitPrice, bProduct.Id]);
+    }
 }
 
 @odata.type(Category)
@@ -104,6 +131,43 @@ export class CategoriesController extends ODataController {
                                         [...sqlQuery.parameters, key]
                                     );
         return convertResults(rows)[0];
+    }
+
+    @odata.GET("Products")
+    async getProducts( @odata.result category: Category, @odata.query query: ODataQuery ): Promise<Product[]> {
+        const db = await connect();
+        const sqlQuery = createQuery(query);
+        const {rows} = await db.query(`SELECT ${sqlQuery.select} FROM "Products"
+                                        WHERE "CategoryId" = $${sqlQuery.parameters.length + 1} AND (${sqlQuery.where})`,
+                                        [...sqlQuery.parameters, category.Id]
+                                    );
+        return convertResults(rows);
+    }
+
+    @odata.GET("Products")
+    async getProduct( @odata.key key: number, @odata.result category: Category, @odata.query query: ODataQuery ): Promise<Product> {
+        const db = await connect();
+        const sqlQuery = createQuery(query);
+        const {rows} = await db.query(`SELECT ${sqlQuery.select} FROM "Products"
+                                        WHERE "Id" = $${sqlQuery.parameters.length + 1} AND "CategoryId" = $${sqlQuery.parameters.length + 2} AND (${sqlQuery.where})`,
+                                        [...sqlQuery.parameters, key, category.Id]
+                                    );
+        return convertResults(rows)[0];
+    }
+
+    @odata.POST("Products").$ref
+    @odata.PUT("Products").$ref
+    async setCategory( @odata.key key: number, @odata.link link: string ): Promise<number> {
+        const db = await connect();
+        const {rowCount} = await db.query(`UPDATE "Products" SET "CategoryId" = $1 WHERE "Id" = $2`, [key, link]);
+        return rowCount;
+    }
+
+    @odata.DELETE("Products").$ref
+    async unsetCategory( @odata.key key: number, @odata.link link: string ): Promise<number> {
+        const db = await connect();
+        const {rowCount} = await db.query(`UPDATE "Products" SET "CategoryId" = NULL WHERE "Id" = $1`, [key]);
+        return rowCount;
     }
 
     @odata.POST
