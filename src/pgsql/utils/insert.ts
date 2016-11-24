@@ -2,7 +2,7 @@ import * as pg from "pg";
 import {flatten} from "ramda";
 
 /**
- * This function returns a statement string such as:
+ * This function returns a clause string such as:
  * ($1, $2, $3),
  * ($2, $3, $4),
  * ($5, $5, $7)
@@ -15,7 +15,7 @@ import {flatten} from "ramda";
  * 		($5::int, $5::varchar, $7::boolean)
  */
 
-function getPrepareStatement(items: any[], types?: string[]): string {
+function getPrepareClause(items: any[], types?: string[]): string {
 
 	const metaColumns = Array.from({length: Object.keys(items[0]).length});
 	
@@ -43,14 +43,15 @@ export default async function(db: pg.Client, tableName: string, items: any[], pr
 	
 	const properties = propertyNameProjection || Object.keys(items[0]);
 
-	const statement = `INSERT INTO "${tableName}"
+	const clause = `INSERT INTO "${tableName}"
 							(${properties.map(propName => `"${propName}"`).join(', ')})
 						VALUES
-							${getPrepareStatement(items, types)} RETURNING *`;
+							${getPrepareClause(items, types)}
+						RETURNING *`;
 	
 	const values = flatten(items.map(item => properties.map(propName => item[propName])));
 
-	const insertionResult = await db.query(statement, values);
+	const insertionResult = await db.query(clause, values);
 	await ensureIdIncrement(db, tableName, items);
 	return insertionResult;
 }

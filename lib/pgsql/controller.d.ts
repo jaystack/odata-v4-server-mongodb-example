@@ -7,7 +7,15 @@ export declare class ProductsController extends ODataController {
     setCategory(key: number, link: number): Promise<number>;
     unsetCategory(key: number): Promise<number>;
     insert(data: any): Promise<Product>;
-    upsert(key: string, data: any, context: any): Promise<Product>;
-    update(key: string, delta: any): Promise<number>;
-    remove(key: string): Promise<number>;
+    upsert(key: number, data: any, context: any): Promise<Product>;
+    update(key: number, delta: any): Promise<number>;
+    remove(key: number): Promise<number>;
+}
+export declare class CategoriesController extends ODataController {
+    select(query: ODataQuery): Promise<Category[]>;
+    selectOne(key: number, query: ODataQuery): Promise<Category>;
+    insert(data: any): Promise<Category>;
+    upsert(key: number, data: any, context: any): Promise<Category>;
+    update(key: number, delta: any): Promise<number>;
+    remove(key: number): Promise<number>;
 }

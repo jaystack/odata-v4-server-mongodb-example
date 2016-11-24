@@ -8,7 +8,7 @@ function filterNullValues(item) {
 
 export default function(rows) {
     return rows.map(row => 
-        Object.assign({}, filterNullValues(row), row.UnitPrice !== null ?
+        Object.assign({}, filterNullValues(row), "UnitPrice" in row && row.UnitPrice !== null ?
                                                     {UnitPrice: parseFloat(row.UnitPrice)} :
                                                     {}
                     )

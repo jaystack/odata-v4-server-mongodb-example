@@ -23,6 +23,10 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 		});
 	}
 
+	function xcreateTest(testcase, command, compare, body) {
+		xit(`${testcase} (${command})`, () => {});
+	}
+
 	describe("OData V4 example server", () => {
 
 		beforeEach(() => {
@@ -105,7 +109,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
-			it.only("should update product", () => {
+			it("should update product", () => {
 				return NorthwindServer.execute("/Products(1)", "PUT", { //''578f2b8c12eaebabec4af23c''->1
 					Name: "Chai (updated)"
 				}).then((result) => {
@@ -121,7 +125,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 								"@odata.id": `http://localhost/Products(1)`, //''578f2b8c12eaebabec4af23c''->1
 								"@odata.editLink": `http://localhost/Products(1)`, //''578f2b8c12eaebabec4af23c''->1
 								Name: "Chai (updated)",
-								id: 1 //'"578f2b8c12eaebabec4af23c"'=>1
+								Id: 1 //'"578f2b8c12eaebabec4af23c"'=>1
 							},
 							elementType: Product,
 							contentType: "application/json"
@@ -141,7 +145,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 					return NorthwindServer.execute("/Products(1)", "GET").then((result) => { //''578f2b8c12eaebabec4af23c''->1
 						expect(result).to.deep.equal({
 							statusCode: 200,
-							body:  products.filter(product => product.id.toString() == 1).map(product => extend({ //'"578f2b8c12eaebabec4af23c"'=>1
+							body:  products.filter(product => product.Id == 1).map(product => extend({ //'"578f2b8c12eaebabec4af23c"'=>1
 								"@odata.context": "http://localhost/$metadata#Products/$entity",
 								"@odata.id": `http://localhost/Products(${product.Id})`,
 								"@odata.editLink": `http://localhost/Products(${product.Id})`
@@ -173,16 +177,16 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				statusCode: 200,
 				body: extend({
 					"@odata.context": "http://localhost/$metadata#Categories/$entity"
-				}, categories.filter(category => category.id == 1).map(category => extend({ //'"578f2baa12eaebabec4af289"'=>1
-						"@odata.id": `http://localhost/Categories('${category.id}')`,
-						"@odata.editLink": `http://localhost/Categories('${category.id}')`
+				}, categories.filter(category => category.Id == 1).map(category => extend({ //'"578f2baa12eaebabec4af289"'=>1
+						"@odata.id": `http://localhost/Categories(${category.Id})`,
+						"@odata.editLink": `http://localhost/Categories(${category.Id})`
 					}, category))[0]
 				),
 				elementType: Category,
 				contentType: "application/json"
 			});
 
-			xit("should create category reference on product", () => {
+			it("should create category reference on product", () => {
 				return NorthwindServer.execute("/Products(1)/Category/$ref", "POST", { //''578f2b8c12eaebabec4af23c''->1
 					"@odata.id": "http://localhost/Categories(2)" //''578f2baa12eaebabec4af28a''->2
 				}).then((result) => {
@@ -196,8 +200,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Categories/$entity"
 							}, categories.filter(category => category.id == 2).map(category => extend({ //'"578f2baa12eaebabec4af28a"'=>2
-									"@odata.id": `http://localhost/Categories('${category.id}')`,
-									"@odata.editLink": `http://localhost/Categories('${category.id}')`
+									"@odata.id": `http://localhost/Categories(${category.Id})`,
+									"@odata.editLink": `http://localhost/Categories(${category.Id})`
 								}, category))[0]
 							),
 							elementType: Category,
@@ -207,7 +211,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
-			xit("should update category reference on product", () => {
+			it("should update category reference on product", () => {
 				return NorthwindServer.execute("/Products(1)/Category/$ref", "PUT", { //''578f2b8c12eaebabec4af23c''->1
 					"@odata.id": "http://localhost/Categories(2)" //''578f2baa12eaebabec4af28a''->2
 				}).then((result) => {
@@ -221,8 +225,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Categories/$entity"
 							}, categories.filter(category => category.id == 2).map(category => extend({ //'"578f2baa12eaebabec4af28a"'=>2
-									"@odata.id": `http://localhost/Categories('${category.id}')`,
-									"@odata.editLink": `http://localhost/Categories('${category.id}')`
+									"@odata.id": `http://localhost/Categories(${category.Id})`,
+									"@odata.editLink": `http://localhost/Categories(${category.Id})`
 								}, category))[0]
 							),
 							elementType: Category,
@@ -409,8 +413,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				body: {
 					"@odata.context": "http://localhost/$metadata#Categories",
 					value: categories.map(category => extend({
-						"@odata.id": `http://localhost/Categories('${category.id}')`,
-						"@odata.editLink": `http://localhost/Categories('${category.id}')`
+						"@odata.id": `http://localhost/Categories(${category.Id})`,
+						"@odata.editLink": `http://localhost/Categories(${category.Id})`
 					}, category))
 				},
 				elementType: Category,
@@ -422,8 +426,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				body: {
 					"@odata.context": "http://localhost/$metadata#Categories",
 					value: categories.filter(category => category.Name == "Beverages").map(category => extend({
-						"@odata.id": `http://localhost/Categories('${category.id}')`,
-						"@odata.editLink": `http://localhost/Categories('${category.id}')`
+						"@odata.id": `http://localhost/Categories(${category.Id})`,
+						"@odata.editLink": `http://localhost/Categories(${category.Id})`
 					}, category))
 				},
 				elementType: Category,
@@ -436,11 +440,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 					"@odata.context": "http://localhost/$metadata#Categories",
 					value: categories.filter(category => category.Name == "Beverages").map((category) => {
 						return {
-							"@odata.id": `http://localhost/Categories('${category.id}')`,
-							"@odata.editLink": `http://localhost/Categories('${category.id}')`,
 							Name: category.Name,
-							Description: category.Description,
-							id: category.id
+							Description: category.Description
 						};
 					})
 				},
@@ -452,9 +453,9 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				statusCode: 200,
 				body: extend({
 					"@odata.context": "http://localhost/$metadata#Categories/$entity"
-				}, categories.filter(category => category.id == 1).map(category => extend({ //'"578f2baa12eaebabec4af289"'=>1
-						"@odata.id": `http://localhost/Categories('${category.id}')`,
-						"@odata.editLink": `http://localhost/Categories('${category.id}')`
+				}, categories.filter(category => category.Id == 1).map(category => extend({ //'"578f2baa12eaebabec4af289"'=>1
+						"@odata.id": `http://localhost/Categories(${category.Id})`,
+						"@odata.editLink": `http://localhost/Categories(${category.Id})`
 					}, category))[0]
 				),
 				elementType: Category,
@@ -466,14 +467,13 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 					Name: "New category",
 					Description: "Test category"
 				}).then((result) => {
-					expect(result.body.id instanceof Id).to.be.true;
 					expect(result).to.deep.equal({
 						statusCode: 201,
 						body: {
 							"@odata.context": "http://localhost/$metadata#Categories/$entity",
-							"@odata.id": `http://localhost/Categories('${result.body.id}')`,
-							"@odata.editLink": `http://localhost/Categories('${result.body.id}')`,
-							id: result.body.id,
+							"@odata.id": `http://localhost/Categories(${result.body.Id})`,
+							"@odata.editLink": `http://localhost/Categories(${result.body.Id})`,
+							Id: result.body.Id,
 							Name: "New category",
 							Description: "Test category"
 						},
@@ -499,7 +499,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 								"@odata.id": `http://localhost/Categories(1)`, //''578f2baa12eaebabec4af289''->1
 								"@odata.editLink": `http://localhost/Categories(1)`, //''578f2baa12eaebabec4af289''->1
 								Name: "Beverages (updated)",
-								id: 1 //'"578f2baa12eaebabec4af289"'=>1
+								Id: 1 //'"578f2baa12eaebabec4af289"'=>1
 							},
 							elementType: Category,
 							contentType: "application/json"
@@ -519,10 +519,10 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 					return NorthwindServer.execute("/Categories(1)", "GET").then((result) => { //''578f2baa12eaebabec4af289''->1
 						expect(result).to.deep.equal({
 							statusCode: 200,
-							body:  categories.filter(category => category.id == 1).map(category => extend({ //'"578f2baa12eaebabec4af289"'=>1
+							body:  categories.filter(category => category.Id == 1).map(category => extend({ //'"578f2baa12eaebabec4af289"'=>1
 								"@odata.context": "http://localhost/$metadata#Categories/$entity",
-								"@odata.id": `http://localhost/Categories('${category.id}')`,
-								"@odata.editLink": `http://localhost/Categories('${category.id}')`
+								"@odata.id": `http://localhost/Categories(${category.Id})`,
+								"@odata.editLink": `http://localhost/Categories(${category.Id})`
 							}, category, {
 								Name: "Beverages (updated)"
 							}))[0],
@@ -574,8 +574,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Categories/$entity"
 							}, categories.filter(category => category.id == 2).map(category => extend({ //'"578f2baa12eaebabec4af28a"'=>2
-									"@odata.id": `http://localhost/Categories('${category.id}')`,
-									"@odata.editLink": `http://localhost/Categories('${category.id}')`
+									"@odata.id": `http://localhost/Categories(${category.Id})`,
+									"@odata.editLink": `http://localhost/Categories(${category.Id})`
 								}, category))[0]
 							),
 							elementType: Category,
@@ -599,8 +599,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Categories/$entity"
 							}, categories.filter(category => category.id == 2).map(category => extend({ //'"578f2baa12eaebabec4af28a"'=>2
-									"@odata.id": `http://localhost/Categories('${category.id}')`,
-									"@odata.editLink": `http://localhost/Categories('${category.id}')`
+									"@odata.id": `http://localhost/Categories(${category.Id})`,
+									"@odata.editLink": `http://localhost/Categories(${category.Id})`
 								}, category))[0]
 							),
 							elementType: Category,

@@ -1,6 +1,6 @@
 import { ObjectID } from "mongodb";
 import { ODataServer, ODataController, Edm, odata, ODataQuery } from "odata-v4-server";
-import { ProductsController, /*CategoriesController*/ } from "./controller";
+import { ProductsController, CategoriesController } from "./controller";
 import connect from "./connect";
 import categories  from "./categories";
 import products from "./products";
@@ -8,7 +8,7 @@ import insert from "./utils/insert";
 
 @odata.namespace("Northwind")
 @odata.controller(ProductsController, true)
-//@odata.controller(CategoriesController, true)
+@odata.controller(CategoriesController, true)
 export class NorthwindServer extends ODataServer {
     
 	@Edm.ActionImport
@@ -19,7 +19,7 @@ export class NorthwindServer extends ODataServer {
 		
 		await db.query(`CREATE TABLE "Categories" (
 							"Id" SERIAL PRIMARY KEY,
-							"Name" VARCHAR(14),
+							"Name" VARCHAR(32),
 							"Description" VARCHAR(25)
 						);`);
 		
@@ -28,7 +28,7 @@ export class NorthwindServer extends ODataServer {
 							"Name" VARCHAR(32),
 							"QuantityPerUnit" VARCHAR(20),
 							"UnitPrice" NUMERIC(5,2),
-							"CategoryId" INT REFERENCES "Categories",
+							"CategoryId" INT,
 							"Discontinued" BOOLEAN
 						);`);
 		
