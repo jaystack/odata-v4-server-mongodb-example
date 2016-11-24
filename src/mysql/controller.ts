@@ -56,17 +56,11 @@ export class ProductsController extends ODataController {
         return Object.assign({}, data, { Id: result.insertId });
     }
 
-    /*@odata.PUT
+    @odata.PUT
     async upsert( @odata.key key: string, @odata.body data: any, @odata.context context: any): Promise<Product> {
-        let db = await mongodb();
-        if (data.CategoryId) data.CategoryId = new ObjectID(data.CategoryId);
-        return await db.collection("Products").updateOne({ id: new ObjectID(key) }, data, {
-            upsert: true
-        }).then((result) => {
-            data.id = result.upsertedId
-            return data;
-        });
-    }*/
+        const connection = promisifyWithDdName(await mysqlConnection());
+        return await connection.query(`INSERT INTO Products (Id,QuantityPerUnit,UnitPrice,CategoryId,Name,Discontinued) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE QuantityPerUnit=?,UnitPrice=?,CategoryId=?,Name=?,Discontinued=?`, [key, data.QuantityPerUnit, data.UnitPrice, data.CategoryId, data.Name, data.Discontinued, data.QuantityPerUnit, data.UnitPrice, data.CategoryId, data.Name, data.Discontinued]);
+    }
 
     @odata.PATCH
     async update( @odata.key key: string, @odata.body delta: any): Promise<number> {

@@ -7,6 +7,7 @@ export declare class ProductsController extends ODataController {
     setCategory(key: string, link: string): Promise<number>;
     unsetCategory(key: string): Promise<number>;
     insert(data: any): Promise<Product>;
+    upsert(key: string, data: any, context: any): Promise<Product>;
     update(key: string, delta: any): Promise<number>;
     remove(key: string): Promise<number>;
     getCheapest(): Promise<Product>;

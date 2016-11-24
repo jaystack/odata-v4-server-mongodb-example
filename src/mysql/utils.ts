@@ -31,3 +31,11 @@ export function mapDiscontinued(results: any[]): any[] {
     return result;
   });
 }
+
+/*export function getUpsertQuery(data: any): string {
+const dataKeys = Object.keys(data);
+const dataLength = dataKeys.length;
+
+}
+
+`INSERT INTO Products (Id,QuantityPerUnit,UnitPrice,CategoryId,Name,Discontinued) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE QuantityPerUnit=?,UnitPrice=?,CategoryId=?,Name=?,Discontinued=?`, [key, data.QuantityPerUnit, data.UnitPrice, data.CategoryId, data.Name, data.Discontinued, data.QuantityPerUnit, data.UnitPrice, data.CategoryId, data.Name, data.Discontinued]*/
