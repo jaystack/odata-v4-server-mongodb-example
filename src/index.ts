@@ -10,4 +10,4 @@ import pgServer from "./pgsql";
 
 const app = express();
 app.use("/", pgServer);
-app.listen(3000);
+app.listen(80);

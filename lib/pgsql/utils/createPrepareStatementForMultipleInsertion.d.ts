@@ -8,4 +8,4 @@
  * 	1) the items in Object[] format: [{Id: 1, Name: 'foo', Active: true}]
  * 	2) the types in String[] format: ['int', 'varchar', 'boolean']
  */
-export default function (items: any[]): string;
+export default function (items: any[], types: string[]): string;

@@ -16,7 +16,7 @@ export class Product{
         term: "UI.ControlHint",
         string: "ReadOnly"
     })
-    id:number
+    Id:number
 
     @Edm.Int32
     @Edm.Required
@@ -98,7 +98,7 @@ export class Category{
         term: "UI.ControlHint",
         string: "ReadOnly"
     })
-    id:number
+    Id:number
 
     @Edm.String
     Description:string

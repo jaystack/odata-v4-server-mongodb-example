@@ -4,7 +4,7 @@ import { ProductsController, /*CategoriesController*/ } from "./controller";
 import connect from "./connect";
 import categories  from "./categories";
 import products from "./products";
-import multipleInsert from "./utils/multipleInsert";
+import insert from "./utils/insert";
 
 @odata.namespace("Northwind")
 @odata.controller(ProductsController, true)
@@ -18,13 +18,13 @@ export class NorthwindServer extends ODataServer {
 		await db.query(`DROP TABLE IF EXISTS "Categories", "Products"`);
 		
 		await db.query(`CREATE TABLE "Categories" (
-							"Id" INT PRIMARY KEY,
+							"Id" SERIAL PRIMARY KEY,
 							"Name" VARCHAR(14),
 							"Description" VARCHAR(25)
 						);`);
 		
 		await db.query(`CREATE TABLE "Products" (
-							"Id" INT PRIMARY KEY,
+							"Id" SERIAL PRIMARY KEY,
 							"Name" VARCHAR(32),
 							"QuantityPerUnit" VARCHAR(20),
 							"UnitPrice" NUMERIC(5,2),
@@ -32,8 +32,8 @@ export class NorthwindServer extends ODataServer {
 							"Discontinued" BOOLEAN
 						);`);
 		
-		await multipleInsert(db, "Categories", categories);
+		await insert(db, "Categories", categories);
 
-		await multipleInsert(db, "Products", products);
+		await insert(db, "Products", products);
 	}
 }
