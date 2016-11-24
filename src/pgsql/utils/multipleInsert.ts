@@ -11,7 +11,7 @@ import {flatten} from "ramda";
  * 	1) the items in Object[] format: [{Id: 1, Name: 'foo', Active: true}]
  */
 
-function createPrepareStatementForMultipleInsertion(items: any[]): string {
+function getPrepareStatement(items: any[]): string {
 
 	const metaColumns = Array.from({length: Object.keys(items[0]).length});
 	
@@ -32,7 +32,7 @@ export default async function(db: pg.Client, tableName: string, items: any[], pr
 	const statement = `INSERT INTO "${tableName}"
 							(${properties.map(propName => `"${propName}"`).join(', ')})
 						VALUES
-							${createPrepareStatementForMultipleInsertion(items)}`;
+							${getPrepareStatement(items)}`;
 	
 	const values = flatten(items.map(item => properties.map(propName => item[propName])));
 

@@ -22,7 +22,7 @@ export default async function():Promise<pg.Client> {
 	const pool = new pg.Pool({
 		user: 'postgres',
 		password: 'postgres',
-		database: 'northwind_pgsql_test_db'
+		database: 'northwind'
 	});
 
 	return new Promise<pg.Client>((resolve: Function, reject: Function) => {
