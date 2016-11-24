@@ -5,8 +5,6 @@ import { ODataServer, ODataController, Edm, odata, ODataQuery } from "odata-v4-s
 import { ProductsController, CategoriesController } from "./controller";
 import mssqlConnection from "./connection";
 import { Category, Product } from "./model";
-const categories: Category[] = require("../../src/mssql/categories");
-const products: Product[] = require("../../src/mssql/products");
 
 @odata.namespace("Northwind")
 @odata.controller(ProductsController, true)
@@ -19,5 +17,25 @@ export class NorthwindServer extends ODataServer {
         const request = new mssql.Request(connection);
         const sqlCommands = fs.readFileSync("./src/mssql/mssql.sql","utf-8");
         await request.query(sqlCommands);
+    }
+
+    @Edm.ActionImport
+    async testProduct() {
+        const connection = await mssqlConnection();
+        const request = new mssql.Request(connection);
+        const sqlCommand = "Select * From dbo.Products Where Id = 57";
+        await new Promise<any>((resolve, reject) => {
+            request.query(sqlCommand, (err, result) => {
+                if (err) {
+                    console.log("testProduct - err:", err);
+                    return reject(err);
+                }
+                console.log("testProduct - result.slice(0, 2):", JSON.stringify(result.slice(0, 2), null, 2));
+                console.log("testProduct - result.slice(-2) :", JSON.stringify(result.slice(-2), null, 2));
+                console.log("testProduct - result.length:", result.length);
+                console.log(sqlCommand);
+                return resolve(result);
+            });
+        });
     }
 }

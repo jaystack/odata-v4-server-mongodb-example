@@ -1,23 +1,23 @@
---USE master;
+USE master;
 --DROP DATABASE IF EXISTS northwind_mssql_test_db;
 --CREATE DATABASE northwind_mssql_test_db;
 USE northwind_mssql_test_db;
 
-DROP TABLE IF EXISTS products;
-DROP TABLE IF EXISTS categories;
-CREATE TABLE categories (
+DROP TABLE IF EXISTS Products;
+DROP TABLE IF EXISTS Categories;
+CREATE TABLE Categories (
 	Description NVARCHAR(200),
 	Name NVARCHAR(50),
 	Id INT CONSTRAINT pk_Categories PRIMARY KEY
 );
-CREATE TABLE products (
+CREATE TABLE Products (
 	QuantityPerUnit NVARCHAR(20),
 	UnitPrice DECIMAL(5, 2),
 	CategoryId INT,
 	Name NVARCHAR(50),
 	Discontinued BIT,
 	Id INT CONSTRAINT pk_Products PRIMARY KEY,
-	CONSTRAINT fk_ProductCategory FOREIGN KEY (CategoryId) references Categories (id)
+	CONSTRAINT fk_ProductCategory FOREIGN KEY (CategoryId) references Categories (Id)
 );
 
 INSERT INTO categories VALUES ('Soft drinks','Beverages',1);
@@ -99,7 +99,7 @@ INSERT INTO products VALUES ('10 - 500 g pkgs.',21.5,7,'Flotemysost',0,67);
 INSERT INTO products VALUES ('24 - 200 g pkgs.',34.8,7,'Mozzarella di Giovanni',0,68);
 INSERT INTO products VALUES ('24 - 150 g jars',15,5,'Röd Kaviar',0,69);
 INSERT INTO products VALUES ('48 pieces',32.8,3,'Perth Pasties',1,70);
-INSERT INTO products VALUES ('16 pies',7.45,3,'Tourtière',1,71);
+INSERT INTO products VALUES ('16 pies',7.45,3,N'Tourtière',1,71);
 INSERT INTO products VALUES ('24 boxes x 2 pies',24,3,'Pâté chinois',1,72);
 INSERT INTO products VALUES ('5 kg pkg.',10,4,'Longlife Tofu',0,73);
 INSERT INTO products VALUES ('24 - 0.5 l bottles',7.75,1,'Rhönbräu Klosterbier',1,74);
