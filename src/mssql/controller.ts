@@ -12,10 +12,11 @@ export class ProductsController extends ODataController {
         const connection = await mssqlConnection();
         const request = new mssql.Request(connection);
         const sqlQuery = createQuery(query);
+        // console.log("\n\n\n================= sqlQuery:\n" + JSON.stringify(sqlQuery, null, 2));
+        // console.log("\n\n===> " + `SELECT ${sqlQuery.select} FROM Products WHERE ${sqlQuery.where}`);
         return await new Promise<Product[]>((resolve, reject) =>
-            request.query(`SELECT ${sqlQuery.select} FROM Products WHERE ${sqlQuery.where}`/*, [...sqlQuery.parameters]*/, (err, result) => {
-                //connection.close();
-                return (err) ? reject(err) : resolve(result[0]);
+            request.query(`SELECT ${sqlQuery.select} FROM Products WHERE ${sqlQuery.where}`/*, [...sqlQuery.parameters]*/, (err, results) => {
+                return (err) ? reject(err) : resolve(results);
             }));
     }
 
@@ -24,10 +25,11 @@ export class ProductsController extends ODataController {
         const connection = await mssqlConnection();
         const request = new mssql.Request(connection);
         const sqlQuery = createQuery(query);
+        console.log("\n\n===> " + `SELECT ${sqlQuery.select} FROM Products WHERE Id = ${key} AND (${sqlQuery.where})`);
         return await new Promise<Product>((resolve, reject) =>
-            //request.query(`SELECT ${sqlQuery.select} FROM Products WHERE _id = ? AND (${sqlQuery.where})`, [key, ...sqlQuery.parameters], (err, result) =>
-            request.query(`SELECT ${sqlQuery.select} FROM Products WHERE _id = '${key}' AND (${sqlQuery.where})`, (err, result) => {
-                //connection.close();
+            //request.query(`SELECT ${sqlQuery.select} FROM Products WHERE Id = ? AND (${sqlQuery.where})`, [key, ...sqlQuery.parameters], (err, result) =>
+            request.query(`SELECT ${sqlQuery.select} FROM Products WHERE Id = ${key} AND (${sqlQuery.where})`, (err, result) => {
+                console.log("\n\n\n================= result:\n" + JSON.stringify(result, null, 2));
                 return (err) ? reject(err) : resolve(result[0]);
             }));
     }
@@ -38,9 +40,8 @@ export class ProductsController extends ODataController {
         const request = new mssql.Request(connection);
         const sqlQuery = createQuery(query);
         return await new Promise<Category>((resolve, reject) =>
-            //request.query(`SELECT ${sqlQuery.select} FROM Categories WHERE _id = ? AND (${sqlQuery.where})`, [result.CategoryId, ...sqlQuery.parameters], (err, result) =>
-            request.query(`SELECT ${sqlQuery.select} FROM Categories WHERE _id = '${result.CategoryId}' AND (${sqlQuery.where})`, (err, result) => {
-                //connection.close();
+            //request.query(`SELECT ${sqlQuery.select} FROM Categories WHERE Id = ? AND (${sqlQuery.where})`, [result.CategoryId, ...sqlQuery.parameters], (err, result) =>
+            request.query(`SELECT ${sqlQuery.select} FROM Categories WHERE Id = '${result.CategoryId}' AND (${sqlQuery.where})`, (err, result) => {
                 return (err) ? reject(err) : resolve(result[0]);
             }));
     }
@@ -51,8 +52,8 @@ export class ProductsController extends ODataController {
         const connection = await mssqlConnection();
         const request = new mssql.Request(connection);
         return await new Promise<number>((resolve, reject) =>
-            //request.query(`UPDATE Categories SET CategoryId = link WHERE _id = ? `, [key], (err, result) =>
-            request.query(`UPDATE Categories SET CategoryId = link WHERE _id = '${key}'`, (err, result) => {
+            //request.query(`UPDATE Categories SET CategoryId = link WHERE Id = ? `, [key], (err, result) =>
+            request.query(`UPDATE Categories SET CategoryId = link WHERE Id = ${key}`, (err, result) => {
                 //connection.close();
                 return (err) ? reject(err) : resolve(result[0]);
             }));
@@ -62,7 +63,7 @@ export class ProductsController extends ODataController {
     async unsetCategory( @odata.key key: string): Promise<number> {
         let db = await mongodb();
         return await db.collection("Products").updateOne({
-            _id: new ObjectID(key)
+            Id: new ObjectID(key)
         }, {
                 $unset: { CategoryId: 1 }
             }).then((result) => {
@@ -78,10 +79,10 @@ export class ProductsController extends ODataController {
         return await new Promise<Product>((resolve, reject) => {
             console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
             console.log(data);
-            console.log([data.QuantityPerUnit || null, data.UnitPrice || null, data.CategoryId || null, data.Name || null, data.Discontinued || null, data.id || null]);
+            console.log([data.QuantityPerUnit || null, data.UnitPrice || null, data.CategoryId || null, data.Name || null, data.Discontinued || null, data.Id || null]);
             const request2 = new mssql.Request(connection);
-            //request2.query(`INSERT INTO Products VALUES (?,?,?,?,?,?);`, [data.QuantityPerUnit || null, data.UnitPrice || null, data.CategoryId || null, data.Name || null, data.Discontinued || null, data.id || null], (err, result) =>
-            request2.query(`INSERT INTO Products VALUES (${(data.QuantityPerUnit || null)}, ${(data.UnitPrice || null)}, ${(data.CategoryId || null)}, ${(data.Name || null)}, ${(data.Discontinued || null)}, ${(data.id || null)});`, (err, result) => {
+            //request2.query(`INSERT INTO Products VALUES (?,?,?,?,?,?);`, [data.QuantityPerUnit || null, data.UnitPrice || null, data.CategoryId || null, data.Name || null, data.Discontinued || null, data.Id || null], (err, result) =>
+            request2.query(`INSERT INTO Products VALUES (${(data.QuantityPerUnit || null)}, ${(data.UnitPrice || null)}, ${(data.CategoryId || null)}, ${(data.Name || null)}, ${(data.Discontinued || null)}, ${(data.Id || null)});`, (err, result) => {
                 //connection.close();
                 return (err) ? reject(err) : resolve(result[0]);
             });
@@ -92,10 +93,10 @@ export class ProductsController extends ODataController {
     async upsert( @odata.key key: string, @odata.body data: any, @odata.context context: any): Promise<Product> {
         let db = await mongodb();
         if (data.CategoryId) data.CategoryId = new ObjectID(data.CategoryId);
-        return await db.collection("Products").updateOne({ _id: new ObjectID(key) }, data, {
+        return await db.collection("Products").updateOne({ Id: new ObjectID(key) }, data, {
             upsert: true
         }).then((result) => {
-            data._id = result.upsertedId
+            data.Id = result.upsertedId
             return data;
         });
     }*/
@@ -110,15 +111,15 @@ export class ProductsController extends ODataController {
     async update( @odata.key key: string, @odata.body delta: any): Promise<number> {
         /*let db = await mongodb();
         if (delta.CategoryId) delta.CategoryId = new ObjectID(delta.CategoryId);
-        return await db.collection("Products").updateOne({ _id: new ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);*/
+        return await db.collection("Products").updateOne({ Id: new ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);*/
         console.log("++++++++++++++++++");
         console.log(delta);
         console.log(key);
         const connection = await mssqlConnection();
         const request = new mssql.Request(connection);
         return await new Promise<number>((resolve, reject) =>
-            //request.query(`UPDATE Products SET ${this.getDeltaObjectInSQL(delta)} WHERE _id = ? `, [key], (err, result) =>
-            request.query(`UPDATE Products SET ${this.getDeltaObjectInSQL(delta)} WHERE _id = ${key}`, (err, result) => {
+            //request.query(`UPDATE Products SET ${this.getDeltaObjectInSQL(delta)} WHERE Id = ? `, [key], (err, result) =>
+            request.query(`UPDATE Products SET ${this.getDeltaObjectInSQL(delta)} WHERE Id = ${key}`, (err, result) => {
                 //connection.close();
                 return (err) ? reject(err) : resolve(result[0]);
             }));
@@ -127,7 +128,7 @@ export class ProductsController extends ODataController {
     /*@odata.DELETE
     async remove( @odata.key key: string): Promise<number> {
         let db = await mongodb();
-        return await db.collection("Products").deleteOne({ _id: new ObjectID(key) }).then(result => result.deletedCount);
+        return await db.collection("Products").deleteOne({ Id: new ObjectID(key) }).then(result => result.deletedCount);
     }
     @Edm.Function
     @Edm.EntityType(Product)
@@ -144,18 +145,18 @@ export class ProductsController extends ODataController {
     @Edm.Action
     async swapPrice( @Edm.String a: string, @Edm.String b: string) {
         let db = await mongodb();
-        const products = await db.collection("Products").find({ _id: { $in: [new ObjectID(a), new ObjectID(b)] } }, { UnitPrice: 1 }).toArray();
-        const aProduct = products.find(product => product._id.toHexString() === a);
-        const bProduct = products.find(product => product._id.toHexString() === b);
-        await db.collection("Products").update({ _id: new ObjectID(a) }, { $set: { UnitPrice: bProduct.UnitPrice } });
-        await db.collection("Products").update({ _id: new ObjectID(b) }, { $set: { UnitPrice: aProduct.UnitPrice } });
+        const products = await db.collection("Products").find({ Id: { $in: [new ObjectID(a), new ObjectID(b)] } }, { UnitPrice: 1 }).toArray();
+        const aProduct = products.find(product => product.Id.toHexString() === a);
+        const bProduct = products.find(product => product.Id.toHexString() === b);
+        await db.collection("Products").update({ Id: new ObjectID(a) }, { $set: { UnitPrice: bProduct.UnitPrice } });
+        await db.collection("Products").update({ Id: new ObjectID(b) }, { $set: { UnitPrice: aProduct.UnitPrice } });
     }
     @Edm.Action
     async discountProduct( @Edm.String productId: string, @Edm.Int32 percent: number): Promise<void> {
         let db = await mongodb();
-        const product = await db.collection("Products").findOne({ _id: new ObjectID(productId) });
+        const product = await db.collection("Products").findOne({ Id: new ObjectID(productId) });
         const discountedPrice = ((100 - percent) / 100) * product.UnitPrice;
-        await db.collection("Products").update({ _id: new ObjectID(productId) }, { $set: { UnitPrice: discountedPrice } });
+        await db.collection("Products").update({ Id: new ObjectID(productId) }, { $set: { UnitPrice: discountedPrice } });
     }*/
 }
 
@@ -165,7 +166,7 @@ export class CategoriesController extends ODataController {
     async find( @odata.query query: ODataQuery): Promise<Category[]> {
         let db = await mongodb();
         let mongodbQuery = createQuery(query);
-        if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
+        if (typeof mongodbQuery.query.Id == "string") mongodbQuery.query.Id = new ObjectID(mongodbQuery.query.Id);
         return db.collection("Categories").find(
             mongodbQuery.query,
             mongodbQuery.projection,
@@ -177,7 +178,7 @@ export class CategoriesController extends ODataController {
     async findOne( @odata.key key: string, @odata.query query: ODataQuery): Promise<Category> {
         let db = await mongodb();
         let mongodbQuery = createQuery(query);
-        return db.collection("Categories").findOne({ _id: new ObjectID(key) }, {
+        return db.collection("Categories").findOne({ Id: new ObjectID(key) }, {
             fields: mongodbQuery.projection
         });
     }
@@ -185,10 +186,10 @@ export class CategoriesController extends ODataController {
     async getProducts( @odata.result result: Category, @odata.query query: ODataQuery): Promise<Product[]> {
         let db = await mongodb();
         let mongodbQuery = createQuery(query);
-        if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
+        if (typeof mongodbQuery.query.Id == "string") mongodbQuery.query.Id = new ObjectID(mongodbQuery.query.Id);
         if (typeof mongodbQuery.query.CategoryId == "string") mongodbQuery.query.CategoryId = new ObjectID(mongodbQuery.query.CategoryId);
         return db.collection("Products").find(
-            { $and: [{ CategoryId: result._id }, mongodbQuery.query] },
+            { $and: [{ CategoryId: result.Id }, mongodbQuery.query] },
             mongodbQuery.projection,
             mongodbQuery.skip,
             mongodbQuery.limit
@@ -198,10 +199,10 @@ export class CategoriesController extends ODataController {
     async getProduct( @odata.key key: string, @odata.result result: Category, @odata.query query: ODataQuery): Promise<Product> {
         let db = await mongodb();
         let mongodbQuery = createQuery(query);
-        if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
+        if (typeof mongodbQuery.query.Id == "string") mongodbQuery.query.Id = new ObjectID(mongodbQuery.query.Id);
         if (typeof mongodbQuery.query.CategoryId == "string") mongodbQuery.query.CategoryId = new ObjectID(mongodbQuery.query.CategoryId);
         return db.collection("Products").findOne({
-            $and: [{ _id: new ObjectID(key), CategoryId: result._id }, mongodbQuery.query]
+            $and: [{ Id: new ObjectID(key), CategoryId: result.Id }, mongodbQuery.query]
         }, {
                 fields: mongodbQuery.projection
             });
@@ -211,7 +212,7 @@ export class CategoriesController extends ODataController {
     async setCategory( @odata.key key: string, @odata.link link: string): Promise<number> {
         let db = await mongodb();
         return await db.collection("Products").updateOne({
-            _id: new ObjectID(link)
+            Id: new ObjectID(link)
         }, {
                 $set: { CategoryId: new ObjectID(key) }
             }).then((result) => {
@@ -222,7 +223,7 @@ export class CategoriesController extends ODataController {
     async unsetCategory( @odata.key key: string, @odata.link link: string): Promise<number> {
         let db = await mongodb();
         return await db.collection("Products").updateOne({
-            _id: new ObjectID(link)
+            Id: new ObjectID(link)
         }, {
                 $unset: { CategoryId: 1 }
             }).then((result) => {
@@ -233,17 +234,17 @@ export class CategoriesController extends ODataController {
     async insert( @odata.body data: any): Promise<Category> {
         let db = await mongodb();
         return await db.collection("Categories").insertOne(data).then((result) => {
-            data._id = result.insertedId;
+            data.Id = result.insertedId;
             return data;
         });
     }
     @odata.PUT
     async upsert( @odata.key key: string, @odata.body data: any): Promise<Category> {
         let db = await mongodb();
-        return await db.collection("Categories").updateOne({ _id: new ObjectID(key) }, data, {
+        return await db.collection("Categories").updateOne({ Id: new ObjectID(key) }, data, {
             upsert: true
         }).then((result) => {
-            data._id = result.upsertedId
+            data.Id = result.upsertedId
             return data;
         });
     }
@@ -251,11 +252,11 @@ export class CategoriesController extends ODataController {
     async update( @odata.key key: string, @odata.body delta: any): Promise<number> {
         let db = await mongodb();
         if (delta.CategoryId) delta.CategoryId = new ObjectID(delta.CategoryId);
-        return await db.collection("Categories").updateOne({ _id: new ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);
+        return await db.collection("Categories").updateOne({ Id: new ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);
     }
     @odata.DELETE
     async remove( @odata.key key: string): Promise<number> {
         let db = await mongodb();
-        return await db.collection("Categories").deleteOne({ _id: new ObjectID(key) }).then(result => result.deletedCount);
+        return await db.collection("Categories").deleteOne({ Id: new ObjectID(key) }).then(result => result.deletedCount);
     }*/
 }

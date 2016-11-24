@@ -31,7 +31,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 		});
 
 		describe("Products", () => {
-			createTest.only("should get all products", "GET /Products", {
+			createTest("should get all products", "GET /Products", {
 				statusCode: 200,
 				body: {
 					"@odata.context": "http://localhost/$metadata#Products",
@@ -75,7 +75,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
-			createTest("should get product by key", "GET /Products(1)", { //''578f2b8c12eaebabec4af23c''->1
+			createTest.only("should get product by key", "GET /Products(1)", { //''578f2b8c12eaebabec4af23c''->1
 				statusCode: 200,
 				body: extend({
 					"@odata.context": "http://localhost/$metadata#Products/$entity"

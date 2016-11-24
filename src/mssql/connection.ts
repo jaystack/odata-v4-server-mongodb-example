@@ -10,7 +10,7 @@ var dbConfig = { //Data Source=localhost\\SQLEXPRESS;Initial Catalog=mytest;Inte
     options: {
         encrypt: true
     },
-    requestTimeout: 1000
+    requestTimeout: 15000
 };
 
 var msSqlConnection = new sql.Connection(dbConfig);

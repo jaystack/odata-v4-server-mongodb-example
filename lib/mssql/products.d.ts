@@ -1,5 +1,5 @@
 declare var _default: {
-    "id": number;
+    "Id": number;
     "QuantityPerUnit": string;
     "UnitPrice": number;
     "CategoryId": number;

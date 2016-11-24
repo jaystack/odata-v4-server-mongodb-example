@@ -1,5 +1,5 @@
 export declare class Product {
-    id: number;
+    Id: number;
     CategoryId: number;
     Category: Category;
     Discontinued: boolean;
@@ -11,7 +11,7 @@ export declare class Product {
     setDiscontinued(result: Product, value: boolean): Promise<void>;
 }
 export declare class Category {
-    id: number;
+    Id: number;
     Description: string;
     Name: string;
     Products: Product[];

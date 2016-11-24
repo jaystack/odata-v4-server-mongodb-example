@@ -18,7 +18,7 @@ export class Product{
         term: "UI.ControlHint",
         string: "ReadOnly"
     })
-    id:number
+    Id:number
 
     @Edm.Int32
     @Edm.Required
@@ -72,7 +72,7 @@ export class Product{
         //let db = await mongodb();
         let db = await mssql();
         await db.collection('Products').findOneAndUpdate(
-                {id: result.id},
+                {Id: result.Id},
                 {$set: {Discontinued: !result.Discontinued}});
     }
 
@@ -81,7 +81,7 @@ export class Product{
         //let db = await mongodb();
         let db = await mssql();
         await db.collection('Products').findOneAndUpdate(
-                {id: result.id},
+                {Id: result.Id},
                 {$set: {Discontinued: value}});
     }
 }
@@ -102,7 +102,7 @@ export class Category{
         term: "UI.ControlHint",
         string: "ReadOnly"
     })
-    id:number
+    Id:number
 
     @Edm.String
     Description:string
