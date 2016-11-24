@@ -1,13 +1,12 @@
-//import { ObjectID } from "mongodb";
 import { Edm, odata } from "odata-v4-server";
-//import mongodb from "./connection";
-import mssql from "./connection";
+import mysqlConnection from "./connection";
+import { promisifyWithDdName, mapDiscontinued } from "./utils";
 
 @Edm.Annotate({
     term: "UI.DisplayName",
     string: "Products"
 })
-export class Product{
+export class Product {
     @Edm.Key
     @Edm.Computed
     @Edm.String
@@ -15,82 +14,80 @@ export class Product{
         term: "UI.DisplayName",
         string: "Product identifier"
     }, {
-        term: "UI.ControlHint",
-        string: "ReadOnly"
-    })
-    id:string
+            term: "UI.ControlHint",
+            string: "ReadOnly"
+        })
+    Id: number
 
     @Edm.String
     @Edm.Required
-    CategoryId:string
+    CategoryId: number
 
     @Edm.EntityType("Category")
     @Edm.Partner("Products")
-    Category:Category
+    Category: Category
 
     @Edm.Boolean
-    Discontinued:boolean
+    Discontinued: boolean
 
     @Edm.String
     @Edm.Annotate({
         term: "UI.DisplayName",
         string: "Product title"
     }, {
-        term: "UI.ControlHint",
-        string: "ShortText"
-    })
-    Name:string
+            term: "UI.ControlHint",
+            string: "ShortText"
+        })
+    Name: string
 
     @Edm.String
     @Edm.Annotate({
         term: "UI.DisplayName",
         string: "Product English name"
     }, {
-        term: "UI.ControlHint",
-        string: "ShortText"
-    })
-    QuantityPerUnit:string
+            term: "UI.ControlHint",
+            string: "ShortText"
+        })
+    QuantityPerUnit: string
 
     @Edm.Decimal
     @Edm.Annotate({
         term: "UI.DisplayName",
         string: "Unit price of product"
     }, {
-        term: "UI.ControlHint",
-        string: "Decimal"
-    })
-    UnitPrice:number
+            term: "UI.ControlHint",
+            string: "Decimal"
+        })
+    UnitPrice: number
 
     @Edm.Function
     @Edm.Decimal
-    getUnitPrice(@odata.result result:Product) {
+    getUnitPrice( @odata.result result: Product) {
         return result.UnitPrice;
     }
 
-    /*@Edm.Action
-    async invertDiscontinued(@odata.result result:Product) {
-        //let db = await mongodb();
-        let db = await mssql();
-        await db.collection('Products').findOneAndUpdate(
-                {id: result.id},
-                {$set: {Discontinued: !result.Discontinued}});
+    @Edm.Action
+    async invertDiscontinued( @odata.result result: Product) {
+        console.log("================== invertDiscontinued on MODEL ==================");
+        const connection = promisifyWithDdName(await mysqlConnection());
+        const updateResults = await connection.query(`UPDATE Products SET Discontinued = ? WHERE Id = ? `, [!result.Discontinued, result.Id]);
+        return mapDiscontinued(updateResults);
     }
 
     @Edm.Action
-    async setDiscontinued(@odata.result result:Product, @Edm.Boolean value:boolean) {
-        //let db = await mongodb();
-        let db = await mssql();
-        await db.collection('Products').findOneAndUpdate(
-                {id: result.id},
-                {$set: {Discontinued: value}});
-    }*/
+    async setDiscontinued( @odata.result result: Product, @Edm.Boolean value: boolean) {
+        console.log("================== setDiscontinued on MODEL ==================");
+        const connection = promisifyWithDdName(await mysqlConnection());
+        const updateResults = await connection.query(`UPDATE Products SET Discontinued = ? WHERE Id = ? `, [value, result.Id]);
+        return mapDiscontinued(updateResults);
+    }
 }
 
 @Edm.Annotate({
     term: "UI.DisplayName",
     string: "Categories"
 })
-export class Category{
+export class Category {
     @Edm.Key
     @Edm.Computed
     @Edm.String
@@ -98,27 +95,27 @@ export class Category{
         term: "UI.DisplayName",
         string: "Category identifier"
     },
-    {
-        term: "UI.ControlHint",
-        string: "ReadOnly"
-    })
-    id:string
+        {
+            term: "UI.ControlHint",
+            string: "ReadOnly"
+        })
+    Id: number
 
     @Edm.String
-    Description:string
+    Description: string
 
     @Edm.String
     @Edm.Annotate({
         term: "UI.DisplayName",
         string: "Category name"
     },
-    {
-        term: "UI.ControlHint",
-        string: "ShortText"
-    })
-    Name:string
+        {
+            term: "UI.ControlHint",
+            string: "ShortText"
+        })
+    Name: string
 
     @Edm.Collection(Edm.EntityType("Product"))
     @Edm.Partner("Category")
-    Products:Product[]
+    Products: Product[]
 }

@@ -9,6 +9,18 @@ export declare class ProductsController extends ODataController {
     insert(data: any): Promise<Product>;
     update(key: string, delta: any): Promise<number>;
     remove(key: string): Promise<number>;
+    getCheapest(): Promise<Product>;
+    getInPriceRange(min: number, max: number): Promise<Product[]>;
+    swapPrice(key1: string, key2: string): Promise<void>;
+    discountProduct(productId: string, percent: number): Promise<void>;
 }
 export declare class CategoriesController extends ODataController {
+    find(query: ODataQuery): Promise<Category[]>;
+    findOne(key: string, query: ODataQuery): Promise<Category>;
+    setCategory(key: string, link: string): Promise<number>;
+    unsetCategory(key: string, link: string): Promise<number>;
+    insert(data: any): Promise<Category>;
+    upsert(key: string, data: any): Promise<Category>;
+    update(key: string, delta: any): Promise<number>;
+    remove(key: string): Promise<number>;
 }
