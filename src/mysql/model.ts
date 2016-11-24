@@ -2,6 +2,7 @@ import { Edm, odata } from "odata-v4-server";
 import mysqlConnection from "./connection";
 import { promisifyWithDdName, mapDiscontinued } from "./utils";
 
+@odata.namespace("NorthwindMySQL")
 @Edm.Annotate({
     term: "UI.DisplayName",
     string: "Products"
@@ -23,7 +24,7 @@ export class Product {
     @Edm.Required
     CategoryId: number
 
-    @Edm.EntityType("Category")
+    @Edm.EntityType("NorthwindMySQL.Category")
     @Edm.Partner("Products")
     Category: Category
 
@@ -83,6 +84,7 @@ export class Product {
     }
 }
 
+@odata.namespace("NorthwindMySQL")
 @Edm.Annotate({
     term: "UI.DisplayName",
     string: "Categories"
@@ -115,7 +117,7 @@ export class Category {
         })
     Name: string
 
-    @Edm.Collection(Edm.EntityType("Product"))
+    @Edm.Collection(Edm.EntityType("NorthwindMySQL.Product"))
     @Edm.Partner("Category")
     Products: Product[]
 }

@@ -25,7 +25,7 @@ export class ProductsController extends ODataController {
 
     @odata.GET("Category")
     async getCategory( @odata.result result: Product, @odata.query query: ODataQuery): Promise<Category> {
-        const connection = await mysqlConnection();
+        const connection = promisifyWithDdName(await mysqlConnection());
         const sqlQuery = createQuery(query);
         return await new Promise<Category>((resolve, reject) =>
             connection.query(`SELECT ${sqlQuery.select} FROM Categories WHERE Id = ? AND (${sqlQuery.where})`, [result.CategoryId, ...sqlQuery.parameters], (err, result) =>
