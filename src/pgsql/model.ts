@@ -67,18 +67,14 @@ export class Product{
 
     @Edm.Action
     async invertDiscontinued(@odata.result result:Product) {
-        let db = await connect();
-        /*await db.collection('Products').findOneAndUpdate(
-                {_id: result._id},
-                {$set: {Discontinued: !result.Discontinued}});*/
+        const db = await connect();
+        await db.query(`UPDATE "Products" SET "Discontinued" = $1 WHERE "Id" = $2`, [!result.Discontinued, result.Id]);
     }
 
     @Edm.Action
     async setDiscontinued(@odata.result result:Product, @Edm.Boolean value:boolean) {
-        let db = await connect();
-        /*await db.collection('Products').findOneAndUpdate(
-                {_id: result._id},
-                {$set: {Discontinued: value}});*/
+        const db = await connect();
+        await db.query(`UPDATE "Products" SET "Discontinued" = $1 WHERE "Id" = $2`, [value, result.Id]);
     }
 }
 

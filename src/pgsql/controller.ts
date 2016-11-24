@@ -109,6 +109,12 @@ export class ProductsController extends ODataController {
         await db.query(`UPDATE "Products" SET "UnitPrice" = $1 WHERE "Id" = $2`, [bProduct.UnitPrice, aProduct.Id]);
         await db.query(`UPDATE "Products" SET "UnitPrice" = $1 WHERE "Id" = $2`, [aProduct.UnitPrice, bProduct.Id]);
     }
+
+    @Edm.Action
+    async discountProduct( @Edm.String productId: number, @Edm.Int32 percent: number): Promise<void> {
+        const db = await connect();
+        await db.query(`UPDATE "Products" SET "UnitPrice" = $1 * "UnitPrice" WHERE "Id" = $2`, [((100 - percent) / 100), productId]);
+    }
 }
 
 @odata.type(Category)

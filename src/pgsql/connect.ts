@@ -1,5 +1,7 @@
 import * as pg from "pg";
 
+let db: pg.Client | null = null;
+
 function promisify(client) {
 	return new Proxy(client, {
 		get(target, name) {
@@ -19,6 +21,10 @@ function promisify(client) {
 }
 
 export default async function():Promise<pg.Client> {
+
+	if (db)
+		return db;
+
 	const pool = new pg.Pool({
 		user: 'postgres',
 		password: 'postgres',
@@ -28,7 +34,8 @@ export default async function():Promise<pg.Client> {
 	return new Promise<pg.Client>((resolve: Function, reject: Function) => {
 		pool.connect((err, client) => {
 			if (err) return reject(err);
-			resolve(promisify(client));
+			db = promisify(client);
+			resolve(db);
 		});
 	});
 }

@@ -289,7 +289,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
-			it.only("should invert Discontinued value on a product", () => {
+			it("should invert Discontinued value on a product", () => {
 				return NorthwindServer.execute("/Products(76)/Northwind.invertDiscontinued", "POST") //''578f2b8c12eaebabec4af288''->76
 				.then((result) => {
 					expect(result).to.deep.equal({
@@ -301,7 +301,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							statusCode: 200,
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Products/$entity"
-							}, products.filter(product => product.id == 76).map(product => Object.assign({}, product, { //'"578f2b8c12eaebabec4af288"'=>76
+							}, products.filter(product => product.Id == 76).map(product => Object.assign({}, product, { //'"578f2b8c12eaebabec4af288"'=>76
 									"@odata.id": `http://localhost/Products(${product.Id})`,
 									"@odata.editLink": `http://localhost/Products(${product.Id})`,
 									Discontinued: true
@@ -326,7 +326,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							statusCode: 200,
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Products/$entity"
-							}, products.filter(product => product.id == 2).map(product => Object.assign({}, product, { //'"578f2b8c12eaebabec4af23d"'=>2
+							}, products.filter(product => product.Id == 2).map(product => Object.assign({}, product, { //'"578f2b8c12eaebabec4af23d"'=>2
 									"@odata.id": `http://localhost/Products(${product.Id})`,
 									"@odata.editLink": `http://localhost/Products(${product.Id})`,
 									Discontinued: true
@@ -393,7 +393,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							statusCode: 200,
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Products/$entity"
-							}, products.filter(product => product.id == 3).map(product => Object.assign({}, product, { //'"578f2b8c12eaebabec4af23e"'=>3
+							}, products.filter(product => product.Id == 3).map(product => Object.assign({}, product, { //'"578f2b8c12eaebabec4af23e"'=>3
 									"@odata.id": `http://localhost/Products(${product.Id})`,
 									"@odata.editLink": `http://localhost/Products(${product.Id})`,
 									UnitPrice: 9
