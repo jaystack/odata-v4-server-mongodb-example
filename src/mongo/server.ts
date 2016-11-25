@@ -5,7 +5,7 @@ import mongodb from "./connection";
 import categories from "./categories";
 import products from "./products";
 
-@odata.namespace("Northwind")
+@odata.namespace("NorthwindTS")
 @odata.controller(ProductsController, true)
 @odata.controller(CategoriesController, true)
 export class NorthwindServer extends ODataServer{
