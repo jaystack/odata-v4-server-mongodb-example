@@ -18,12 +18,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 	createTest.only = function (testcase, command, compare, body) {
 		it.only(`${testcase} (${command})`, () => {
 			let test = command.split(" ");
-			return NorthwindServer.execute(test.slice(1).join(" "), test[0], body).then((result) => {
-				/*console.log("==========================");
-				console.log(JSON.stringify(result, null, 2));
-				console.log(JSON.stringify(compare, null, 2))*/;
-				expect(result).to.deep.equal(compare)
-			});
+			return NorthwindServer.execute(test.slice(1).join(" "), test[0], body).then((result) => expect(result).to.deep.equal(compare));
 		});
 	}
 
@@ -39,8 +34,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				body: {
 					"@odata.context": "http://localhost/$metadata#Products",
 					value: products.map(product => extend({
-						"@odata.id": `http://localhost/Products('${product.Id}')`,
-						"@odata.editLink": `http://localhost/Products('${product.Id}')`
+						"@odata.id": `http://localhost/Products(${product.Id})`,
+						"@odata.editLink": `http://localhost/Products(${product.Id})`
 					}, product))
 				},
 				elementType: Product,
@@ -52,25 +47,22 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				body: {
 					"@odata.context": "http://localhost/$metadata#Products",
 					value: products.filter(product => product.Name == "Chai").map(product => extend({
-						"@odata.id": `http://localhost/Products('${product.Id}')`,
-						"@odata.editLink": `http://localhost/Products('${product.Id}')`
+						"@odata.id": `http://localhost/Products(${product.Id})`,
+						"@odata.editLink": `http://localhost/Products(${product.Id})`
 					}, product))
 				},
 				elementType: Product,
 				contentType: "application/json"
 			});
 
-			createTest("should get products by filter and select", "GET /Products?$filter=Name eq 'Chai'&$select=Name,UnitPrice", {		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			createTest("should get products by filter and select", "GET /Products?$filter=Name eq 'Chai'&$select=Name,UnitPrice", {
 				statusCode: 200,
 				body: {
 					"@odata.context": "http://localhost/$metadata#Products",
 					value: products.filter(product => product.Name == "Chai").map((product) => {
 						return {
-							"@odata.id": `http://localhost/Products('${product.id}')`,
-							"@odata.editLink": `http://localhost/Products('${product.id}')`,
 							Name: product.Name,
-							UnitPrice: product.UnitPrice,
-							id: product.id
+							UnitPrice: product.UnitPrice
 						};
 					})
 				},
@@ -83,8 +75,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				body: extend({
 					"@odata.context": "http://localhost/$metadata#Products/$entity"
 				}, products.filter(product => product.Id == 1).map(product => extend({
-					"@odata.id": `http://localhost/Products('${product.Id}')`,
-					"@odata.editLink": `http://localhost/Products('${product.Id}')`
+					"@odata.id": `http://localhost/Products(${product.Id})`,
+					"@odata.editLink": `http://localhost/Products(${product.Id})`
 				}, product))[0]
 				),
 				elementType: Product,
@@ -100,8 +92,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 						statusCode: 201,
 						body: {
 							"@odata.context": "http://localhost/$metadata#Products/$entity",
-							"@odata.id": `http://localhost/Products('${result.body.Id}')`,
-							"@odata.editLink": `http://localhost/Products('${result.body.Id}')`,
+							"@odata.id": `http://localhost/Products(${result.body.Id})`,
+							"@odata.editLink": `http://localhost/Products(${result.body.Id})`,
 							Id: result.body.Id,
 							Name: "New product",
 							CategoryId: categories[0].Id
@@ -125,8 +117,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							statusCode: 200,
 							body: {
 								"@odata.context": "http://localhost/$metadata#Products/$entity",
-								"@odata.id": `http://localhost/Products('1')`,
-								"@odata.editLink": `http://localhost/Products('1')`,
+								"@odata.id": `http://localhost/Products(1)`,
+								"@odata.editLink": `http://localhost/Products(1)`,
 								Name: "Chai (updated)",
 								Id: 1
 							},
@@ -150,8 +142,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							statusCode: 200,
 							body: products.filter(product => product.Id.toString() == 1).map(product => extend({
 								"@odata.context": "http://localhost/$metadata#Products/$entity",
-								"@odata.id": `http://localhost/Products('${product.Id}')`,
-								"@odata.editLink": `http://localhost/Products('${product.Id}')`
+								"@odata.id": `http://localhost/Products(${product.Id})`,
+								"@odata.editLink": `http://localhost/Products(${product.Id})`
 							}, product, {
 									Name: "Chai (updated)"
 								}))[0],
@@ -181,8 +173,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				body: extend({
 					"@odata.context": "http://localhost/$metadata#Categories/$entity"
 				}, categories.filter(category => category.Id == 1).map(category => extend({
-					"@odata.id": `http://localhost/Categories('${category.Id}')`,
-					"@odata.editLink": `http://localhost/Categories('${category.Id}')`
+					"@odata.id": `http://localhost/Categories(${category.Id})`,
+					"@odata.editLink": `http://localhost/Categories(${category.Id})`
 				}, category))[0]
 				),
 				elementType: Category,
@@ -203,8 +195,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Categories/$entity"
 							}, categories.filter(category => category.Id == 2).map(category => extend({
-								"@odata.id": `http://localhost/Categories('${category.Id}')`,
-								"@odata.editLink": `http://localhost/Categories('${category.Id}')`
+								"@odata.id": `http://localhost/Categories(${category.Id})`,
+								"@odata.editLink": `http://localhost/Categories(${category.Id})`
 							}, category))[0]
 							),
 							elementType: Category,
@@ -228,8 +220,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Categories/$entity"
 							}, categories.filter(category => category.Id == 2).map(category => extend({
-								"@odata.id": `http://localhost/Categories('${category.Id}')`,
-								"@odata.editLink": `http://localhost/Categories('${category.Id}')`
+								"@odata.id": `http://localhost/Categories(${category.Id})`,
+								"@odata.editLink": `http://localhost/Categories(${category.Id})`
 							}, category))[0]
 							),
 							elementType: Category,
@@ -257,8 +249,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				statusCode: 200,
 				body: extend(
 					products.filter(product => product.UnitPrice === 2.5).map(product => extend({
-						"@odata.id": `http://localhost/Products('${product.Id}')`,
-						"@odata.editLink": `http://localhost/Products('${product.Id}')`
+						"@odata.id": `http://localhost/Products(${product.Id})`,
+						"@odata.editLink": `http://localhost/Products(${product.Id})`
 					}, product))[0], {
 						"@odata.context": "http://localhost/$metadata#Products/$entity"
 					}
@@ -273,8 +265,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 					"@odata.context": "http://localhost/$metadata#Products",
 					value: products.filter(product => product.UnitPrice >= 5 && product.UnitPrice <= 8).map((product) => {
 						return Object.assign({}, product, {
-							"@odata.id": `http://localhost/Products('${product.Id}')`,
-							"@odata.editLink": `http://localhost/Products('${product.Id}')`,
+							"@odata.id": `http://localhost/Products(${product.Id})`,
+							"@odata.editLink": `http://localhost/Products(${product.Id})`,
 						});
 					})
 				},
@@ -305,8 +297,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 								body: extend({
 									"@odata.context": "http://localhost/$metadata#Products/$entity"
 								}, products.filter(product => product.Id == 76).map(product => Object.assign({}, product, { //'"578f2b8c12eaebabec4af288"'=>76
-									"@odata.id": `http://localhost/Products('${product.Id}')`,
-									"@odata.editLink": `http://localhost/Products('${product.Id}')`,
+									"@odata.id": `http://localhost/Products(${product.Id})`,
+									"@odata.editLink": `http://localhost/Products(${product.Id})`,
 									Discontinued: true
 								}))[0]
 								),
@@ -330,8 +322,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 								body: extend({
 									"@odata.context": "http://localhost/$metadata#Products/$entity"
 								}, products.filter(product => product.Id == 2).map(product => Object.assign({}, product, {
-									"@odata.id": `http://localhost/Products('${product.Id}')`,
-									"@odata.editLink": `http://localhost/Products('${product.Id}')`,
+									"@odata.id": `http://localhost/Products(${product.Id})`,
+									"@odata.editLink": `http://localhost/Products(${product.Id})`,
 									Discontinued: true
 								}))[0]
 								),
@@ -342,8 +334,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 					});
 			});
 
-			it("should swap two products UnitPrice", () => {		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				return NorthwindServer.execute("/Products/Northwind.swapPrice", "POST", { a: 74, b: 75 })
+			it("should swap two products UnitPrice", () => {
+				return NorthwindServer.execute("/Products/Northwind.swapPrice", "POST", { key1: 74, key2: 75 })
 					.then((result) => {
 						expect(result).to.deep.equal({
 							statusCode: 204
@@ -355,8 +347,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 								body: extend({
 									"@odata.context": "http://localhost/$metadata#Products/$entity"
 								}, products.filter(product => product.Id.toString() == 74).map(product => Object.assign({}, product, {
-									"@odata.id": `http://localhost/Products('${product.Id}')`,
-									"@odata.editLink": `http://localhost/Products('${product.Id}')`,
+									"@odata.id": `http://localhost/Products(${product.Id})`,
+									"@odata.editLink": `http://localhost/Products(${product.Id})`,
 									UnitPrice: 18
 								}))[0]
 								),
@@ -371,8 +363,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 										body: extend({
 											"@odata.context": "http://localhost/$metadata#Products/$entity"
 										}, products.filter(product => product.Id.toString() == 75).map(product => Object.assign({}, product, {
-											"@odata.id": `http://localhost/Products('${product.Id}')`,
-											"@odata.editLink": `http://localhost/Products('${product.Id}')`,
+											"@odata.id": `http://localhost/Products(${product.Id})`,
+											"@odata.editLink": `http://localhost/Products(${product.Id})`,
 											UnitPrice: 7.75
 										}))[0]
 										),
@@ -397,8 +389,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 								body: extend({
 									"@odata.context": "http://localhost/$metadata#Products/$entity"
 								}, products.filter(product => product.Id == 3).map(product => Object.assign({}, product, {
-									"@odata.id": `http://localhost/Products('${product.Id}')`,
-									"@odata.editLink": `http://localhost/Products('${product.Id}')`,
+									"@odata.id": `http://localhost/Products(${product.Id})`,
+									"@odata.editLink": `http://localhost/Products(${product.Id})`,
 									UnitPrice: 9
 								}))[0]
 								),
@@ -410,14 +402,14 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 			});
 		});
 
-		describe.only("Categories", () => {
+		describe("Categories", () => {
 			createTest("should get all categories", "GET /Categories", {
 				statusCode: 200,
 				body: {
 					"@odata.context": "http://localhost/$metadata#Categories",
 					value: categories.map(category => extend({
-						"@odata.id": `http://localhost/Categories('${category.Id}')`,
-						"@odata.editLink": `http://localhost/Categories('${category.Id}')`
+						"@odata.id": `http://localhost/Categories(${category.Id})`,
+						"@odata.editLink": `http://localhost/Categories(${category.Id})`
 					}, category))
 				},
 				elementType: Category,
@@ -429,22 +421,20 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				body: {
 					"@odata.context": "http://localhost/$metadata#Categories",
 					value: categories.filter(category => category.Name == "Beverages").map(category => extend({
-						"@odata.id": `http://localhost/Categories('${category.Id}')`,
-						"@odata.editLink": `http://localhost/Categories('${category.Id}')`
+						"@odata.id": `http://localhost/Categories(${category.Id})`,
+						"@odata.editLink": `http://localhost/Categories(${category.Id})`
 					}, category))
 				},
 				elementType: Category,
 				contentType: "application/json"
 			});
 
-			createTest.only("should get categories by filter and select", "GET /Categories?$filter=Name eq 'Beverages'&$select=Name,Description", {		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			createTest("should get categories by filter and select", "GET /Categories?$filter=Name eq 'Beverages'&$select=Name,Description", {
 				statusCode: 200,
 				body: {
 					"@odata.context": "http://localhost/$metadata#Categories",
 					value: categories.filter(category => category.Name == "Beverages").map((category) => {
 						return {
-							"@odata.id": `http://localhost/Categories('${category.Id}')`,
-							"@odata.editLink": `http://localhost/Categories('${category.Id}')`,
 							Name: category.Name,
 							Description: category.Description
 						};
@@ -459,8 +449,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				body: extend({
 					"@odata.context": "http://localhost/$metadata#Categories/$entity"
 				}, categories.filter(category => category.Id == 1).map(category => extend({
-					"@odata.id": `http://localhost/Categories('${category.Id}')`,
-					"@odata.editLink": `http://localhost/Categories('${category.Id}')`
+					"@odata.id": `http://localhost/Categories(${category.Id})`,
+					"@odata.editLink": `http://localhost/Categories(${category.Id})`
 				}, category))[0]
 				),
 				elementType: Category,
@@ -476,8 +466,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 						statusCode: 201,
 						body: {
 							"@odata.context": "http://localhost/$metadata#Categories/$entity",
-							"@odata.id": `http://localhost/Categories('${result.body.Id}')`,
-							"@odata.editLink": `http://localhost/Categories('${result.body.Id}')`,
+							"@odata.id": `http://localhost/Categories(${result.body.Id})`,
+							"@odata.editLink": `http://localhost/Categories(${result.body.Id})`,
 							Id: result.body.Id,
 							Name: "New category",
 							Description: "Test category"
@@ -488,7 +478,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
-			it("should update category", () => {		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			it("should update category", () => {
 				return NorthwindServer.execute("/Categories(1)", "PUT", {
 					Name: "Beverages (updated)"
 				}).then((result) => {
@@ -513,7 +503,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
-			it("should delta update category", () => {		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			it("should delta update category", () => {
 				return NorthwindServer.execute("/Categories(1)", "PATCH", {
 					Name: "Beverages (updated)"
 				}).then((result) => {
@@ -524,10 +514,10 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 					return NorthwindServer.execute("/Categories(1)", "GET").then((result) => {
 						expect(result).to.deep.equal({
 							statusCode: 200,
-							body: categories.filter(category => category.id == 1).map(category => extend({
+							body: categories.filter(category => category.Id == 1).map(category => extend({
 								"@odata.context": "http://localhost/$metadata#Categories/$entity",
-								"@odata.id": `http://localhost/Categories('${category.id}')`,
-								"@odata.editLink": `http://localhost/Categories('${category.id}')`
+								"@odata.id": `http://localhost/Categories(${category.Id})`,
+								"@odata.editLink": `http://localhost/Categories(${category.Id})`
 							}, category, {
 									Name: "Beverages (updated)"
 								}))[0],
@@ -557,8 +547,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				body: {
 					"@odata.context": "http://localhost/$metadata#Categories(1)/Products",
 					value: products.filter(product => product.CategoryId == 1).map(product => extend({
-						"@odata.id": `http://localhost/Products('${product.Id}')`,
-						"@odata.editLink": `http://localhost/Products('${product.Id}')`
+						"@odata.id": `http://localhost/Products(${product.Id})`,
+						"@odata.editLink": `http://localhost/Products(${product.Id})`
 					}, product))
 				},
 				elementType: Product,
@@ -579,8 +569,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Categories/$entity"
 							}, categories.filter(category => category.Id == 2).map(category => extend({
-								"@odata.id": `http://localhost/Categories('${category.Id}')`,
-								"@odata.editLink": `http://localhost/Categories('${category.Id}')`
+								"@odata.id": `http://localhost/Categories(${category.Id})`,
+								"@odata.editLink": `http://localhost/Categories(${category.Id})`
 							}, category))[0]
 							),
 							elementType: Category,
@@ -604,8 +594,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 							body: extend({
 								"@odata.context": "http://localhost/$metadata#Categories/$entity"
 							}, categories.filter(category => category.Id == 2).map(category => extend({
-								"@odata.id": `http://localhost/Categories('${category.Id}')`,
-								"@odata.editLink": `http://localhost/Categories('${category.Id}')`
+								"@odata.id": `http://localhost/Categories(${category.Id})`,
+								"@odata.editLink": `http://localhost/Categories(${category.Id})`
 							}, category))[0]
 							),
 							elementType: Category,

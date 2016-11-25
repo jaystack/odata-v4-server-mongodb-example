@@ -46,30 +46,6 @@ export function filterNullValues(rows: any[]): any[] {
   return rows.map(row => filterRow(row));
 }
 
-// DEPRICATED?
-/*function getQuestionMarks(dataKeys: any[]): string {
-  return dataKeys.map(key => '?').join();
-}
-
-function getUpdateString(dataKeys: any[]): string {
-  return dataKeys.map(key => key + '=?').join();
-}
-
-function getObjectValues(data: any, dataKeys: any[]): any[] {
-  return dataKeys.map(key => data[key]);
-}
-
-export function getUpsertQueryString(key: number, data: any): string {
-  const dataKeys = Object.keys(data);
-  return `INSERT INTO Products (Id,${dataKeys.join()}) VALUES (?,${getQuestionMarks(dataKeys)}) ON DUPLICATE KEY UPDATE ${getUpdateString(dataKeys)}`;
-}
-
-export function getUpsertQueryParameters(key: number, data: any): any[] {
-  const dataKeys = Object.keys(data);
-  const dataValues = getObjectValues(data, dataKeys);
-  return [key, ...dataValues, ...dataValues];
-}*/
-
 function getUpdateParameters(deltaKeys: string[]): string {
   return deltaKeys.map(key => key + '=?').join();
 }
@@ -78,9 +54,9 @@ function getObjectValues(delta: any, deltaKeys: any[]): any[] {
   return deltaKeys.map(key => delta[key]);
 }
 
-export function getPatchQueryString(delta: any): string {
+export function getPatchQueryString(tableName: string, delta: any): string {
   const deltaKeys = Object.keys(delta);
-  return `UPDATE Products SET ${getUpdateParameters(deltaKeys)} WHERE Id = ?`;
+  return `UPDATE ${tableName} SET ${getUpdateParameters(deltaKeys)} WHERE Id = ?`;
 }
 
 export function getPatchQueryParameters(key: number, delta: any): any[] {

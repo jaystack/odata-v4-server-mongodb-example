@@ -10,7 +10,7 @@ import { promisifyWithDdName, mapDiscontinued } from "./utils";
 export class Product {
     @Edm.Key
     @Edm.Computed
-    @Edm.String
+    @Edm.Int32
     @Edm.Annotate({
         term: "UI.DisplayName",
         string: "Product identifier"
@@ -20,7 +20,7 @@ export class Product {
         })
     Id: number
 
-    @Edm.String
+    @Edm.Int32
     @Edm.Required
     CategoryId: number
 
@@ -88,7 +88,7 @@ export class Product {
 export class Category {
     @Edm.Key
     @Edm.Computed
-    @Edm.String
+    @Edm.Int32
     @Edm.Annotate({
         term: "UI.DisplayName",
         string: "Category identifier"
