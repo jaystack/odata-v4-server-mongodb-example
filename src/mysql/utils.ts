@@ -27,12 +27,27 @@ export function getDeltaObjectInSQL(delta: any): string {
 
 export function mapDiscontinued(results: any[]): any[] {
   return results.map(result => {
+    if (!result.hasOwnProperty('Discontinued'))
+      return result;
     result.Discontinued = (result.Discontinued == 1) ? true : false;
     return result;
   });
 }
 
-function getQuestionMarks(dataKeys: any[]): string {
+function filterRow(item) {
+  const newItem = {};
+  Object.keys(item)
+    .filter(key => item[key] !== null)
+    .forEach(key => newItem[key] = item[key]);
+  return newItem;
+}
+
+export function filterNullValues(rows: any[]): any[] {
+  return rows.map(row => filterRow(row));
+}
+
+// DEPRICATED?
+/*function getQuestionMarks(dataKeys: any[]): string {
   return dataKeys.map(key => '?').join();
 }
 
@@ -53,4 +68,23 @@ export function getUpsertQueryParameters(key: number, data: any): any[] {
   const dataKeys = Object.keys(data);
   const dataValues = getObjectValues(data, dataKeys);
   return [key, ...dataValues, ...dataValues];
+}*/
+
+function getUpdateParameters(deltaKeys: string[]): string {
+  return deltaKeys.map(key => key + '=?').join();
+}
+
+function getObjectValues(delta: any, deltaKeys: any[]): any[] {
+  return deltaKeys.map(key => delta[key]);
+}
+
+export function getPatchQueryString(delta: any): string {
+  const deltaKeys = Object.keys(delta);
+  return `UPDATE Products SET ${getUpdateParameters(deltaKeys)} WHERE Id = ?`;
+}
+
+export function getPatchQueryParameters(key: number, delta: any): any[] {
+  const dataKeys = Object.keys(delta);
+  const dataValues = getObjectValues(delta, dataKeys);
+  return [...dataValues, key];
 }

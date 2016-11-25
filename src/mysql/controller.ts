@@ -3,7 +3,7 @@ import { createQuery } from "odata-v4-mysql";
 import { ODataController, Edm, odata, ODataQuery } from "odata-v4-server";
 import { Product, Category } from "./model";
 import mysqlConnection from "./connection";
-import { promisifyWithDdName, getDeltaObjectInSQL, mapDiscontinued, getUpsertQueryString, getUpsertQueryParameters } from "./utils";
+import { promisifyWithDdName, getDeltaObjectInSQL, mapDiscontinued, filterNullValues, getPatchQueryParameters, getPatchQueryString } from "./utils";
 
 @odata.type(Product)
 export class ProductsController extends ODataController {
@@ -23,7 +23,7 @@ export class ProductsController extends ODataController {
         const connection = promisifyWithDdName(await mysqlConnection());
         const sqlQuery = createQuery(query);
         const results = await connection.query(`SELECT ${sqlQuery.select} FROM Products WHERE Id = ? AND (${sqlQuery.where})`, [key, ...sqlQuery.parameters]);
-        return mapDiscontinued(results)[0];
+        return mapDiscontinued(filterNullValues(results))[0];
     }
 
     @odata.GET("Category")
@@ -69,12 +69,10 @@ export class ProductsController extends ODataController {
     }
 
     @odata.PATCH
-    async update( @odata.key key: string, @odata.body delta: any): Promise<number> {
+    async update( @odata.key key: number, @odata.body delta: any): Promise<any> {
         console.log("!!!!!!!!!!! update !!!!!!!!!!!!");
         const connection = promisifyWithDdName(await mysqlConnection());
-        const results = await connection.query(`UPDATE Products SET ${getDeltaObjectInSQL(delta)} WHERE Id = ? `, [key]);
-        console.log(results);
-        return results;
+        return await connection.query(getPatchQueryString(delta), getPatchQueryParameters(key, delta));
     }
 
     @odata.DELETE
@@ -142,7 +140,7 @@ export class CategoriesController extends ODataController {
         console.log(JSON.stringify(results, null, 2));
         console.log(sqlQuery.where);
         console.log(sqlQuery.parameters);
-        return results
+        return results;
     }
 
     @odata.GET
