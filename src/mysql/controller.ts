@@ -46,7 +46,7 @@ export class ProductsController extends ODataController {
     @odata.POST
     async insert( @odata.body data: any): Promise<Product> {
         const connection = promisifyWithDbName(await mysqlConnection());
-        const result = await connection.query(`INSERT INTO Products VALUES (?,?,?,?,?,?);`, [data.Id || null, data.QuantityPerUnit || null, data.UnitPrice || null, data.CategoryId || null, data.Name || null, data.Discontinued || null]);
+        const result = await connection.query(`INSERT INTO Products VALUES (?,?,?,?,?,?);`, [data.Id, data.QuantityPerUnit, data.UnitPrice, data.CategoryId, data.Name, data.Discontinued]);
         return Object.assign({}, data, { Id: result.insertId });
     }
 
@@ -150,7 +150,7 @@ export class CategoriesController extends ODataController {
     @odata.POST
     async insert( @odata.body data: any): Promise<Category> {
         const connection = promisifyWithDbName(await mysqlConnection());
-        const result = await connection.query(`INSERT INTO Categories VALUES (?,?,?);`, [data.Id || null, data.Description || null, data.Name || null]);
+        const result = await connection.query(`INSERT INTO Categories VALUES (?,?,?);`, [data.Id, data.Description, data.Name]);
         const res = Object.assign({}, data, { Id: result.insertId });
         return res;
     }
