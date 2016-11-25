@@ -68,18 +68,14 @@ export class Product {
 
     @Edm.Action
     async invertDiscontinued( @odata.result result: Product) {
-        console.log("================== invertDiscontinued on MODEL ==================");
         const connection = promisifyWithDdName(await mysqlConnection());
-        const updateResults = await connection.query(`UPDATE Products SET Discontinued = ? WHERE Id = ? `, [!result.Discontinued, result.Id]);
-        return mapDiscontinued(updateResults);
+        return await connection.query(`UPDATE Products SET Discontinued = ? WHERE Id = ? `, [!result.Discontinued, result.Id]);
     }
 
     @Edm.Action
     async setDiscontinued( @odata.result result: Product, @Edm.Boolean value: boolean) {
-        console.log("================== setDiscontinued on MODEL ==================");
         const connection = promisifyWithDdName(await mysqlConnection());
-        const updateResults = await connection.query(`UPDATE Products SET Discontinued = ? WHERE Id = ? `, [value, result.Id]);
-        return mapDiscontinued(updateResults);
+        return await connection.query(`UPDATE Products SET Discontinued = ? WHERE Id = ? `, [value, result.Id]);
     }
 }
 

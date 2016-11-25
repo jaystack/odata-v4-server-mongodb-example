@@ -6,7 +6,7 @@ import { Category, Product } from "./model";
 const categories: Category[] = require("../../src/mysql/categories");
 const products: Product[] = require("../../src/mysql/products");
 
-@odata.namespace("Northwinds")
+@odata.namespace("Northwind")
 @odata.controller(ProductsController, true)
 @odata.controller(CategoriesController, true)
 export class NorthwindServer extends ODataServer {
