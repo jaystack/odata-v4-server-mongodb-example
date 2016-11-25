@@ -2,9 +2,9 @@ var sql = require('mssql');
 var mssql = sql;
 //var runSqlFile = require('./runSqlFile');
 
-import { Category, Product } from "./model";
-const categories: Category[] = require("../../src/mssql/categories");
-const products: Product[] = require("../../src/mssql/products");
+// import { Category, Product } from "./model";
+// const categories: Category[] = require("../../src/mssql/categories");
+// const products: Product[] = require("../../src/mssql/products");
 
 var dbConfig = { //Data Source=HARIHARAN-PC\\SQLEXPRESS;Initial Catalog=yourDataBaseName;Integrated Security=True
     server: "localhost\\MSSQLSERVER",
@@ -33,8 +33,25 @@ conn.connect().then(async function () {
         //conn.close();
     });
 
-    // /////////////////////////////
+    let myResultsI = await new Promise<any>((resolve, reject) => runQuery(mssql, conn, resolve, reject,
+        "INSERT INTO mytest.dbo.t1 OUTPUT inserted.* Values(5, 'FIVE')", true));
+    console.log("INSERT:", JSON.stringify(myResultsI, null, 2));
 
+    let myResultsD = await new Promise<any>((resolve, reject) => runQuery(mssql, conn, resolve, reject,
+        "DELETE From mytest.dbo.t1 Output deleted.* Where id = 5", true));
+    console.log("DELETE:", JSON.stringify(myResultsD, null, 2));
+
+    let sqlCommand = `DECLARE @impactedId INT;
+        UPDATE mytest.dbo.t1 SET text = 'UPDATED HI', @impactedId = id WHERE id = 2;
+        SELECT @impactedId as 'ImpactedId';`
+    let myResultsU = await new Promise<any>((resolve, reject) => runQuery(mssql, conn, resolve, reject,
+        sqlCommand, true));
+    console.log("UPDATE:", JSON.stringify(myResultsU, null, 2));
+
+
+
+    // /////////////////////////////
+/*
     var connection = conn;
     await new Promise<any>((resolve, reject) => (new mssql.Request(connection)).query("USE mytest", (err, result) => err ? reject(err) : resolve(result)));
     const recordset = await new Promise<any>((resolve, reject) => (new mssql.Request(connection)).query("SELECT * FROM mytest.dbo.t1", (err, result) => err ? reject(err) : resolve(result)));
@@ -62,6 +79,20 @@ conn.connect().then(async function () {
 .catch(function (err) {
     console.log(err);
 });
+
+function runQuery(mssql: any, connection: any, resolve: Function, reject: Function, query: string, goOn: boolean = false) {
+  return (new mssql.Request(connection)).query(query, (err, result) => {
+    if (err) {
+        console.log("ERR:", query, ":\n", err);
+        return (goOn) ? resolve(err) : reject(err);
+    }
+    console.log("OK:", query);
+    if (result) { console.log(result); }
+    return resolve(result);
+  });
+}
+
+*/
 
 function runQuery(mssql: any, connection: any, resolve: Function, reject: Function, query: string, goOn: boolean = false) {
   return (new mssql.Request(connection)).query(query, (err, result) => {

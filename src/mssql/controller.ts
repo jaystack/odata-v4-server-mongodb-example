@@ -64,20 +64,52 @@ export class ProductsController extends ODataController {
     async insert( @odata.body data: any): Promise<Product> {
         const connection = await mssqlConnection();
         let request = new mssql.Request(connection);
-        const {rows} = await insert(db, "Products", [data]);
-        return convertResults(rows)[0];
+        let columns: string[];
+        let values: any[];
+        Object.keys(data).forEach((key: string) => {
+            columns.push(key);
+            values.push(addQuote(data[key]));
+        });
+        let sqlCommand = `INSERT INTO Products (${columns.join(", ")}) OUTPUT inserted.* VALUES (${values.join(", ")});`;
+        const result = await request.query(sqlCommand);
+        return <Product>result[0]; //convertResults(rows)[0];
     }
 
     @odata.PUT
-    async upsert( @odata.key key: string, @odata.body data: any, @odata.context context: any): Promise<Product> {
+    async upsert( @odata.key key: string, @odata.body data: any, @odata.context context: any ): Promise<Product> {
     }
 
     @odata.PATCH
-    async update( @odata.key key: string, @odata.body delta: any): Promise<number> {
+    async update( @odata.key id: string, @odata.body delta: any ): Promise<number> {
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        let sets: any[];
+        Object.keys(delta).forEach((key: string) => {
+            sets.push(key + "=" + addQuote(delta[key]));
+        });
+        let sqlCommand = `DECLARE @impactedId INT;
+        UPDATE Products SET ${sets.join(", ")}, @impactedId = Id WHERE Id = ${id};
+        SELECT @impactedId as 'ImpactedId';`;
+        const result = await <Promise<any>>request.query(sqlCommand);
+        return (result) ? 1 : 0; //<Product>result[0];
+/*
+DECLARE @id INT
+
+UPDATE Foo
+SET Bar = 1, @id = id
+WHERE Baz = 2
+
+SELECT @id
+*/
     }
 
     @odata.DELETE
-    async remove( @odata.key key: string): Promise<number> {
+    async remove( @odata.key id: string ): Promise<number> {
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        let sqlCommand = `DELETE FROM Products OUTPUT deleted.* WHERE Id = ${id}`;
+        const result = await <Promise<Product[]>>request.query(sqlCommand);
+        return (Array.isArray(result)) ? result.length : 0; //<Product>result[0];
     }
 }
 
@@ -309,4 +341,9 @@ export class CategoriesController extends ODataController {
         let db = await mongodb();
         return await db.collection("Categories").deleteOne({ Id: new ObjectID(key) }).then(result => result.deletedCount);
     }*/
+}
+
+function addQuote(par: any): string {
+    if (typeof par === "string") { return par; }
+    return "'" + par.toString + "'";
 }
