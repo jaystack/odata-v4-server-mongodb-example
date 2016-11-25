@@ -17,13 +17,13 @@
     "pretest": "npm run build",
     "precoverage": "tsc",
     "coverage": "rm -rf coverage && node node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha test/*.spec.js --config=.istanbul.yaml -x config/**/*.js && node node_modules/remap-istanbul/bin/remap-istanbul -i coverage/coverage.json -o coverage/html-report -t html",
-    "docker-build": "docker build -t odata-v4-server-example .",
-    "docker-run": "docker run --name odata-v4-server-example --link mongo:mongo -p 3000:3000 -d odata-v4-server-example",
-    "docker-stop": "docker stop odata-v4-server-example",
+    "docker-build": "docker build -t odata-v4-server-mongodb-example .",
+    "docker-run": "docker run --name odata-v4-server-mongodb-example --link mongo:mongo -p 3000:3000 -d odata-v4-server-mongodb-example",
+    "docker-stop": "docker stop odata-v4-server-mongodb-example",
     "docker-clean-containers": "docker rm $(docker ps -a -q)",
     "docker-clean-images": "docker rmi $(docker images -a -q)",
     "docker-clean": "npm run docker-clean-containers && npm run docker-clean-images",
-    "docker-enter": "docker exec -ti odata-v4-server-example bash"
+    "docker-enter": "docker exec -ti odata-v4-server-mongodb-example bash"
   },
   "watch": {
     "coverage": "{lib,test}/*.js",
@@ -49,9 +49,7 @@
     "@types/mysql": "0.0.30",
     "express": "^4.14.0",
     "mongodb": "^2.2.11",
-    "mysql": "^2.12.0",
     "odata-v4-mongodb": "^0.1.7",
-    "odata-v4-mysql": "^0.1.0",
     "odata-v4-server": "rc"
   },
   "devDependencies": {
