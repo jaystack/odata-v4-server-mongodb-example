@@ -1,0 +1,8 @@
+export default {
+	GET_CATEGORIES: Symbol(),
+	RESOLVE_GET_CATEGORIES: Symbol(),
+	REJECT_GET_CATEGORIES: Symbol(),
+	GET_PRODUCTS: Symbol(),
+	RESOLVE_GET_PRODUCTS: Symbol(),
+	REJECT_GET_PRODUCTS: Symbol()
+};
