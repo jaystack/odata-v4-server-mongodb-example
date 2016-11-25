@@ -31,8 +31,12 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 		});
 
 		describe("Products", () => {
-			// //
-			createTest.only("should get all products", "GET /Products", {
+			// // OK volt, de most ez a hiba:
+			//    +  "contentType": "application/json"
+      //    +  "elementType": {
+      //    +    "namespace": "Northwind"
+      //    +  }
+			createTest("should get all products", "GET /Products", {
 				statusCode: 200,
 				body: {
 					"@odata.context": "http://localhost/$metadata#Products",
@@ -45,6 +49,11 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
+			// // OK lenne, de ez a hiba:
+			//    +  "contentType": "application/json"
+      //    +  "elementType": {
+      //    +    "namespace": "Northwind"
+      //    +  }
 			createTest("should get products by filter", "GET /Products?$filter=Name eq 'Chai'", {
 				statusCode: 200,
 				body: {
@@ -58,6 +67,25 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
+			// // // a fenti contentType és elementType (namesapce) hiba +++ PLUSZ ez:
+			//    "body": {
+      //         "@odata.context": "http://localhost/$metadata#Products"
+      //         "value": [
+      //           {
+      //    +        "@odata.editLink": "http://localhost/Products(1)"
+      //    +        "@odata.id": "http://localhost/Products(1)"
+      //    +        "Id": 1
+      //             "Name": "Chai"
+      //             "UnitPrice": 39
+      //           }
+      //         ]
+      //       }
+      //    +  "contentType": "application/json"
+      //    +  "elementType": {
+      //    +    "namespace": "Northwind"
+      //    +  }
+      //       "statusCode": 200
+      //    }
 			createTest("should get products by filter and select", "GET /Products?$filter=Name eq 'Chai'&$select=Name,UnitPrice", {
 				statusCode: 200,
 				body: {
@@ -76,8 +104,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
-			// //
-			createTest.only("should get product by key", "GET /Products(1)", { //''578f2b8c12eaebabec4af23c''->1
+			// // OK
+			createTest("should get product by key", "GET /Products(1)", { //''578f2b8c12eaebabec4af23c''->1
 				statusCode: 200,
 				body: extend({
 					"@odata.context": "http://localhost/$metadata#Products/$entity"
@@ -90,18 +118,23 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
+			// // OK
 			it("should create new product", () => {
+				console.log("\n\nXXXXXXXXXXXXXXXXX ", JSON.stringify({
+					Name: "New product",
+					CategoryId: categories[0].Id
+				}));
 				return NorthwindServer.execute("/Products", "POST", {
 					Name: "New product",
 					CategoryId: categories[0].Id
 				}).then((result) => {
-					expect(result.body.Id instanceof Id).to.be.true;
+					expect(typeof result.body.Id === "number").to.be.true;
 					expect(result).to.deep.equal({
 						statusCode: 201,
 						body: {
 							"@odata.context": "http://localhost/$metadata#Products/$entity",
-							"@odata.id": `http://localhost/Products('${result.body.Id}')`,
-							"@odata.editLink": `http://localhost/Products('${result.body.Id}')`,
+							"@odata.id": `http://localhost/Products(${result.body.Id})`,
+							"@odata.editLink": `http://localhost/Products(${result.body.Id})`,
 							Id: result.body.Id,
 							Name: "New product",
 							CategoryId: categories[0].Id
@@ -112,6 +145,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
+			// // OK
 			it("should update product", () => {
 				return NorthwindServer.execute("/Products(1)", "PUT", { //''578f2b8c12eaebabec4af23c''->1
 					Name: "Chai (updated)"
@@ -137,6 +171,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
+			// // OK
 			it("should delta update product", () => {
 				return NorthwindServer.execute("/Products(1)", "PATCH", { //''578f2b8c12eaebabec4af23c''->1
 					Name: "Chai (updated)"
@@ -162,6 +197,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
+			// // OK
 			it("should delete product", () => {
 				return NorthwindServer.execute("/Products(1)", "DELETE").then((result) => { //''578f2b8c12eaebabec4af23c''->1
 					expect(result).to.deep.equal({
@@ -176,6 +212,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
+			// // OK, de egy odata property hiányzik:
+			//    +    "@odata.editLink": "http://localhost/Categories(1)"
 			createTest("should get category by product", "GET /Products(1)/Category", { //''578f2b8c12eaebabec4af23c''->1
 				statusCode: 200,
 				body: extend({
@@ -189,6 +227,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
+			// // OK, de egy odata property hiányzik:
+			//    +    "@odata.editLink": "http://localhost/Categories(2)"
 			it("should create category reference on product", () => {
 				return NorthwindServer.execute("/Products(1)/Category/$ref", "POST", { //''578f2b8c12eaebabec4af23c''->1
 					"@odata.id": "http://localhost/Categories(2)" //''578f2baa12eaebabec4af28a''->2
@@ -214,6 +254,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
+			// // OK, de egy odata property hiányzik:
+			//    +    "@odata.editLink": "http://localhost/Categories(2)"
 			it("should update category reference on product", () => {
 				return NorthwindServer.execute("/Products(1)/Category/$ref", "PUT", { //''578f2b8c12eaebabec4af23c''->1
 					"@odata.id": "http://localhost/Categories(2)" //''578f2baa12eaebabec4af28a''->2
@@ -239,6 +281,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
+			// // OK
 			it("should delete category reference on product", () => {
 				return NorthwindServer.execute("/Products(1)/Category/$ref", "DELETE").then((result) => { //''578f2b8c12eaebabec4af23c''->1
 					expect(result).to.deep.equal({
@@ -253,7 +296,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
-			createTest("should get the cheapest product", "GET /Products/Northwind.getCheapest()", {
+			// // // HIBA: minden terméket visszaad, pedig csak az Id=30-at kellene !!!
+			createTest.only("should get the cheapest product", "GET /Products/Northwind.getCheapest()", {
 				statusCode: 200,
 				body: extend(
 					products.filter(product => product.UnitPrice === 2.5).map(product => extend({
@@ -473,13 +517,13 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 					Name: "New category",
 					Description: "Test category"
 				}).then((result) => {
-					expect(result.body.Id instanceof Id).to.be.true;
+					expect(typeof result.body.Id === "number").to.be.true;
 					expect(result).to.deep.equal({
 						statusCode: 201,
 						body: {
 							"@odata.context": "http://localhost/$metadata#Categories/$entity",
-							"@odata.id": `http://localhost/Categories('${result.body.Id}')`,
-							"@odata.editLink": `http://localhost/Categories('${result.body.Id}')`,
+							"@odata.id": `http://localhost/Categories(${result.body.Id})`,
+							"@odata.editLink": `http://localhost/Categories(${result.body.Id})`,
 							Id: result.body.Id,
 							Name: "New category",
 							Description: "Test category"
@@ -618,7 +662,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 			});
 
 			it("should delete product reference on category", () => {
-				return NorthwindServer.execute("/Categories('578f2baa12eaebabec4af289')/Products/$ref?$id=http://localhost/Products(1)", "DELETE").then((result) => { //''578f2b8c12eaebabec4af23c''->1
+				return NorthwindServer.execute("/Categories(1)/Products/$ref?$id=http://localhost/Products(1)", "DELETE").then((result) => { // ''578f2baa12eaebabec4af289'' -> 1 //''578f2b8c12eaebabec4af23c''->1
 					expect(result).to.deep.equal({
 						statusCode: 204
 					});

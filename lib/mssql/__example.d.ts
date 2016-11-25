@@ -12,3 +12,4 @@ declare var dbConfig: {
     requestTimeout: number;
 };
 declare var conn: any;
+declare function runQuery(mssql: any, connection: any, resolve: Function, reject: Function, query: string, goOn?: boolean): any;

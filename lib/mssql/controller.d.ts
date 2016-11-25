@@ -7,9 +7,13 @@ export declare class ProductsController extends ODataController {
     setCategory(id: number, link: number): Promise<number>;
     unsetCategory(id: number): Promise<number>;
     insert(data: any): Promise<Product>;
-    upsert(key: string, data: any, context: any): Promise<Product>;
+    upsert(id: string, data: any, context: any): Promise<Product>;
     update(id: string, delta: any): Promise<number>;
     remove(id: string): Promise<number>;
+    getCheapest(): Promise<Product>;
+    getInPriceRange(min: number, max: number): Promise<Product[]>;
+    swapPrice(a: number, b: number): Promise<void>;
+    discountProduct(productId: number, percent: number): Promise<void>;
 }
 export declare class CategoriesController extends ODataController {
 }
