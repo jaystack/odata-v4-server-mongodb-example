@@ -1,4 +1,4 @@
-export function promisifyWithDdName(client) {
+export function promisifyWithDbName(client) {
   return new Proxy(client, {
     get(target, name) {
       if (name !== 'query')
