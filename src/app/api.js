@@ -1,6 +1,10 @@
 async function resolveDocs(response) {
-	const json = await response.json();
-	return json.value ? json.value : json;
+	try {
+		const json = await response.json();
+		return json.value ? json.value : json;
+	} catch (error) {
+		return null;
+	}
 }
 
 async function call(method, url, content) {

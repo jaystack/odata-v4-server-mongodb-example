@@ -27,3 +27,52 @@ function resolveGetProducts(items) {
 function rejectGetProducts(error) {
   store.dispatch({type: actionTypes.REJECT_GET_PRODUCTS, error});
 }
+
+export function selectCategory(category) {
+  store.dispatch({type: actionTypes.SELECT_CATEGORY, category});
+  getCategoryProducts(category._id);
+}
+
+function getCategoryProducts(categoryId) {
+  store.dispatch({type: actionTypes.GET_CATEGORY_PRODUCTS, categoryId});
+  api.get(`/Categories('${categoryId}')/Products`)
+    .then(resolveGetCategoryProducts.bind(null, categoryId), rejectGetCategoryProducts);
+}
+
+function resolveGetCategoryProducts(categoryId, items) {
+  store.dispatch({type: actionTypes.RESOLVE_GET_CATEGORY_PRODUCTS, categoryId, items});
+}
+
+function rejectGetCategoryProducts(error) {
+  store.dispatch({type: actionTypes.REJECT_GET_CATEGORY_PRODUCTS, error});
+}
+
+export function addProductToCategory(categoryId, productId) {
+  store.dispatch({type: actionTypes.ADD_PRODUCT_TO_CATEGORY, categoryId, productId});
+  api.post(`/Categories('${categoryId}')/Products/$ref`, {"@odata.id": `${window.location.href}api/Products('${productId}')`})
+    .then(resolveAddProductToCategory.bind(null, categoryId), rejectAddProductToCategory);
+}
+
+function resolveAddProductToCategory(categoryId) {
+  store.dispatch({type: actionTypes.RESOLVE_ADD_PRODUCT_TO_CATEGORY, categoryId});
+  getCategoryProducts(categoryId);
+}
+
+function rejectAddProductToCategory(error) {
+  store.dispatch({type: actionTypes.REJECT_ADD_PRODUCT_TO_CATEGORY, error});
+}
+
+export function deleteProductFromCategory(categoryId, productId) {
+  store.dispatch({type: actionTypes.DELETE_PRODUCT_FROM_CATEGORY, categoryId, productId});
+  api.delete(`/Categories('${categoryId}')/Products/$ref?$id=${window.location.href}api/Products('${productId}')`)
+    .then(resolveDeleteProductFromCategory.bind(null, categoryId), rejectDeleteProductFromCategory);
+}
+
+function resolveDeleteProductFromCategory(categoryId) {
+  store.dispatch({type: actionTypes.RESOLVE_DELETE_PRODUCT_FROM_CATEGORY, categoryId});
+  getCategoryProducts(categoryId);
+}
+
+function rejectDeleteProductFromCategory(error) {
+  store.dispatch({type: actionTypes.REJECT_DELETE_PRODUCT_FROM_CATEGORY, error});
+}

@@ -1,8 +1,12 @@
+"use strict";
+
+const path = require("path");
+
 module.exports = {
-  context: __dirname + "/src/app",
+  context: path.join(__dirname, "/src/app"),
   entry: "./app.jsx",
   output: {
-    path: __dirname + "/public",
+    path: path.join(__dirname, "/public"),
     filename: "bundle.js"
   },
   devtool: 'source-map',

@@ -34,7 +34,11 @@ export default class Demo extends React.Component {
 						tabItemContainerStyle={{flex: "0 0 auto"}}
 						>
 						<Tab label="Categories">
-							<Categories categories={this.props.state.categories}/>
+							<Categories
+								categories={this.props.state.categories}
+								products={this.props.state.products}
+								selectedCategory={this.props.state.selectedCategory}
+								/>
 						</Tab>
 						<Tab label="Products">
 

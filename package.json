@@ -88,6 +88,6 @@
     "style-loader": "^0.13.1",
     "tslint": "^3.15.1",
     "typescript": "^2.0.8",
-    "webpack": "^1.4.15"
+    "webpack": "^1.13.3"
   }
 }
