@@ -6,19 +6,19 @@ USE northwind_mssql_test_db;
 DROP TABLE IF EXISTS Products;
 DROP TABLE IF EXISTS Categories;
 CREATE TABLE Categories (
-	Description NVARCHAR(200),
+	Description NVARCHAR(100),
 	Name NVARCHAR(50),
-	Id BIGINT IDENTITY(1,1) CONSTRAINT pk_Categories PRIMARY KEY
-);
+	Id INT IDENTITY(1,1) CONSTRAINT pk_Categories PRIMARY KEY
+)  ON [PRIMARY];
 CREATE TABLE Products (
-	QuantityPerUnit NVARCHAR(20),
+	QuantityPerUnit NVARCHAR(50),
 	UnitPrice DECIMAL(5, 2),
-	CategoryId BIGINT,
+	CategoryId INT,
 	Name NVARCHAR(50),
 	Discontinued BIT,
-	Id BIGINT IDENTITY(1,1) CONSTRAINT pk_Products PRIMARY KEY,
+	Id INT IDENTITY(1,1) CONSTRAINT pk_Products PRIMARY KEY,
 	CONSTRAINT fk_ProductCategory FOREIGN KEY (CategoryId) references Categories (Id)
-);
+)  ON [PRIMARY];
 
 SET IDENTITY_INSERT Categories ON; -- Column names must be specified in insert statements
 INSERT INTO Categories (Description, Name, Id) VALUES ('Soft drinks','Beverages',1);

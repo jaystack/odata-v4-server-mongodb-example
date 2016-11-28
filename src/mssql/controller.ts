@@ -177,6 +177,7 @@ export class ProductsController extends ODataController {
         const connection = await mssqlConnection();
         let request = new mssql.Request(connection);
         const result = await <Promise<Product[]>>request.query(`SELECT Id, UnitPrice FROM Products WHERE Id IN (${a}, ${b})`);
+        console.log("===> swapPrice Select result:", result);
         const aProduct = result.find(product => product.Id === a);
         const bProduct = result.find(product => product.Id === b);
         await request.query(`UPDATE Products SET UnitPrice = ${bProduct.UnitPrice} WHERE Id = ${aProduct.Id}`);
@@ -194,26 +195,30 @@ export class ProductsController extends ODataController {
 
 @odata.type(Category)
 export class CategoriesController extends ODataController {
-    /*@odata.GET
-    async find( @odata.query query: ODataQuery): Promise<Category[]> {
-        let db = await mongodb();
-        let mongodbQuery = createQuery(query);
-        if (typeof mongodbQuery.query.Id == "string") mongodbQuery.query.Id = new ObjectID(mongodbQuery.query.Id);
-        return db.collection("Categories").find(
-            mongodbQuery.query,
-            mongodbQuery.projection,
-            mongodbQuery.skip,
-            mongodbQuery.limit
-        ).toArray();
-    }
     @odata.GET
-    async findOne( @odata.key key: string, @odata.query query: ODataQuery): Promise<Category> {
-        let db = await mongodb();
-        let mongodbQuery = createQuery(query);
-        return db.collection("Categories").findOne({ Id: new ObjectID(key) }, {
-            fields: mongodbQuery.projection
-        });
+    async find( @odata.stream stream, @odata.query query: ODataQuery): Promise<Category[]|void> {
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        let output = request.pipe(stream);
+        let sqlQuery = createQuery(query);
+        sqlQuery.parameters.forEach((value, name) => request.input(name, value));
+        sqlQuery.orderby = "Id";
+        request.query(sqlQuery.from("Categories"));
+        return <Category[]|void>convertResults(output);
     }
+
+    @odata.GET
+    async findOne( @odata.key id: string, @odata.stream stream, @odata.query query: ODataQuery): Promise<Category> {
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        let sqlQuery = createQuery(query);
+        sqlQuery.parameters.forEach((value, name) => request.input(name, value));
+        request.input("Id", id);
+        const result = await <Promise<Product[]>>request.query(`SELECT ${sqlQuery.select} FROM Categories WHERE Id = @id AND (${sqlQuery.where})`);
+        return <Category>convertResults(result)[0];
+    }
+
+/*
     @odata.GET("Products")
     async getProducts( @odata.result result: Category, @odata.query query: ODataQuery): Promise<Product[]> {
         let db = await mongodb();

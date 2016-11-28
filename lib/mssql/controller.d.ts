@@ -16,4 +16,6 @@ export declare class ProductsController extends ODataController {
     discountProduct(productId: number, percent: number): Promise<void>;
 }
 export declare class CategoriesController extends ODataController {
+    find(stream: any, query: ODataQuery): Promise<Category[] | void>;
+    findOne(id: string, stream: any, query: ODataQuery): Promise<Category>;
 }

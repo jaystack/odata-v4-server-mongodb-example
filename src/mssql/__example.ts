@@ -56,7 +56,11 @@ conn.connect().then(async function () {
 
     // TOP(1) nélkül 6272 db-ot ad vissza, de legalább jó sorrendben
     let myResultsGetCheapest = await new Promise<any>((resolve, reject) => runQuery(mssql, conn, resolve, reject,
-        "SELECT * FROM Products ORDER BY UnitPrice ASC", true));
+        "SELECT TOP(1) * FROM Products ORDER BY UnitPrice ASC", true));
+    console.log("getCheapest:", JSON.stringify(myResultsGetCheapest, null, 2));
+    console.log("getCheapest length:", myResultsGetCheapest.length);
+    myResultsGetCheapest = await new Promise<any>((resolve, reject) => runQuery(mssql, conn, resolve, reject,
+        "SELECT TOP(1) * FROM Products ORDER BY UnitPrice ASC", true));
     console.log("getCheapest:", JSON.stringify(myResultsGetCheapest, null, 2));
     console.log("getCheapest length:", myResultsGetCheapest.length);
 });
