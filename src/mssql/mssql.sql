@@ -8,15 +8,15 @@ DROP TABLE IF EXISTS Categories;
 CREATE TABLE Categories (
 	Description NVARCHAR(200),
 	Name NVARCHAR(50),
-	Id INT IDENTITY(1,1) CONSTRAINT pk_Categories PRIMARY KEY
+	Id BIGINT IDENTITY(1,1) CONSTRAINT pk_Categories PRIMARY KEY
 );
 CREATE TABLE Products (
 	QuantityPerUnit NVARCHAR(20),
 	UnitPrice DECIMAL(5, 2),
-	CategoryId INT,
+	CategoryId BIGINT,
 	Name NVARCHAR(50),
 	Discontinued BIT,
-	Id INT IDENTITY(1,1) CONSTRAINT pk_Products PRIMARY KEY,
+	Id BIGINT IDENTITY(1,1) CONSTRAINT pk_Products PRIMARY KEY,
 	CONSTRAINT fk_ProductCategory FOREIGN KEY (CategoryId) references Categories (Id)
 );
 

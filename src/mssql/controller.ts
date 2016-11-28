@@ -7,6 +7,7 @@ import convertResults from "./utils/convertResults";
 
 @odata.type(Product)
 export class ProductsController extends ODataController {
+
     @odata.GET
     async find( @odata.stream stream, @odata.query query: ODataQuery): Promise<Product[]|void> {
         const connection = await mssqlConnection();
@@ -16,9 +17,22 @@ export class ProductsController extends ODataController {
         sqlQuery.parameters.forEach((value, name) => request.input(name, value));
         sqlQuery.orderby = "Id";
         request.query(sqlQuery.from("Products"));
+        //request.query(`SELECT UnitPrice FROM "Products" WHERE "Id" = 30`);
         return <Product[]|void>convertResults(output);
     }
-
+/*
+    @odata.GET
+    async find( @odata.stream stream, @odata.query query: ODataQuery): Promise<Product[]|void> {
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        let sqlQuery = createQuery(query);
+        sqlQuery.parameters.forEach((value, name) => request.input(name, value));
+        sqlQuery.orderby = "Id";
+        request.query(sqlQuery.from("Products"));
+        //request.query(`SELECT UnitPrice FROM "Products" WHERE "Id" = 30`);
+        return <Product[]|void>convertResults(output);
+    }
+*/
     @odata.GET
     async findOne( @odata.key id: string, @odata.stream stream, @odata.query query: ODataQuery): Promise<Product> {
         const connection = await mssqlConnection();
@@ -134,22 +148,26 @@ export class ProductsController extends ODataController {
 
     @Edm.Function
     @Edm.EntityType(Product)
-    async getCheapest(): Promise<Product> {
+    async getCheapest(@odata.result result:Product): Promise<Product> {
         const connection = await mssqlConnection();
         let request = new mssql.Request(connection);
-        let sqlCommand = "SELECT * FROM Products ORDER BY UnitPrice ASC";
+        let sqlCommand = "SELECT TOP(1) * FROM Products ORDER BY UnitPrice ASC";
         console.log("\n\n===> Product/Northwind.getCheapest sqlCommand:", sqlCommand);
-        const result = await <Promise<Product[]>>request.query(sqlCommand);
-        return <Product>convertResults(result)[0];
+        const results = await <Promise<Product[]>>request.query(sqlCommand);
+        result = convertResults(results)[0];
+        console.log("%%%%%", result);
+        return result;
     }
 
     @Edm.Function
     @Edm.Collection(Edm.EntityType(Product))
-    async getInPriceRange( @Edm.Decimal min: number, @Edm.Decimal max: number): Promise<Product[]> {
+    async getInPriceRange( @Edm.Decimal min: number, @Edm.Decimal max: number, @odata.result result:Product[]): Promise<Product[]> {
         const connection = await mssqlConnection();
         let request = new mssql.Request(connection);
-        const result = await <Promise<Product[]>>request.query(`SELECT * FROM Products WHERE UnitPrice >= ${min} AND UnitPrice <= ${max}`);
-        return <Product[]>convertResults(result);
+        const results = await <Promise<Product[]>>request.query(`SELECT * FROM Products WHERE UnitPrice >= ${min} AND UnitPrice <= ${max} ORDER BY UnitPrice`);
+        result = <Product[]>convertResults(results);
+        console.log("===> getInPriceRange:", result);
+        return result;
     }
 
     @Edm.Action

@@ -10,8 +10,8 @@ export declare class ProductsController extends ODataController {
     upsert(id: string, data: any, context: any): Promise<Product>;
     update(id: string, delta: any): Promise<number>;
     remove(id: string): Promise<number>;
-    getCheapest(): Promise<Product>;
-    getInPriceRange(min: number, max: number): Promise<Product[]>;
+    getCheapest(result: Product): Promise<Product>;
+    getInPriceRange(min: number, max: number, result: Product[]): Promise<Product[]>;
     swapPrice(a: number, b: number): Promise<void>;
     discountProduct(productId: number, percent: number): Promise<void>;
 }

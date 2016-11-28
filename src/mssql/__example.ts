@@ -12,6 +12,8 @@ var dbConfig = { //Data Source=HARIHARAN-PC\\SQLEXPRESS;Initial Catalog=yourData
     user: "sa",
     password: "QWEasd123%",
     port: 1433,
+    supportBigNumbers: true,
+    bigNumberStrings: true,
     options: {
         encrypt: true
     },

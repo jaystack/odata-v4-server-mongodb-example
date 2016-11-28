@@ -9,9 +9,6 @@ function filterNullValues(item) {
 export default function (data: any): any {
   const rows: any[] = (Array.isArray(data)) ? data : [data];
   return rows.map(row =>
-    Object.assign({}, filterNullValues(row), "UnitPrice" in row && row.UnitPrice !== null ?
-      { UnitPrice: parseFloat(row.UnitPrice) } :
-      {}
-    )
+    Object.assign({}, filterNullValues(row))
   );
 }

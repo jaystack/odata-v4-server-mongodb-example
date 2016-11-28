@@ -67,36 +67,14 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
-			// // // a fenti contentType és elementType (namesapce) hiba +++ PLUSZ ez:
-			//    "body": {
-      //         "@odata.context": "http://localhost/$metadata#Products"
-      //         "value": [
-      //           {
-      //    +        "@odata.editLink": "http://localhost/Products(1)"
-      //    +        "@odata.id": "http://localhost/Products(1)"
-      //    +        "Id": 1
-      //             "Name": "Chai"
-      //             "UnitPrice": 39
-      //           }
-      //         ]
-      //       }
-      //    +  "contentType": "application/json"
-      //    +  "elementType": {
-      //    +    "namespace": "Northwind"
-      //    +  }
-      //       "statusCode": 200
-      //    }
 			createTest("should get products by filter and select", "GET /Products?$filter=Name eq 'Chai'&$select=Name,UnitPrice", {
 				statusCode: 200,
 				body: {
 					"@odata.context": "http://localhost/$metadata#Products",
 					value: products.filter(product => product.Name == "Chai").map((product) => {
 						return {
-							"@odata.id": `http://localhost/Products(${product.Id})`,
-							"@odata.editLink": `http://localhost/Products(${product.Id})`,
 							Name: product.Name,
-							UnitPrice: product.UnitPrice,
-							Id: product.Id
+							UnitPrice: product.UnitPrice
 						};
 					})
 				},

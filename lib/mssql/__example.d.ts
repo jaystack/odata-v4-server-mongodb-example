@@ -6,6 +6,8 @@ declare var dbConfig: {
     user: string;
     password: string;
     port: number;
+    supportBigNumbers: boolean;
+    bigNumberStrings: boolean;
     options: {
         encrypt: boolean;
     };
