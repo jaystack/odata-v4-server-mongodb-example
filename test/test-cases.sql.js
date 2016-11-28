@@ -98,10 +98,6 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 
 			// // OK
 			it("should create new product", () => {
-				console.log("\n\nXXXXXXXXXXXXXXXXX ", JSON.stringify({
-					Name: "New product",
-					CategoryId: categories[0].Id
-				}));
 				return NorthwindServer.execute("/Products", "POST", {
 					Name: "New product",
 					CategoryId: categories[0].Id
@@ -275,7 +271,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 			});
 
 			// // // HIBA: minden terméket visszaad, pedig csak az Id=30-at kellene !!!
-			createTest.only("should get the cheapest product", "GET /Products/Northwind.getCheapest()", {
+			createTest("should get the cheapest product", "GET /Products/Northwind.getCheapest()", {
 				statusCode: 200,
 				body: extend(
 					products.filter(product => product.UnitPrice === 2.5).map(product => extend({
@@ -365,7 +361,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 			});
 
 			it("should swap two products UnitPrice", () => {
-				return NorthwindServer.execute("/Products/Northwind.swapPrice", "POST", {a: "578f2b8c12eaebabec4af286", b: 75}) //'"578f2b8c12eaebabec4af287"'=>75
+				return NorthwindServer.execute("/Products/Northwind.swapPrice", "POST", {a: 74, b: 75}) //'"578f2b8c12eaebabec4af286"'=>74 //'"578f2b8c12eaebabec4af287"'=>75
 				.then((result) => {
 					expect(result).to.deep.equal({
 						statusCode: 204
@@ -465,11 +461,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 					"@odata.context": "http://localhost/$metadata#Categories",
 					value: categories.filter(category => category.Name == "Beverages").map((category) => {
 						return {
-							"@odata.id": `http://localhost/Categories(${category.Id})`,
-							"@odata.editLink": `http://localhost/Categories(${category.Id})`,
 							Name: category.Name,
-							Description: category.Description,
-							Id: category.Id
+							Description: category.Description
 						};
 					})
 				},

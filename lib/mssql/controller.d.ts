@@ -18,4 +18,12 @@ export declare class ProductsController extends ODataController {
 export declare class CategoriesController extends ODataController {
     find(stream: any, query: ODataQuery): Promise<Category[] | void>;
     findOne(id: string, stream: any, query: ODataQuery): Promise<Category>;
+    getProducts(category: Category, query: ODataQuery): Promise<Product[]>;
+    getProduct(productId: number, category: Category, query: ODataQuery): Promise<Product>;
+    setCategory(id: number, link: number): Promise<number>;
+    unsetCategory(id: number, link: number): Promise<number>;
+    insert(data: any): Promise<Category>;
+    upsert(id: string, data: any, context: any): Promise<Category>;
+    update(id: string, delta: any): Promise<number>;
+    remove(id: string): Promise<number>;
 }

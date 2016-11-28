@@ -1,7 +1,8 @@
 //import { ObjectID } from "mongodb";
 import { Edm, odata } from "odata-v4-server";
 //import mongodb from "./connection";
-import mssql from "./connection";
+import * as mssql from "mssql";
+import mssqlConnection from "./connection";
 
 @Edm.Annotate({
     term: "UI.DisplayName",
@@ -69,20 +70,20 @@ export class Product{
 
     @Edm.Action
     async invertDiscontinued(@odata.result result:Product) {
-        //let db = await mongodb();
-        let db = await mssql();
-        await db.collection('Products').findOneAndUpdate(
-                {Id: result.Id},
-                {$set: {Discontinued: !result.Discontinued}});
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        request.input("discontinued", !result.Discontinued);
+        request.input("id", result.Id);
+        await request.query(`UPDATE Products SET Discontinued = @discontinued WHERE Id = @id`);
     }
 
     @Edm.Action
     async setDiscontinued(@odata.result result:Product, @Edm.Boolean value:boolean) {
-        //let db = await mongodb();
-        let db = await mssql();
-        await db.collection('Products').findOneAndUpdate(
-                {Id: result.Id},
-                {$set: {Discontinued: value}});
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        request.input("discontinued", value);
+        request.input("id", result.Id);
+        await request.query(`UPDATE Products SET Discontinued = @discontinued WHERE Id = @id`);
     }
 }
 

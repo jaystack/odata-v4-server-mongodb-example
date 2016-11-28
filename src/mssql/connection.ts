@@ -1,9 +1,10 @@
 //import * as sql from "mssql";
 const sql = require("mssql");
 
-var dbConfig = { //Data Source=localhost\\SQLEXPRESS;Initial Catalog=mytest;Integrated Security=True
-    server: "localhost\\MSSQLSERVER",
-    database: "",
+const dbConfig = {
+    driver: "msnodesqlv8", // very important // "tedious",
+    server: "DESKTOP-SZABOF",  // very important //localhost\\MSSQLSERVER",
+    database: "northwind_mssql_test_db", // very important
     user: "sa",
     password: "QWEasd123%",
     port: 1433,

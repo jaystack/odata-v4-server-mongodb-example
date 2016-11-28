@@ -7,32 +7,29 @@ import convertResults from "./utils/convertResults";
 
 @odata.type(Product)
 export class ProductsController extends ODataController {
+    @odata.GET
+    async find( @odata.stream stream, @odata.query query: ODataQuery): Promise<Product[]|void> {
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        let sqlQuery = createQuery(query);
+        sqlQuery.parameters.forEach((value, name) => request.input(name, value));
+        sqlQuery.orderby = "Id";
+        return request.query(sqlQuery.from("Products"));
+    }
 
-    @odata.GET
-    async find( @odata.stream stream, @odata.query query: ODataQuery): Promise<Product[]|void> {
-        const connection = await mssqlConnection();
-        let request = new mssql.Request(connection);
-        let output = request.pipe(stream);
-        let sqlQuery = createQuery(query);
-        sqlQuery.parameters.forEach((value, name) => request.input(name, value));
-        sqlQuery.orderby = "Id";
-        request.query(sqlQuery.from("Products"));
-        //request.query(`SELECT UnitPrice FROM "Products" WHERE "Id" = 30`);
-        return <Product[]|void>convertResults(output);
-    }
-/*
-    @odata.GET
-    async find( @odata.stream stream, @odata.query query: ODataQuery): Promise<Product[]|void> {
-        const connection = await mssqlConnection();
-        let request = new mssql.Request(connection);
-        let sqlQuery = createQuery(query);
-        sqlQuery.parameters.forEach((value, name) => request.input(name, value));
-        sqlQuery.orderby = "Id";
-        request.query(sqlQuery.from("Products"));
-        //request.query(`SELECT UnitPrice FROM "Products" WHERE "Id" = 30`);
-        return <Product[]|void>convertResults(output);
-    }
-*/
+    // @odata.GET
+    // async find( @odata.stream stream, @odata.query query: ODataQuery): Promise<Product[]|void> {
+    //     const connection = await mssqlConnection();
+    //     let request = new mssql.Request(connection);
+    //     let output = request.pipe(stream);
+    //     let sqlQuery = createQuery(query);
+    //     sqlQuery.parameters.forEach((value, name) => request.input(name, value));
+    //     sqlQuery.orderby = "Id";
+    //     request.query(sqlQuery.from("Products"));
+    //     //request.query(`SELECT UnitPrice FROM "Products" WHERE "Id" = 30`);
+    //     return <Product[]|void>convertResults(output);
+    // }
+
     @odata.GET
     async findOne( @odata.key id: string, @odata.stream stream, @odata.query query: ODataQuery): Promise<Product> {
         const connection = await mssqlConnection();
@@ -117,7 +114,7 @@ export class ProductsController extends ODataController {
         let sqlCommand = `SET IDENTITY_INSERT Products ON;
         INSERT INTO Products (${columns.join(", ")}) OUTPUT ${insertedColumns.join(", ")} VALUES (${values.join(", ")});
         SET IDENTITY_INSERT Products OFF;`;
-        console.log("\n\n\n======================= Products PUT sqlCommand:\n" + sqlCommand,"\n");
+        //console.log("\n\n\n======================= Products PUT sqlCommand:\n" + sqlCommand,"\n");
         const result = await request.query(sqlCommand);
         return <Product>convertResults(result)[0]; //convertResults(rows)[0];
     }
@@ -152,10 +149,10 @@ export class ProductsController extends ODataController {
         const connection = await mssqlConnection();
         let request = new mssql.Request(connection);
         let sqlCommand = "SELECT TOP(1) * FROM Products ORDER BY UnitPrice ASC";
-        console.log("\n\n===> Product/Northwind.getCheapest sqlCommand:", sqlCommand);
+        //console.log("\n\n===> Product/Northwind.getCheapest sqlCommand:", sqlCommand);
         const results = await <Promise<Product[]>>request.query(sqlCommand);
         result = convertResults(results)[0];
-        console.log("%%%%%", result);
+        //console.log("%%%%%", result);
         return result;
     }
 
@@ -167,8 +164,8 @@ export class ProductsController extends ODataController {
         let sqlCommand = `SELECT * FROM Products WHERE UnitPrice >= ${min} AND UnitPrice <= ${max} ORDER BY UnitPrice`;
         const results = await <Promise<Product[]>>request.query(sqlCommand);
         result = <Product[]>convertResults(results);
-        console.log("===> getInPriceRange:", result);
-        console.log(sqlCommand);
+        //console.log("===> getInPriceRange:", result);
+        //console.log(sqlCommand);
         return result;
     }
 
@@ -177,7 +174,7 @@ export class ProductsController extends ODataController {
         const connection = await mssqlConnection();
         let request = new mssql.Request(connection);
         const result = await <Promise<Product[]>>request.query(`SELECT Id, UnitPrice FROM Products WHERE Id IN (${a}, ${b})`);
-        console.log("===> swapPrice Select result:", result);
+        //console.log("===> swapPrice Select result:", result);
         const aProduct = result.find(product => product.Id === a);
         const bProduct = result.find(product => product.Id === b);
         await request.query(`UPDATE Products SET UnitPrice = ${bProduct.UnitPrice} WHERE Id = ${aProduct.Id}`);
@@ -199,12 +196,10 @@ export class CategoriesController extends ODataController {
     async find( @odata.stream stream, @odata.query query: ODataQuery): Promise<Category[]|void> {
         const connection = await mssqlConnection();
         let request = new mssql.Request(connection);
-        let output = request.pipe(stream);
         let sqlQuery = createQuery(query);
         sqlQuery.parameters.forEach((value, name) => request.input(name, value));
         sqlQuery.orderby = "Id";
-        request.query(sqlQuery.from("Categories"));
-        return <Category[]|void>convertResults(output);
+        return request.query(sqlQuery.from("Categories"));
     }
 
     @odata.GET
@@ -218,84 +213,123 @@ export class CategoriesController extends ODataController {
         return <Category>convertResults(result)[0];
     }
 
-/*
-    @odata.GET("Products")
-    async getProducts( @odata.result result: Category, @odata.query query: ODataQuery): Promise<Product[]> {
-        let db = await mongodb();
-        let mongodbQuery = createQuery(query);
-        if (typeof mongodbQuery.query.Id == "string") mongodbQuery.query.Id = new ObjectID(mongodbQuery.query.Id);
-        if (typeof mongodbQuery.query.CategoryId == "string") mongodbQuery.query.CategoryId = new ObjectID(mongodbQuery.query.CategoryId);
-        return db.collection("Products").find(
-            { $and: [{ CategoryId: result.Id }, mongodbQuery.query] },
-            mongodbQuery.projection,
-            mongodbQuery.skip,
-            mongodbQuery.limit
-        ).toArray();
-    }
-    @odata.GET("Products")
-    async getProduct( @odata.key key: string, @odata.result result: Category, @odata.query query: ODataQuery): Promise<Product> {
-        let db = await mongodb();
-        let mongodbQuery = createQuery(query);
-        if (typeof mongodbQuery.query.Id == "string") mongodbQuery.query.Id = new ObjectID(mongodbQuery.query.Id);
-        if (typeof mongodbQuery.query.CategoryId == "string") mongodbQuery.query.CategoryId = new ObjectID(mongodbQuery.query.CategoryId);
-        return db.collection("Products").findOne({
-            $and: [{ Id: new ObjectID(key), CategoryId: result.Id }, mongodbQuery.query]
-        }, {
-                fields: mongodbQuery.projection
-            });
-    }
+  @odata.GET("Products")
+  async getProducts( @odata.result category: Category, @odata.query query: ODataQuery): Promise<Product[]> {
+    const connection = await mssqlConnection();
+    let request = new mssql.Request(connection);
+    const sqlQuery = createQuery(query);
+    sqlQuery.parameters.forEach((value, name) => request.input(name, value));
+    request.input("categoryId", category.Id);
+    const result = await <Promise<Product[]>>request.query(`SELECT ${sqlQuery.select} FROM Products WHERE CategoryId = @categoryId AND (${sqlQuery.where})`);
+    return convertResults(result);
+  }
+
+  @odata.GET("Products")
+  async getProduct( @odata.key productId: number, @odata.result category: Category, @odata.query query: ODataQuery): Promise<Product> {
+    const connection = await mssqlConnection();
+    let request = new mssql.Request(connection);
+    const sqlQuery = createQuery(query);
+    sqlQuery.parameters.forEach((value, name) => request.input(name, value));
+    request.input("categoryId", category.Id);
+    request.input("productId", productId);
+    const result = await <Promise<Product[]>>request.query(`SELECT ${sqlQuery.select} FROM Products WHERE Id = @productId AND CategoryId = @categoryId AND (${sqlQuery.where})`);
+    return convertResults(result);
+  }
+
+
+
     @odata.POST("Products").$ref
     @odata.PUT("Products").$ref
-    async setCategory( @odata.key key: string, @odata.link link: string): Promise<number> {
-        let db = await mongodb();
-        return await db.collection("Products").updateOne({
-            Id: new ObjectID(link)
-        }, {
-                $set: { CategoryId: new ObjectID(key) }
-            }).then((result) => {
-                return result.modifiedCount;
-            });
+    async setCategory( @odata.key id: number, @odata.link link: number ): Promise<number> {
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        request.input("Id", id);
+        request.input("Link", link);
+        const result = await <Promise<Product[]>>request.query(`UPDATE Products SET CategoryId = @Id WHERE Id = @Link`); // TODO: 0 / 1 -et kell visszaadni
+        return <any>result; //.length;
     }
+
     @odata.DELETE("Products").$ref
-    async unsetCategory( @odata.key key: string, @odata.link link: string): Promise<number> {
-        let db = await mongodb();
-        return await db.collection("Products").updateOne({
-            Id: new ObjectID(link)
-        }, {
-                $unset: { CategoryId: 1 }
-            }).then((result) => {
-                return result.modifiedCount;
-            });
+    async unsetCategory( @odata.key id: number, @odata.link link: number ): Promise<number> {
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        request.input("Id", id);
+        const result = await request.query(`UPDATE Products SET CategoryId = NULL WHERE Id = @Id`); // TODO: 0 / 1 -et kell visszaadni
+        return <any>result; //rowCount;
     }
-    @odata.POST
+
+
+  @odata.POST
     async insert( @odata.body data: any): Promise<Category> {
-        let db = await mongodb();
-        return await db.collection("Categories").insertOne(data).then((result) => {
-            data.Id = result.insertedId;
-            return data;
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        let columns: string[] = [];
+        let values: any[] = [];
+        Object.keys(data).forEach((key: string) => {
+            columns.push(key);
+            values.push(addQuote(data[key]));
         });
+        let sqlCommand = `INSERT INTO Categories (${columns.join(", ")}) OUTPUT inserted.* VALUES (${values.join(", ")});`;
+        //console.log("\n\n\n======================= Categories POST sqlCommand:\n" + sqlCommand,"\n");
+        const result = await request.query(sqlCommand);
+        //console.log("\n\n\n===> result:", JSON.stringify(result, null, 2));
+        return <Category>convertResults(result)[0]; //convertResults(rows)[0];
     }
-    @odata.PUT
-    async upsert( @odata.key key: string, @odata.body data: any): Promise<Category> {
-        let db = await mongodb();
-        return await db.collection("Categories").updateOne({ Id: new ObjectID(key) }, data, {
-            upsert: true
-        }).then((result) => {
-            data.Id = result.upsertedId
-            return data;
+
+
+    @odata.PUT // replace the content of the row
+    async upsert( @odata.key id: string, @odata.body data: any, @odata.context context: any ): Promise<Category> {
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        let sqlCommandDelete = `DELETE FROM Categories OUTPUT deleted.* WHERE Id = ${id}`;
+        //console.log("\n\n\n======================= Categories PUT sqlCommandDelete:\n" + sqlCommandDelete,"\n");
+        const dataDeleted = await request.query(sqlCommandDelete);
+        //console.log("\n\n===> dataDeleted:", JSON.stringify(dataDeleted, null, 2));
+
+        // This will save the original properties:
+        // const dataToInsert = Object.assign({}, dataDeleted[0], data, { Id: id });
+        // This will satisfy the requirements of the unit tests:
+        const dataToInsert = Object.assign({}, data, { Id: id });
+        //console.log("\n\n===> dataToInsert:", JSON.stringify(dataToInsert, null, 2));
+        let columns: string[] = [];
+        let insertedColumns: string[] = [];
+        let values: any[] = [];
+        Object.keys(dataToInsert).forEach((key: string) => {
+            columns.push(key);
+            insertedColumns.push("inserted." + key);
+            values.push(addQuote(dataToInsert[key]));
         });
+        let sqlCommand = `SET IDENTITY_INSERT Categories ON;
+        INSERT INTO Categories (${columns.join(", ")}) OUTPUT ${insertedColumns.join(", ")} VALUES (${values.join(", ")});
+        SET IDENTITY_INSERT Categories OFF;`;
+        //console.log("\n\n\n======================= Products PUT sqlCommand:\n" + sqlCommand,"\n");
+        const result = await request.query(sqlCommand);
+        return <Category>convertResults(result)[0]; //convertResults(rows)[0];
     }
-    @odata.PATCH
-    async update( @odata.key key: string, @odata.body delta: any): Promise<number> {
-        let db = await mongodb();
-        if (delta.CategoryId) delta.CategoryId = new ObjectID(delta.CategoryId);
-        return await db.collection("Categories").updateOne({ Id: new ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);
+
+    @odata.PATCH // update the content of the row (delta)
+    async update( @odata.key id: string, @odata.body delta: any ): Promise<number> {
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        let sets: any[] = [];
+        Object.keys(delta).forEach((key: string) => {
+            sets.push(key + "=" + addQuote(delta[key]));
+        });
+        let sqlCommand = `DECLARE @impactedId INT;
+        UPDATE Categories SET ${sets.join(", ")}, @impactedId = Id WHERE Id = ${id};
+        SELECT @impactedId as 'ImpactedId';`;
+        const result = await <Promise<any>>request.query(sqlCommand);
+        return (result) ? 1 : 0; //<Product>result[0];
     }
+
     @odata.DELETE
-    async remove( @odata.key key: string): Promise<number> {
-        let db = await mongodb();
-        return await db.collection("Categories").deleteOne({ Id: new ObjectID(key) }).then(result => result.deletedCount);
-    }*/
+    async remove( @odata.key id: string ): Promise<number> {
+        const connection = await mssqlConnection();
+        let request = new mssql.Request(connection);
+        let sqlCommand = `DELETE FROM Categories OUTPUT deleted.* WHERE Id = ${id}`;
+        const result = await <Promise<Product[]>>request.query(sqlCommand);
+        return (Array.isArray(result)) ? result.length : 0; //<Product>result[0];
+    }
 }
 
 function addQuote(par: any): string {

@@ -16,8 +16,8 @@ CREATE TABLE Products (
 	CategoryId INT,
 	Name NVARCHAR(50),
 	Discontinued BIT,
-	Id INT IDENTITY(1,1) CONSTRAINT pk_Products PRIMARY KEY,
-	CONSTRAINT fk_ProductCategory FOREIGN KEY (CategoryId) references Categories (Id)
+	Id INT IDENTITY(1,1) CONSTRAINT pk_Products PRIMARY KEY
+--, CONSTRAINT fk_ProductCategory FOREIGN KEY (CategoryId) references Categories (Id)
 )  ON [PRIMARY];
 
 SET IDENTITY_INSERT Categories ON; -- Column names must be specified in insert statements
