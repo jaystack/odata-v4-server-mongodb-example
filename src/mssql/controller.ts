@@ -164,9 +164,11 @@ export class ProductsController extends ODataController {
     async getInPriceRange( @Edm.Decimal min: number, @Edm.Decimal max: number, @odata.result result:Product[]): Promise<Product[]> {
         const connection = await mssqlConnection();
         let request = new mssql.Request(connection);
-        const results = await <Promise<Product[]>>request.query(`SELECT * FROM Products WHERE UnitPrice >= ${min} AND UnitPrice <= ${max} ORDER BY UnitPrice`);
+        let sqlCommand = `SELECT * FROM Products WHERE UnitPrice >= ${min} AND UnitPrice <= ${max} ORDER BY UnitPrice`;
+        const results = await <Promise<Product[]>>request.query(sqlCommand);
         result = <Product[]>convertResults(results);
         console.log("===> getInPriceRange:", result);
+        console.log(sqlCommand);
         return result;
     }
 
