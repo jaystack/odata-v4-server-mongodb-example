@@ -54,7 +54,7 @@ class Product{
 
 The *Edm* decorator system provides a wide range of decorators for you to annotate your classes for OData v4 publication.
 
-The most important *Edm* decorators are the type property decorators. These type property decorators doesn't give you any automatic conversion, they are just type annotation (like in TypeScript) and effects only your OData metadata information. All OData v4 standard primitive types are available to use. These are:
+The most important *Edm* decorators are the type property decorators. These type property decorators don't give you any automatic conversion, they are just type annotations (like in TypeScript) and affects only your OData metadata information. All OData v4 standard primitive types are available to use. These are:
 
 * Edm.Binary
 * Edm.Boolean
