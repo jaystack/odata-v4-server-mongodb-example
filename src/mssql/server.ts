@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as mssql from "mssql";
 import { ODataServer, ODataController, Edm, odata, ODataQuery } from "odata-v4-server";
 import { ProductsController, CategoriesController } from "./controller";
-import mssqlConnection from "./connection";
+import { mssqlRequest, default as mssqlConnection } from "./connection";
 import { Category, Product } from "./model";
 
 @odata.namespace("Northwind")
@@ -12,8 +12,7 @@ export class NorthwindServer extends ODataServer {
 
     @Edm.ActionImport
     async initDb() {
-        const connection = await mssqlConnection();
-        const request = new mssql.Request(connection);
+        let request = await mssqlRequest();
         const sqlCommands = fs.readFileSync("./src/mssql/mssql.sql","utf-8");
         await request.query(sqlCommands);
     }

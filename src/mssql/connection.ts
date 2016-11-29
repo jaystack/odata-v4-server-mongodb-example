@@ -1,4 +1,3 @@
-//import * as sql from "mssql";
 const sql = require("mssql");
 
 const dbConfig = {
@@ -17,6 +16,11 @@ const dbConfig = {
 var msSqlConnection = new sql.Connection(dbConfig);
 const connection = msSqlConnection.connect();
 
-export default async function():Promise<any> {
+export default async function mssqlConnection(): Promise<any> {
     return connection;
 };
+
+export async function mssqlRequest(): Promise<any> {
+    const connection = await mssqlConnection();
+    return new sql.Request(connection);
+}
