@@ -8,5 +8,5 @@ export default combineReducers({
 	categories,
 	products,
 	selectedCategory,
-	logger: (state = null, action) => {console.debug(action); return state;}
+	//logger: (state = null, action) => {console.debug(action); return state;}
 });

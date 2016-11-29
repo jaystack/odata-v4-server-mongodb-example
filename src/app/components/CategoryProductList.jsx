@@ -40,17 +40,28 @@ function getSelectableProducts(assignedProducts, allProducts) {
     .map(product => ({ value: product._id, text: product.Name }));
 }
 
-export default function CategoryProductList({categoryId, assignedProducts, allProducts}) {
+export default class CategoryProductList extends React.Component {
 
-  const selectableProducts = getSelectableProducts(assignedProducts || [], allProducts || []);
+  shouldComponentUpdate(nextProps) {
+    if (
+      nextProps.assignedProducts !== this.props.assignedProducts ||
+      nextProps.allProducts !== this.props.allProducts
+    ) return true;
+    return false;
+  }
 
-  return (
-    <Card style={{ flex: "2 1 0", margin: "20px" }}>
-      <CardHeader title="Products" subtitle="Here are listed the assigned products" />
-      <CardText>
-        <AssignProductToCategoryCard selectableProducts={selectableProducts} />
-        {renderProductList(assignedProducts)}
-      </CardText>
-    </Card>
-  );
+  render() {
+    const selectableProducts = getSelectableProducts(this.props.assignedProducts || [], this.props.allProducts || []);
+
+    return (
+      <Card style={{ flex: "2 1 0", margin: "20px" }}>
+        <CardHeader title="Products" subtitle="Here are listed the assigned products" />
+        <CardText>
+          <AssignProductToCategoryCard selectableProducts={selectableProducts} />
+          {renderProductList(this.props.assignedProducts)}
+        </CardText>
+      </Card>
+    );
+  }
+
 }

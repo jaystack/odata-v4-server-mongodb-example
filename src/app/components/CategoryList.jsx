@@ -51,6 +51,14 @@ export default class CategoryList extends React.Component {
 		this.state = { isOpenCategoryCreateDialog: false };
 	}
 
+	shouldComponentUpdate(nextProps, nextState) {
+		if (
+			nextProps.categories !== this.props.categories ||
+			nextState.isOpenCategoryCreateDialog !== this.props.isOpenCategoryCreateDialog
+		) return true;
+		return false;
+	}
+
 	handleCreate() {
 		this.setState({ isOpenCategoryCreateDialog: true });
 	}
