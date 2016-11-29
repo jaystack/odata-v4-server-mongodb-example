@@ -22,7 +22,7 @@ export default class AssignProductToCategoryCard extends React.Component {
 	}
 
 	handleNewRequest(choosen) {
-		addProductToCategory(this.props.categoryId, choosen.value);
+		addProductToCategory(choosen.value);
 		this.setState({
 			searchText: ""
 		});

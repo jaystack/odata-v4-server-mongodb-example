@@ -8,29 +8,29 @@ import AddIcon from 'material-ui/svg-icons/content/add';
 import AssignProductToCategoryCard from "./AssignProductToCategoryCard";
 import { deleteProductFromCategory } from "../actions";
 
-function renderProductClearButton(categoryId, productId) {
+function renderProductClearButton(productId) {
   return (
-    <IconButton onClick={() => deleteProductFromCategory(categoryId, productId)}>
+    <IconButton onClick={() => deleteProductFromCategory(productId)}>
       <ClearIcon />
     </IconButton>
   );
 }
 
-function renderProduct(categoryId, product) {
+function renderProduct(product) {
   return (
     <div key={product._id}>
       <ListItem
         primaryText={product.Name}
-        rightIconButton={renderProductClearButton(categoryId, product._id)}
+        rightIconButton={renderProductClearButton(product._id)}
         />
       <Divider />
     </div>
   );
 }
 
-function renderProductList(categoryId, assignedProducts) {
+function renderProductList(assignedProducts) {
   return assignedProducts.length > 0 ? (<List>
-    {assignedProducts.map(renderProduct.bind(null, categoryId))}
+    {assignedProducts.map(renderProduct)}
   </List>) : null;
 }
 
@@ -48,8 +48,8 @@ export default function CategoryProductList({categoryId, assignedProducts, allPr
     <Card style={{ flex: "2 1 0", margin: "20px" }}>
       <CardHeader title="Products" subtitle="Here are listed the assigned products" />
       <CardText>
-        <AssignProductToCategoryCard selectableProducts={selectableProducts} categoryId={categoryId} />
-        {renderProductList(categoryId, assignedProducts)}
+        <AssignProductToCategoryCard selectableProducts={selectableProducts} />
+        {renderProductList(assignedProducts)}
       </CardText>
     </Card>
   );
