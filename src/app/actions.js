@@ -13,6 +13,7 @@ function resolveInitDb() {
   store.dispatch({type: actionTypes.RESOLVE_INIT_DB});
   getCategories();
   getProducts();
+  selectCategory(null);
 }
 
 function rejectInitDb(error) {
@@ -45,9 +46,11 @@ function rejectGetProducts(error) {
   store.dispatch({type: actionTypes.REJECT_GET_PRODUCTS, error});
 }
 
-export function selectCategory(category) {
-  if (store.getState().selectedCategory && store.getState().selectedCategory._id === category._id)
+export function selectCategory(categoryId) {
+  const state = store.getState();
+  if (state.selectedCategory && store.getState().selectedCategory._id === categoryId)
     return;
+  const category = state.categories.find(category => category._id === categoryId) || null;
   store.dispatch({type: actionTypes.SELECT_CATEGORY, category});
   getCategoryProducts(category._id);
 }
@@ -143,7 +146,7 @@ export function createCategory(category) {
 
 function resolveCreateCategory(category) {
   store.dispatch({type: actionTypes.RESOLVE_CREATE_CATEGORY, category});
-  selectCategory(category);
+  selectCategory(category._id);
 }
 
 function rejectCreateCategory(error) {
