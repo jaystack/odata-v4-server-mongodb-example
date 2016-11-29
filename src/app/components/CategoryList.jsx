@@ -13,7 +13,7 @@ function renderListItem(category) {
 			<ListItem
 				primaryText={category.Name}
 				secondaryText={category.Description}
-				onClick={() => selectCategory(category)}
+				onTouchTap={() => selectCategory(category)}
 				/>
 			<Divider />
 		</div>

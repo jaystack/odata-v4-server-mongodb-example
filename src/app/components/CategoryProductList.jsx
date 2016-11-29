@@ -10,7 +10,7 @@ import { deleteProductFromCategory } from "../actions";
 
 function renderProductClearButton(productId) {
   return (
-    <IconButton onClick={() => deleteProductFromCategory(productId)}>
+    <IconButton onTouchTap={() => deleteProductFromCategory(productId)}>
       <ClearIcon />
     </IconButton>
   );
