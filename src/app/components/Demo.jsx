@@ -2,8 +2,9 @@ import React from "react";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBar from 'material-ui/AppBar';
 import { Tabs, Tab } from 'material-ui/Tabs';
+import FlatButton from 'material-ui/FlatButton';
 import CategoriesPage from "./CategoriesPage";
-import {getCategories, getProducts} from "../actions";
+import {getCategories, getProducts, initDb} from "../actions";
 
 export default class Demo extends React.Component {
 
@@ -26,6 +27,7 @@ export default class Demo extends React.Component {
 						style={{flex: "0 0 auto"}}
 						title="Northwind"
 						showMenuIconButton={false}
+						iconElementRight={<FlatButton label="Init DB" onTouchTap={initDb} />}
 						/>
 					<Tabs
 						style={{display: "flex", flexGrow: 1, flexDirection: "column"}}

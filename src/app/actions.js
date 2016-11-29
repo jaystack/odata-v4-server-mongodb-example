@@ -4,6 +4,21 @@ import api from "./api";
 import getSelectedCategoryId from "./utils/getSelectedCategoryId";
 import getModifications from "./utils/getModifications";
 
+export function initDb() {
+  store.dispatch({type: actionTypes.INIT_DB});
+  api.post("/initDb").then(resolveInitDb, rejectInitDb);
+}
+
+function resolveInitDb() {
+  store.dispatch({type: actionTypes.RESOLVE_INIT_DB});
+  getCategories();
+  getProducts();
+}
+
+function rejectInitDb(error) {
+  store.dispatch({type: actionTypes.REJECT_INIT_DB});
+}
+
 export function getCategories() {
   store.dispatch({type: actionTypes.GET_CATEGORIES});
 	api.get("/Categories").then(resolveGetCategories, rejectGetCategories);
@@ -104,4 +119,19 @@ function resolveSaveCategoryChanges() {
 
 function rejectSaveCategoryChanges(error) {
   store.dispatch({type: actionTypes.REJECT_SAVE_CATEGORY_CHANGES, error});
+}
+
+export function deleteCategory() {
+  const categoryId = getSelectedCategoryId();
+  store.dispatch({type: actionTypes.DELETE_CATEGORY});
+  api.delete(`/Categories('${categoryId}')`).then(resolveDeleteCategory, rejectDeleteCategory);
+}
+
+function resolveDeleteCategory() {
+  store.dispatch({type: actionTypes.RESOLVE_DELETE_CATEGORY});
+  getCategories();
+}
+
+function rejectDeleteCategory(error) {
+  store.dispatch({type: actionTypes.REJECT_DELETE_CATEGORY, error});
 }

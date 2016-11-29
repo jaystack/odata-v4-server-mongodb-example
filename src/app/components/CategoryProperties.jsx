@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import { modifyCategory, discardCategoryModifications, saveCategoryModifications } from "../actions";
+import { modifyCategory, discardCategoryModifications, saveCategoryModifications, deleteCategory } from "../actions";
 import areChanges from "../utils/areCategoryChanges";
 import ConfirmDialog from "./ConfirmDialog";
 
@@ -23,6 +23,7 @@ export default class CategoryProperties extends React.Component {
 
   handleSubmitDeleting() {
     this.setState({ isOpenConfirmDialog: false });
+    deleteCategory();
   }
 
   render() {
