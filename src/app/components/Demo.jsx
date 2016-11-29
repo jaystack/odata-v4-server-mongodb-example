@@ -39,6 +39,7 @@ export default class Demo extends React.Component {
 							<CategoriesPage
 								categories={this.props.state.categories}
 								products={this.props.state.products}
+								categoryFilter={this.props.state.categoryFilter}
 								selectedCategory={this.props.state.selectedCategory}
 								/>
 						</Tab>
