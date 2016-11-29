@@ -1,10 +1,9 @@
 async function resolveDocs(response) {
-	try {
-		const json = await response.json();
-		return json.value ? json.value : json;
-	} catch (error) {
+	const text = await response.text();
+	if (!text)
 		return null;
-	}
+	const json = JSON.parse(text);
+	return json.value ? json.value : json;
 }
 
 async function call(method, url, content) {
