@@ -135,3 +135,17 @@ function resolveDeleteCategory() {
 function rejectDeleteCategory(error) {
   store.dispatch({type: actionTypes.REJECT_DELETE_CATEGORY, error});
 }
+
+export function createCategory(category) {
+  store.dispatch({type: actionTypes.CREATE_CATEGORY, category});
+  api.post("/Categories", category).then(resolveCreateCategory, rejectCreateCategory);
+}
+
+function resolveCreateCategory(category) {
+  store.dispatch({type: actionTypes.RESOLVE_CREATE_CATEGORY, category});
+  selectCategory(category);
+}
+
+function rejectCreateCategory(error) {
+  store.dispatch({type: actionTypes.REJECT_CREATE_CATEGORY});
+}

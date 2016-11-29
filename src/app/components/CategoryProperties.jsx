@@ -53,8 +53,8 @@ export default class CategoryProperties extends React.Component {
           <ConfirmDialog
             open={this.state.isOpenConfirmDialog}
             text={`Are your sure you want to delete this category: ${this.props.selectedCategory.Name} ?`}
-            handleCancel={() => this.handleCancelDeleting()}
-            handleSubmit={() => this.handleSubmitDeleting()}
+            onCancel={() => this.handleCancelDeleting()}
+            onSubmit={() => this.handleSubmitDeleting()}
             />
         </CardActions>
       </Card>

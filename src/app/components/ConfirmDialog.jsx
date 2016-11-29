@@ -2,18 +2,18 @@ import React from "react";
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 
-export default function ConfirmDialog({open, text, handleCancel, handleSubmit}) {
+export default function ConfirmDialog({open, text, onCancel, onSubmit}) {
 
 	const actions = [
 		<FlatButton
 			label="Cancel"
 			primary={true}
-			onTouchTap={handleCancel}
+			onTouchTap={onCancel}
 			/>,
 		<FlatButton
 			label="Ok"
 			primary={true}
-			onTouchTap={handleSubmit}
+			onTouchTap={onSubmit}
 			/>
 	];
 

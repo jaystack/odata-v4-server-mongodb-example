@@ -4,8 +4,11 @@ import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
 import SearchIcon from 'material-ui/svg-icons/action/search';
-import { selectCategory } from "../actions";
+import CreateCategoryDialog from "./CreateCategoryDialog";
+import { selectCategory, createCategory } from "../actions";
 
 function renderListItem(category) {
 	return (
@@ -22,7 +25,7 @@ function renderListItem(category) {
 
 function renderList(categories) {
 	return (
-		<List style={{ flex: "1 1 0" }}>
+		<List style={{ flex: "1 1 0", overflowY: "auto" }}>
 			{categories.map(renderListItem)}
 		</List>
 	);
@@ -41,13 +44,46 @@ function renderSearchBar() {
 	);
 }
 
-export default function CategoryList({categories}) {
-	return (
-		<Paper zDepth={3} style={{ display: "flex", flexDirection: "column", flex: "0 0 auto", width: "25%", minWidth: "300px", overflow: "hidden" }}>
-			{renderSearchBar()}
-			<div style={{ display: "flex", flexDirection: "column", flex: "1 1 0", overflowY: "auto" }}>
-				{renderList(categories)}
-			</div>
-		</Paper>
-	);
+export default class CategoryList extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.state = { isOpenCategoryCreateDialog: false };
+	}
+
+	handleCreate() {
+		this.setState({ isOpenCategoryCreateDialog: true });
+	}
+
+	handleCancelCreateCategory() {
+		this.setState({ isOpenCategoryCreateDialog: false });
+	}
+
+	handleSubmitCreateCategory(category) {
+		this.setState({ isOpenCategoryCreateDialog: false });
+		createCategory(category);
+	}
+
+	render() {
+		return (
+			<Paper zDepth={3} style={{ display: "flex", flexDirection: "column", flex: "0 0 auto", width: "25%", minWidth: "300px", overflow: "hidden" }}>
+				{renderSearchBar()}
+				<div style={{ position: "relative", display: "flex", flexDirection: "column", flex: "1 1 0" }}>
+					{renderList(this.props.categories)}
+					<FloatingActionButton
+						style={{ position: "absolute", bottom: "20px", right: "20px" }}
+						onTouchTap={() => this.handleCreate()}
+						>
+						<ContentAdd />
+					</FloatingActionButton>
+					<CreateCategoryDialog
+						open={this.state.isOpenCategoryCreateDialog}
+						onCancel={() => this.handleCancelCreateCategory()}
+						onSubmit={category => this.handleSubmitCreateCategory(category)}
+						/>
+				</div>
+			</Paper>
+		);
+	}
+
 }
