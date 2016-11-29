@@ -7,7 +7,6 @@ export default function ConfirmDialog({open, text, onCancel, onSubmit}) {
 	const actions = [
 		<FlatButton
 			label="Cancel"
-			primary={true}
 			onTouchTap={onCancel}
 			/>,
 		<FlatButton

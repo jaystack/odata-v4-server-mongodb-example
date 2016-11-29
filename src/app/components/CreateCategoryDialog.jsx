@@ -7,6 +7,10 @@ export default class CreateCategoryDialog extends React.Component {
 
 	constructor(props) {
 		super(props);
+		this.initState();
+	}
+
+	initState() {
 		this.state = {
 			Name: "",
 			Description: ""
@@ -15,6 +19,7 @@ export default class CreateCategoryDialog extends React.Component {
 
 	handleSubmit() {
 		this.props.onSubmit(Object.assign({}, this.state));
+		this.initState();
 	}
 
 	handleUpdate(propName, propValue) {
@@ -31,8 +36,7 @@ export default class CreateCategoryDialog extends React.Component {
 		const actions = [
 			<FlatButton
 				label="Cancel"
-				primary={true}
-				onTouchTap={() => this.props.onCancel}
+				onTouchTap={() => this.props.onCancel()}
 				/>,
 			<FlatButton
 				label="Create"
