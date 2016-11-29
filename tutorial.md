@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In this tutorial, we will create an OData v4 server using JayStack OData v4 Server and will use a MongoDB database as data storage. We will use TypeScript here, but you can use ES6 too to implement your OData service. Our data model will be a simple Northwind-like model publishing categories and products.
+In this tutorial, we will create an OData v4 service using JayStack OData v4 Server and will use a MongoDB database as data storage. We will use TypeScript here, but you can use ES6 too to implement your OData service. Our data model will be a simple Northwind-like model publishing categories and products.
 
 ## Installation
 
