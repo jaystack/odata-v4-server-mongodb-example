@@ -31,6 +31,11 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 		});
 
 		describe("Products", () => {
+			// // OK volt, de most ez a hiba:
+			//    +  "contentType": "application/json"
+      //    +  "elementType": {
+      //    +    "namespace": "Northwind"
+      //    +  }
 			createTest("should get all products", "GET /Products", {
 				statusCode: 200,
 				body: {
@@ -44,6 +49,11 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
+			// // OK lenne, de ez a hiba:
+			//    +  "contentType": "application/json"
+      //    +  "elementType": {
+      //    +    "namespace": "Northwind"
+      //    +  }
 			createTest("should get products by filter", "GET /Products?$filter=Name eq 'Chai'", {
 				statusCode: 200,
 				body: {
@@ -72,6 +82,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
+			// // OK
 			createTest("should get product by key", "GET /Products(1)", { //''578f2b8c12eaebabec4af23c''->1
 				statusCode: 200,
 				body: extend({
@@ -85,6 +96,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
+			// // OK
 			it("should create new product", () => {
 				return NorthwindServer.execute("/Products", "POST", {
 					Name: "New product",
@@ -107,6 +119,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
+			// // OK
 			it("should update product", () => {
 				return NorthwindServer.execute("/Products(1)", "PUT", { //''578f2b8c12eaebabec4af23c''->1
 					Name: "Chai (updated)"
@@ -132,6 +145,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
+			// // OK
 			it("should delta update product", () => {
 				return NorthwindServer.execute("/Products(1)", "PATCH", { //''578f2b8c12eaebabec4af23c''->1
 					Name: "Chai (updated)"
@@ -157,6 +171,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
+			// // OK
 			it("should delete product", () => {
 				return NorthwindServer.execute("/Products(1)", "DELETE").then((result) => { //''578f2b8c12eaebabec4af23c''->1
 					expect(result).to.deep.equal({
@@ -171,6 +186,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
+			// // OK, de egy odata property hiányzik:
+			//    +    "@odata.editLink": "http://localhost/Categories(1)"
 			createTest("should get category by product", "GET /Products(1)/Category", { //''578f2b8c12eaebabec4af23c''->1
 				statusCode: 200,
 				body: extend({
@@ -184,6 +201,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				contentType: "application/json"
 			});
 
+			// // OK, de egy odata property hiányzik:
+			//    +    "@odata.editLink": "http://localhost/Categories(2)"
 			it("should create category reference on product", () => {
 				return NorthwindServer.execute("/Products(1)/Category/$ref", "POST", { //''578f2b8c12eaebabec4af23c''->1
 					"@odata.id": "http://localhost/Categories(2)" //''578f2baa12eaebabec4af28a''->2
@@ -209,6 +228,8 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
+			// // OK, de egy odata property hiányzik:
+			//    +    "@odata.editLink": "http://localhost/Categories(2)"
 			it("should update category reference on product", () => {
 				return NorthwindServer.execute("/Products(1)/Category/$ref", "PUT", { //''578f2b8c12eaebabec4af23c''->1
 					"@odata.id": "http://localhost/Categories(2)" //''578f2baa12eaebabec4af28a''->2
@@ -234,6 +255,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
+			// // OK
 			it("should delete category reference on product", () => {
 				return NorthwindServer.execute("/Products(1)/Category/$ref", "DELETE").then((result) => { //''578f2b8c12eaebabec4af23c''->1
 					expect(result).to.deep.equal({
@@ -248,6 +270,7 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				});
 			});
 
+			// // // HIBA: minden terméket visszaad, pedig csak az Id=30-at kellene !!!
 			createTest("should get the cheapest product", "GET /Products/Northwind.getCheapest()", {
 				statusCode: 200,
 				body: extend(
@@ -557,20 +580,6 @@ function testCases(NorthwindServer, {Product, Category}, {products, categories})
 				},
 				elementType: Product,
 				contentType: "application/json"
-			});
-
-			createTest("should get products by category", "GET /Categories(1)/Products(1)", { //''578f2baa12eaebabec4af289''->1
-					statusCode: 200,
-					body: Object.assign({}, {
-									"@odata.context": "http://localhost/$metadata#Products/$entity", //''578f2baa12eaebabec4af289''->1
-							},
-							products.filter(product => product.Id == 1 && product.CategoryId == 1).map(product => Object.assign({}, product, { //'"578f2baa12eaebabec4af289"'=>1
-									"@odata.id": `http://localhost/Products(${product.Id})`,
-									"@odata.editLink": `http://localhost/Products(${product.Id})`
-							}))[0]
-					),
-					elementType: Product,
-					contentType: "application/json"
 			});
 
 			it("should create product reference on category", () => {

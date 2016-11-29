@@ -17,19 +17,6 @@ export class ProductsController extends ODataController {
         return request.query(sqlQuery.from("Products"));
     }
 
-    // @odata.GET
-    // async find( @odata.stream stream, @odata.query query: ODataQuery): Promise<Product[]|void> {
-    //     const connection = await mssqlConnection();
-    //     let request = new mssql.Request(connection);
-    //     let output = request.pipe(stream);
-    //     let sqlQuery = createQuery(query);
-    //     sqlQuery.parameters.forEach((value, name) => request.input(name, value));
-    //     sqlQuery.orderby = "Id";
-    //     request.query(sqlQuery.from("Products"));
-    //     //request.query(`SELECT UnitPrice FROM "Products" WHERE "Id" = 30`);
-    //     return <Product[]|void>convertResults(output);
-    // }
-
     @odata.GET
     async findOne( @odata.key id: string, @odata.stream stream, @odata.query query: ODataQuery): Promise<Product> {
         const connection = await mssqlConnection();
@@ -83,9 +70,7 @@ export class ProductsController extends ODataController {
             values.push(addQuote(data[key]));
         });
         let sqlCommand = `INSERT INTO Products (${columns.join(", ")}) OUTPUT inserted.* VALUES (${values.join(", ")});`;
-        //console.log("\n\n\n======================= Products POST sqlCommand:\n" + sqlCommand,"\n");
         const result = await request.query(sqlCommand);
-        //console.log("\n\n\n===> result:", JSON.stringify(result, null, 2));
         return <Product>convertResults(result)[0]; //convertResults(rows)[0];
     }
 
@@ -94,15 +79,12 @@ export class ProductsController extends ODataController {
         const connection = await mssqlConnection();
         let request = new mssql.Request(connection);
         let sqlCommandDelete = `DELETE FROM Products OUTPUT deleted.* WHERE Id = ${id}`;
-        //console.log("\n\n\n======================= Products PUT sqlCommandDelete:\n" + sqlCommandDelete,"\n");
         const dataDeleted = await request.query(sqlCommandDelete);
-        //console.log("\n\n===> dataDeleted:", JSON.stringify(dataDeleted, null, 2));
 
-        // This will save the original properties:
+        //This will save the original properties:
         // const dataToInsert = Object.assign({}, dataDeleted[0], data, { Id: id });
-        // This will satisfy the requirements of the unit tests:
+        //This will satisfy the requirements of the unit tests:
         const dataToInsert = Object.assign({}, data, { Id: id });
-        //console.log("\n\n===> dataToInsert:", JSON.stringify(dataToInsert, null, 2));
         let columns: string[] = [];
         let insertedColumns: string[] = [];
         let values: any[] = [];
@@ -114,9 +96,8 @@ export class ProductsController extends ODataController {
         let sqlCommand = `SET IDENTITY_INSERT Products ON;
         INSERT INTO Products (${columns.join(", ")}) OUTPUT ${insertedColumns.join(", ")} VALUES (${values.join(", ")});
         SET IDENTITY_INSERT Products OFF;`;
-        //console.log("\n\n\n======================= Products PUT sqlCommand:\n" + sqlCommand,"\n");
         const result = await request.query(sqlCommand);
-        return <Product>convertResults(result)[0]; //convertResults(rows)[0];
+        return <Product>convertResults(result)[0];
     }
 
     @odata.PATCH // update the content of the row (delta)
@@ -131,7 +112,7 @@ export class ProductsController extends ODataController {
         UPDATE Products SET ${sets.join(", ")}, @impactedId = Id WHERE Id = ${id};
         SELECT @impactedId as 'ImpactedId';`;
         const result = await <Promise<any>>request.query(sqlCommand);
-        return (result) ? 1 : 0; //<Product>result[0];
+        return (result) ? 1 : 0;
     }
 
     @odata.DELETE
@@ -140,7 +121,7 @@ export class ProductsController extends ODataController {
         let request = new mssql.Request(connection);
         let sqlCommand = `DELETE FROM Products OUTPUT deleted.* WHERE Id = ${id}`;
         const result = await <Promise<Product[]>>request.query(sqlCommand);
-        return (Array.isArray(result)) ? result.length : 0; //<Product>result[0];
+        return (Array.isArray(result)) ? result.length : 0;
     }
 
     @Edm.Function
@@ -149,10 +130,8 @@ export class ProductsController extends ODataController {
         const connection = await mssqlConnection();
         let request = new mssql.Request(connection);
         let sqlCommand = "SELECT TOP(1) * FROM Products ORDER BY UnitPrice ASC";
-        //console.log("\n\n===> Product/Northwind.getCheapest sqlCommand:", sqlCommand);
         const results = await <Promise<Product[]>>request.query(sqlCommand);
         result = convertResults(results)[0];
-        //console.log("%%%%%", result);
         return result;
     }
 
@@ -164,8 +143,6 @@ export class ProductsController extends ODataController {
         let sqlCommand = `SELECT * FROM Products WHERE UnitPrice >= ${min} AND UnitPrice <= ${max} ORDER BY UnitPrice`;
         const results = await <Promise<Product[]>>request.query(sqlCommand);
         result = <Product[]>convertResults(results);
-        //console.log("===> getInPriceRange:", result);
-        //console.log(sqlCommand);
         return result;
     }
 
@@ -174,7 +151,6 @@ export class ProductsController extends ODataController {
         const connection = await mssqlConnection();
         let request = new mssql.Request(connection);
         const result = await <Promise<Product[]>>request.query(`SELECT Id, UnitPrice FROM Products WHERE Id IN (${a}, ${b})`);
-        //console.log("===> swapPrice Select result:", result);
         const aProduct = result.find(product => product.Id === a);
         const bProduct = result.find(product => product.Id === b);
         await request.query(`UPDATE Products SET UnitPrice = ${bProduct.UnitPrice} WHERE Id = ${aProduct.Id}`);
@@ -233,10 +209,8 @@ export class CategoriesController extends ODataController {
     request.input("categoryId", category.Id);
     request.input("productId", productId);
     const result = await <Promise<Product[]>>request.query(`SELECT ${sqlQuery.select} FROM Products WHERE Id = @productId AND CategoryId = @categoryId AND (${sqlQuery.where})`);
-    return convertResults(result);
+    return convertResults(result)[0];
   }
-
-
 
     @odata.POST("Products").$ref
     @odata.PUT("Products").$ref
@@ -270,9 +244,7 @@ export class CategoriesController extends ODataController {
             values.push(addQuote(data[key]));
         });
         let sqlCommand = `INSERT INTO Categories (${columns.join(", ")}) OUTPUT inserted.* VALUES (${values.join(", ")});`;
-        //console.log("\n\n\n======================= Categories POST sqlCommand:\n" + sqlCommand,"\n");
         const result = await request.query(sqlCommand);
-        //console.log("\n\n\n===> result:", JSON.stringify(result, null, 2));
         return <Category>convertResults(result)[0]; //convertResults(rows)[0];
     }
 
@@ -282,15 +254,12 @@ export class CategoriesController extends ODataController {
         const connection = await mssqlConnection();
         let request = new mssql.Request(connection);
         let sqlCommandDelete = `DELETE FROM Categories OUTPUT deleted.* WHERE Id = ${id}`;
-        //console.log("\n\n\n======================= Categories PUT sqlCommandDelete:\n" + sqlCommandDelete,"\n");
         const dataDeleted = await request.query(sqlCommandDelete);
-        //console.log("\n\n===> dataDeleted:", JSON.stringify(dataDeleted, null, 2));
 
-        // This will save the original properties:
+        //This will save the original properties:
         // const dataToInsert = Object.assign({}, dataDeleted[0], data, { Id: id });
-        // This will satisfy the requirements of the unit tests:
+        //This will satisfy the requirements of the unit tests:
         const dataToInsert = Object.assign({}, data, { Id: id });
-        //console.log("\n\n===> dataToInsert:", JSON.stringify(dataToInsert, null, 2));
         let columns: string[] = [];
         let insertedColumns: string[] = [];
         let values: any[] = [];
@@ -302,7 +271,6 @@ export class CategoriesController extends ODataController {
         let sqlCommand = `SET IDENTITY_INSERT Categories ON;
         INSERT INTO Categories (${columns.join(", ")}) OUTPUT ${insertedColumns.join(", ")} VALUES (${values.join(", ")});
         SET IDENTITY_INSERT Categories OFF;`;
-        //console.log("\n\n\n======================= Products PUT sqlCommand:\n" + sqlCommand,"\n");
         const result = await request.query(sqlCommand);
         return <Category>convertResults(result)[0]; //convertResults(rows)[0];
     }

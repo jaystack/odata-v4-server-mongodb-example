@@ -1,6 +1,4 @@
-//import { ObjectID } from "mongodb";
 import { Edm, odata } from "odata-v4-server";
-//import mongodb from "./connection";
 import * as mssql from "mssql";
 import mssqlConnection from "./connection";
 

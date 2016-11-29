@@ -1,5 +1,3 @@
-//import { ObjectID } from "mongodb";
-
 export default [
     {"Id": 1,"Description":"Soft drinks","Name":"Beverages"}, //'"578f2baa12eaebabec4af289"'=>1
     {"Id": 2,"Description":"Breads","Name":"Grains/Cereals"}, //'"578f2baa12eaebabec4af28a"'=>2

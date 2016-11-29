@@ -1,5 +1,3 @@
-//import { ObjectID } from "mongodb";
-
 export default [
     {"Id": 1,"QuantityPerUnit":"10 boxes x 20 bags","UnitPrice":39,"CategoryId": 1,"Name":"Chai","Discontinued":false}, //'"578f2b8c12eaebabec4af23c"'=>1 //'"578f2baa12eaebabec4af289"'->1
     {"Id": 2,"QuantityPerUnit":"24 - 12 oz bottles","UnitPrice":19.0,"CategoryId": 1,"Name":"Chang","Discontinued":true}, //'"578f2b8c12eaebabec4af23d"'=>2 //'"578f2baa12eaebabec4af289"'->1
