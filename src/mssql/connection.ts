@@ -1,9 +1,9 @@
 const sql = require("mssql");
 
 const dbConfig = {
-    driver: "msnodesqlv8", // very important // alternate value "tedious",
+    driver: "msnodesqlv8", // alternate value "tedious", // should be installed by 'npm install msnodesqlv8' / 'npm install tedious'
     server: "DESKTOP-SZABOF",  // very important // sometimes these don't work: "localhost" or "localhost\\MSSQLSERVER",
-    database: "northwind_mssql_test_db", // very important
+    database: "", // "northwind_mssql_test_db"
     user: "sa",
     password: "QWEasd123%"
     // , port: 1433
