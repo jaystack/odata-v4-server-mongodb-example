@@ -41,12 +41,12 @@ function renderSearchBar() {
 	);
 }
 
-export default function CategoryList(props) {
+export default function CategoryList({categories}) {
 	return (
 		<Paper zDepth={3} style={{ display: "flex", flexDirection: "column", flex: "0 0 auto", width: "25%", minWidth: "300px", overflow: "hidden" }}>
 			{renderSearchBar()}
 			<div style={{ display: "flex", flexDirection: "column", flex: "1 1 0", overflowY: "auto" }}>
-				{renderList(props.categories)}
+				{renderList(categories)}
 			</div>
 		</Paper>
 	);

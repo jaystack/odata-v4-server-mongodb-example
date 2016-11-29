@@ -29,6 +29,8 @@ function rejectGetProducts(error) {
 }
 
 export function selectCategory(category) {
+  if (store.getState().selectedCategory && store.getState().selectedCategory._id === category._id)
+    return;
   store.dispatch({type: actionTypes.SELECT_CATEGORY, category});
   getCategoryProducts(category._id);
 }
