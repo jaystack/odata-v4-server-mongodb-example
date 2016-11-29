@@ -54,7 +54,7 @@ export default class CategoryList extends React.Component {
 	shouldComponentUpdate(nextProps, nextState) {
 		if (
 			nextProps.categories !== this.props.categories ||
-			nextState.isOpenCategoryCreateDialog !== this.props.isOpenCategoryCreateDialog
+			nextState.isOpenCategoryCreateDialog !== this.state.isOpenCategoryCreateDialog
 		) return true;
 		return false;
 	}
