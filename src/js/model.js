@@ -1,6 +1,6 @@
 import { ObjectID } from "mongodb";
 import { Edm, odata } from "odata-v4-server";
-import mongodb from "./connection";
+import connect from "./connect";
 
 @odata.namespace("NorthwindES")
 @Edm.Annotate({
@@ -71,7 +71,7 @@ export class Product{
     @Edm.Action
     @odata.parameter("result", odata.result)
     async invertDiscontinued(result) {
-        let db = await mongodb();
+        const db = await connect();
         await db.collection('Products').findOneAndUpdate(
                 {_id: result._id},
                 {$set: {Discontinued: !result.Discontinued}});
@@ -81,7 +81,7 @@ export class Product{
     @odata.parameter("result", odata.result)
     @odata.parameter("value", Edm.Boolean)
     async setDiscontinued(result, @Edm.Boolean value) {
-        let db = await mongodb();
+        const db = await connect();
         await db.collection('Products').findOneAndUpdate(
                 {_id: result._id},
                 {$set: {Discontinued: value}});
