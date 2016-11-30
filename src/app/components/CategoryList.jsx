@@ -36,7 +36,13 @@ function renderSearchBar(categoryFilter) {
   return (
     <Paper zDepth={1} style={{ display: "flex", padding: "10px 20px", zIndex: 1 }}>
       <div style={{ flex: "1 1 0", paddingRight: "10px" }}>
-        <TextField hintText="Filter ..." fullWidth={true} value={categoryFilter} onChange={evt => modifyCategoryFilter(evt.target.value)} />
+        <TextField
+        hintText="Filter ..."
+        fullWidth={true}
+        value={categoryFilter}
+        onChange={evt => modifyCategoryFilter(evt.target.value)}
+        onKeyPress={evt => {if (evt.which === 13) filterCategories()}}
+        />
       </div>
       <div style={{ display: "flex", flex: "0 0 auto", alignItems: "center" }}>
         <RaisedButton

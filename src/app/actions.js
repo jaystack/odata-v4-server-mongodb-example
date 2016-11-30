@@ -24,7 +24,7 @@ export function getCategories() {
   const categoryFilter = store.getState().categoryFilter;
   store.dispatch({ type: actionTypes.GET_CATEGORIES });
   api.get(
-    categoryFilter ? `/Categories?$filter=substringof(Name, '${categoryFilter}')` :"/Categories"
+    categoryFilter ? `/Categories?$filter=contains(Name, '${categoryFilter}')` :"/Categories"
   ).then(resolveGetCategories, rejectGetCategories);
 }
 
