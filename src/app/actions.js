@@ -96,11 +96,11 @@ export function addProductToCategory(productId) {
   const categoryId = getSelectedCategoryId();
   store.dispatch({ type: actionTypes.ADD_PRODUCT_TO_CATEGORY, categoryId, productId });
   api.post(`/Categories('${categoryId}')/Products/$ref`, { "@odata.id": `${window.location.href}api/Products('${productId}')` })
-    .then(resolveAddProductToCategory.bind(null, categoryId), rejectAddProductToCategory);
+    .then(resolveAddProductToCategory.bind(null, categoryId, productId), rejectAddProductToCategory);
 }
 
-function resolveAddProductToCategory(categoryId) {
-  store.dispatch({ type: actionTypes.RESOLVE_ADD_PRODUCT_TO_CATEGORY, categoryId });
+function resolveAddProductToCategory(categoryId, productId) {
+  store.dispatch({ type: actionTypes.RESOLVE_ADD_PRODUCT_TO_CATEGORY, categoryId, productId });
   getCategoryProducts(categoryId);
 }
 
@@ -112,11 +112,11 @@ export function deleteProductFromCategory(productId) {
   const categoryId = getSelectedCategoryId();
   store.dispatch({ type: actionTypes.DELETE_PRODUCT_FROM_CATEGORY, categoryId, productId });
   api.delete(`/Categories('${categoryId}')/Products/$ref?$id=${window.location.href}api/Products('${productId}')`)
-    .then(resolveDeleteProductFromCategory.bind(null, categoryId), rejectDeleteProductFromCategory);
+    .then(resolveDeleteProductFromCategory.bind(null, categoryId, productId), rejectDeleteProductFromCategory);
 }
 
-function resolveDeleteProductFromCategory(categoryId) {
-  store.dispatch({ type: actionTypes.RESOLVE_DELETE_PRODUCT_FROM_CATEGORY, categoryId });
+function resolveDeleteProductFromCategory(categoryId, productId) {
+  store.dispatch({ type: actionTypes.RESOLVE_DELETE_PRODUCT_FROM_CATEGORY, categoryId, productId });
   getCategoryProducts(categoryId);
 }
 
@@ -292,7 +292,6 @@ export function setProductCategory(categoryId) {
 
 function resolveSetProductCategory(productId, categoryId, prevCategoryId) {
   store.dispatch({ type: actionTypes.RESOLVE_SET_PRODUCT_CATEGORY, productId, categoryId });
-  getProduct(productId);
   getCategoryProducts(categoryId);
   getCategoryProducts(prevCategoryId);
 }

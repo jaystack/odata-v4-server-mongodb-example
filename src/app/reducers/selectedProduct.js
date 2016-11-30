@@ -13,6 +13,18 @@ function updateSelectedProduct(state, data) {
 	return Object.assign({}, updatedProduct);
 }
 
+function updateProductCategory(state, productId, categoryId) {
+	if (state._id !== productId)
+		return;
+	if (categoryId)
+		return Object.assign({}, state, {CategoryId: categoryId});
+	else {
+		const newState = Object.assign({}, state);
+		delete newState.CategoryId;
+		return newState;
+	}
+}
+
 export default function (state = null, action) {
 	switch (action.type) {
 		case actionTypes.SELECT_PRODUCT:
@@ -25,6 +37,12 @@ export default function (state = null, action) {
 			return state ? updateSelectedProduct(state, action.items) : null;
 		case actionTypes.RESOLVE_GET_PRODUCT:
 			return state ? updateSelectedProduct(state, action.product) : null;
+		case actionTypes.RESOLVE_SET_PRODUCT_CATEGORY:
+			return state ? updateProductCategory(state, action.productId, action.categoryId) : null;
+		case actionTypes.RESOLVE_ADD_PRODUCT_TO_CATEGORY:
+			return state ? updateProductCategory(state, action.productId, action.categoryId) : null;
+		case actionTypes.RESOLVE_DELETE_PRODUCT_FROM_CATEGORY:
+			return state ? updateProductCategory(state, action.productId, null) : null;
 		default:
 			return state;
 	}
