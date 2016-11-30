@@ -2,7 +2,9 @@ import store from "./store";
 import actionTypes from "./actionTypes";
 import api from "./api";
 import getSelectedCategoryId from "./utils/getSelectedCategoryId";
-import getModifications from "./utils/getModifications";
+import getSelectedProductId from "./utils/getSelectedProductId";
+import getCategoryModifications from "./utils/getCategoryModifications";
+import getProductModifications from "./utils/getProductModifications";
 
 export function initDb() {
   store.dispatch({ type: actionTypes.INIT_DB });
@@ -49,11 +51,12 @@ export function filterCategories() {
 
 export function selectCategory(categoryId) {
   const state = store.getState();
-  if (state.selectedProduct && store.getState().selectedProduct._id === categoryId)
+  if (state.selectedCategory && store.getState().selectedCategory._id === categoryId)
     return;
   const category = state.categories.find(category => category._id === categoryId) || null;
   store.dispatch({ type: actionTypes.SELECT_CATEGORY, category });
-  getCategoryProducts(category._id);
+  if (category)
+    getCategoryProducts(category._id);
 }
 
 function getCategoryProducts(categoryId) {
@@ -113,7 +116,7 @@ export function discardCategoryModifications() {
 export function saveCategoryModifications() {
   const categoryId = getSelectedCategoryId();
   store.dispatch({ type: actionTypes.SAVE_CATEGORY_CHANGES });
-  api.put(`/Categories('${categoryId}')`, getModifications()).then(resolveSaveCategoryChanges, rejectSaveCategoryChanges);
+  api.put(`/Categories('${categoryId}')`, getCategoryModifications()).then(resolveSaveCategoryChanges, rejectSaveCategoryChanges);
 }
 
 function resolveSaveCategoryChanges() {
@@ -197,4 +200,42 @@ export function selectProduct(productId) {
     return;
   const product = state.products.find(product => product._id === productId) || null;
   store.dispatch({ type: actionTypes.SELECT_PRODUCT, product });
+}
+
+export function modifyProduct(propName, propValue) {
+  store.dispatch({ type: actionTypes.MODIFY_PRODUCT, propName, propValue });
+}
+
+export function discardProductModifications() {
+  store.dispatch({ type: actionTypes.DISCARD_PRODUCT_MODIFICATIONS });
+}
+
+export function saveProductModifications() {
+  const productId = getSelectedProductId();
+  store.dispatch({ type: actionTypes.SAVE_PRODUCT_CHANGES });
+  api.put(`/Products('${productId}')`, getProductModifications()).then(resolveSaveProductChanges, rejectSaveProductChanges);
+}
+
+function resolveSaveProductChanges() {
+  store.dispatch({ type: actionTypes.RESOLVE_SAVE_PRODUCT_CHANGES });
+  getProducts();
+}
+
+function rejectSaveProductChanges(error) {
+  store.dispatch({ type: actionTypes.REJECT_SAVE_PRODUCT_CHANGES, error });
+}
+
+export function deleteProduct() {
+  const productId = getSelectedProductId();
+  store.dispatch({ type: actionTypes.DELETE_PRODUCT });
+  api.delete(`/Products('${productId}')`).then(resolveDeleteProduct, rejectDeleteProduct);
+}
+
+function resolveDeleteProduct() {
+  store.dispatch({ type: actionTypes.RESOLVE_DELETE_PRODUCT });
+  getProducts();
+}
+
+function rejectDeleteProduct(error) {
+  store.dispatch({ type: actionTypes.REJECT_DELETE_PRODUCT, error });
 }

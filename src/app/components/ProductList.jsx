@@ -77,7 +77,7 @@ function renderSearchBar(productFilter, productOrder) {
 					>
 					<MenuItem value={null} primaryText="" />
 					<MenuItem value="Name" primaryText="Name" />
-					<MenuItem value="UnitPrice" primaryText="UnitPrice" />
+					<MenuItem value="UnitPrice" primaryText="Unit price" />
 				</SelectField>
 			</div>
 		</Paper>
