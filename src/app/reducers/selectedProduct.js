@@ -16,13 +16,13 @@ function updateSelectedProduct(state, data) {
 function updateProductCategory(state, productId, categoryId) {
 	if (state._id !== productId)
 		return;
-	if (categoryId)
-		return Object.assign({}, state, {CategoryId: categoryId});
-	else {
-		const newState = Object.assign({}, state);
+	
+	const newState =  Object.assign({}, state, {CategoryId: categoryId});
+	
+	if (!categoryId)
 		delete newState.CategoryId;
-		return newState;
-	}
+	
+	return newState;
 }
 
 export default function (state = null, action) {
