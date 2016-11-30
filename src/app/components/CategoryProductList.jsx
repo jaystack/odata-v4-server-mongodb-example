@@ -55,7 +55,11 @@ export default class CategoryProductList extends React.Component {
 
     return (
       <Card style={{ flex: "2 1 0", margin: "20px" }}>
-        <CardHeader title="Products" subtitle="Here are listed the assigned products" />
+        <CardHeader
+          title="Products"
+          subtitle="Here are listed the assigned products"
+          titleStyle={{ fontSize: "20px" }}
+          />
         <CardText>
           <AssignProductToCategoryCard selectableProducts={selectableProducts} />
           {renderProductList(this.props.assignedProducts)}

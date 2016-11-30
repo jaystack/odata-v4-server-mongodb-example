@@ -50,6 +50,7 @@ export default class Demo extends React.Component {
 								productFilter={this.props.state.productFilter}
 								productOrder={this.props.state.productOrder}
 								selectedProduct={this.props.state.selectedProduct}
+								categories={this.props.state.categories}
 								/>
 						</Tab>
 					</Tabs>

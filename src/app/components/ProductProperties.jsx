@@ -3,9 +3,10 @@ import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
 import RaisedButton from 'material-ui/RaisedButton';
-import { modifyProduct, discardProductModifications, saveProductModifications, deleteProduct } from "../actions";
+import AutoComplete from 'material-ui/AutoComplete';
 import areChanges from "../utils/areProductChanges";
 import ConfirmDialog from "./ConfirmDialog";
+import { modifyProduct, discardProductModifications, saveProductModifications, deleteProduct } from "../actions";
 
 export default class ProductProperties extends React.Component {
 
@@ -30,7 +31,10 @@ export default class ProductProperties extends React.Component {
 	render() {
 		return (
 			<Card style={{ flex: "1 1 0", margin: "20px 5px 20px 20px", minWidth: "400px" }}>
-				<CardHeader title="Properties" subtitle="Here you can set the products properties" />
+				<CardHeader
+					title="Properties"
+					subtitle="Here you can set the products properties"
+					titleStyle={{ fontSize: "20px" }} />
 				<CardText style={{ display: "flex", flexDirection: "column", padding: "20px" }}>
 					<TextField
 						floatingLabelText="Name"
@@ -55,7 +59,7 @@ export default class ProductProperties extends React.Component {
 						onChange={evt => modifyProduct("UnitPrice", evt.target.value)}
 						/>
 					<Checkbox
-						style={{margin: "10px 0px"}}
+						style={{ margin: "10px 0px" }}
 						label="Discontinued"
 						checked={this.props.selectedProduct.Discontinued}
 						onCheck={(_, checked) => modifyProduct("Discontinued", checked)}
