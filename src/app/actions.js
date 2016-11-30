@@ -20,6 +20,8 @@ function rejectInitDb(error) {
   store.dispatch({ type: actionTypes.REJECT_INIT_DB });
 }
 
+// Categories
+
 export function getCategories() {
   const categoryFilter = store.getState().categoryFilter;
   store.dispatch({ type: actionTypes.GET_CATEGORIES });
@@ -34,19 +36,6 @@ function resolveGetCategories(items) {
 
 function rejectGetCategories(error) {
   store.dispatch({ type: actionTypes.REJECT_GET_CATEGORIES, error });
-}
-
-export function getProducts() {
-  store.dispatch({ type: actionTypes.GET_PRODUCTS });
-  api.get("/Products").then(resolveGetProducts, rejectGetProducts);
-}
-
-function resolveGetProducts(items) {
-  store.dispatch({ type: actionTypes.RESOLVE_GET_PRODUCTS, items });
-}
-
-function rejectGetProducts(error) {
-  store.dispatch({ type: actionTypes.REJECT_GET_PRODUCTS, error });
 }
 
 export function modifyCategoryFilter(filter) {
@@ -163,3 +152,19 @@ function resolveCreateCategory(category) {
 function rejectCreateCategory(error) {
   store.dispatch({ type: actionTypes.REJECT_CREATE_CATEGORY });
 }
+
+// Products
+
+export function getProducts() {
+  store.dispatch({ type: actionTypes.GET_PRODUCTS });
+  api.get("/Products").then(resolveGetProducts, rejectGetProducts);
+}
+
+function resolveGetProducts(items) {
+  store.dispatch({ type: actionTypes.RESOLVE_GET_PRODUCTS, items });
+}
+
+function rejectGetProducts(error) {
+  store.dispatch({ type: actionTypes.REJECT_GET_PRODUCTS, error });
+}
+
