@@ -16,6 +16,7 @@ function resolveInitDb() {
   getCategories();
   getProducts();
   selectCategory(null);
+  selectProduct(null);
 }
 
 function rejectInitDb(error) {
