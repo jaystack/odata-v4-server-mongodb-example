@@ -48,6 +48,7 @@ export default class Demo extends React.Component {
 							<ProductsPage
 								products={this.props.state.products}
 								productFilter={this.props.state.productFilter}
+								productOrder={this.props.state.productOrder}
 								selectedProduct={this.props.state.selectedProduct}
 								/>
 						</Tab>

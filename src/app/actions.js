@@ -23,11 +23,12 @@ function rejectInitDb(error) {
 // Categories
 
 export function getCategories() {
+  const params = {};
   const categoryFilter = store.getState().categoryFilter;
+  if (categoryFilter)
+    params.$filter = `contains(Name, '${categoryFilter}')`;
   store.dispatch({ type: actionTypes.GET_CATEGORIES });
-  api.get(
-    categoryFilter ? `/Categories?$filter=contains(Name, '${categoryFilter}')` :"/Categories"
-  ).then(resolveGetCategories, rejectGetCategories);
+  api.get("/Categories", params).then(resolveGetCategories, rejectGetCategories);
 }
 
 function resolveGetCategories(items) {
@@ -156,8 +157,17 @@ function rejectCreateCategory(error) {
 // Products
 
 export function getProducts() {
+  const params = {};
+  const state = store.getState();
+  const productFilter = state.productFilter;
+  const productOrder = state.productOrder;
+  if (productFilter)
+    params.$filter = `contains(Name, '${productFilter}')`;
+  if (productOrder)
+    params.$orderby = productOrder;
+
   store.dispatch({ type: actionTypes.GET_PRODUCTS });
-  api.get("/Products").then(resolveGetProducts, rejectGetProducts);
+  api.get("/Products", params).then(resolveGetProducts, rejectGetProducts);
 }
 
 function resolveGetProducts(items) {
@@ -168,3 +178,7 @@ function rejectGetProducts(error) {
   store.dispatch({ type: actionTypes.REJECT_GET_PRODUCTS, error });
 }
 
+export function modifyProductOrder(order) {
+  store.dispatch({ type: actionTypes.MODIFY_PRODUCT_ORDER, order });
+  getProducts();
+}

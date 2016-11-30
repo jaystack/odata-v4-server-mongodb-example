@@ -1,3 +1,5 @@
+import * as queryString from "query-string";
+
 async function resolveDocs(response) {
 	const text = await response.text();
 	if (!text)
@@ -7,9 +9,13 @@ async function resolveDocs(response) {
 }
 
 async function call(method, url, content) {
+	const isContent = content && Object.keys(content).length > 0;
 	const headers = new Headers();
 	headers.append("Content-Type", "application/json");
-	return await fetch(`/api${url}`, { method, headers, body: JSON.stringify(content) }).then(resolveDocs);
+	if (method === 'GET')
+		return await fetch(`/api${url}${isContent ? '?'+queryString.stringify(content) : ''}`, { method, headers }).then(resolveDocs);
+	else
+		return await fetch(`/api${url}`, { method, headers, body: JSON.stringify(content) }).then(resolveDocs);
 }
 
 export default {
