@@ -6,8 +6,8 @@ function discardChanges(state) {
 	return Object.assign({}, state, original);
 }
 
-function updateSelectedCategory(state, newCategories) {
-	const updatedCategory = newCategories.find(category => category._id === state._id);
+function updateSelectedCategory(state, data) {
+	const updatedCategory = Array.isArray(data) ? newCategories.find(category => category._id === state._id) : data;
 	if (!updatedCategory)
 		return null;
 	return Object.assign({}, state, updatedCategory);
@@ -25,6 +25,8 @@ export default function (state = null, action) {
 			return state ? discardChanges(state) : null;
 		case actionTypes.RESOLVE_GET_CATEGORIES:
 			return state ? updateSelectedCategory(state, action.items) : null;
+		case actionTypes.RESOLVE_GET_CATEGORY:
+			return state ? updateSelectedCategory(state, action.category) : null;
 		default:
 			return state;
 	}

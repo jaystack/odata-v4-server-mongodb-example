@@ -42,6 +42,21 @@ function rejectGetCategories(error) {
   store.dispatch({ type: actionTypes.REJECT_GET_CATEGORIES, error });
 }
 
+function getCategory(categoryId) {
+  if (!categoryId)
+    return;
+  store.dispatch({ type: actionTypes.GET_CATEGORY, categoryId });
+  api.get(`/Categories('${categoryId}')`).then(resolveGetCategory, rejectGetCategory);
+}
+
+function resolveGetCategory(category) {
+  store.dispatch({ type: actionTypes.RESOLVE_GET_CATEGORY, category });
+}
+
+function rejectGetCategory(error) {
+  store.dispatch({ type: actionTypes.REJECT_GET_CATEGORY, error });
+}
+
 export function modifyCategoryFilter(filter) {
   store.dispatch({ type: actionTypes.MODIFY_CATEGORY_FILTER, filter });
 }
@@ -61,6 +76,9 @@ export function selectCategory(categoryId) {
 }
 
 function getCategoryProducts(categoryId) {
+  const selectedCategory = store.getState().selectedCategory;
+  if (!selectedCategory || selectedCategory._id !== categoryId)
+    return;
   store.dispatch({ type: actionTypes.GET_CATEGORY_PRODUCTS, categoryId });
   api.get(`/Categories('${categoryId}')/Products`)
     .then(resolveGetCategoryProducts.bind(null, categoryId), rejectGetCategoryProducts);
@@ -117,12 +135,13 @@ export function discardCategoryModifications() {
 export function saveCategoryModifications() {
   const categoryId = getSelectedCategoryId();
   store.dispatch({ type: actionTypes.SAVE_CATEGORY_CHANGES });
-  api.put(`/Categories('${categoryId}')`, getCategoryModifications()).then(resolveSaveCategoryChanges, rejectSaveCategoryChanges);
+  api.put(`/Categories('${categoryId}')`, getCategoryModifications())
+    .then(resolveSaveCategoryChanges.bind(null, categoryId), rejectSaveCategoryChanges);
 }
 
-function resolveSaveCategoryChanges() {
+function resolveSaveCategoryChanges(categoryId) {
   store.dispatch({ type: actionTypes.RESOLVE_SAVE_CATEGORY_CHANGES });
-  getCategories();
+  getCategory(categoryId);
 }
 
 function rejectSaveCategoryChanges(error) {
@@ -132,12 +151,11 @@ function rejectSaveCategoryChanges(error) {
 export function deleteCategory() {
   const categoryId = getSelectedCategoryId();
   store.dispatch({ type: actionTypes.DELETE_CATEGORY });
-  api.delete(`/Categories('${categoryId}')`).then(resolveDeleteCategory, rejectDeleteCategory);
+  api.delete(`/Categories('${categoryId}')`).then(resolveDeleteCategory.bind(null, categoryId), rejectDeleteCategory);
 }
 
-function resolveDeleteCategory() {
-  store.dispatch({ type: actionTypes.RESOLVE_DELETE_CATEGORY });
-  getCategories();
+function resolveDeleteCategory(categoryId) {
+  store.dispatch({ type: actionTypes.RESOLVE_DELETE_CATEGORY, categoryId });
 }
 
 function rejectDeleteCategory(error) {
@@ -182,6 +200,21 @@ function rejectGetProducts(error) {
   store.dispatch({ type: actionTypes.REJECT_GET_PRODUCTS, error });
 }
 
+function getProduct(productId) {
+  if (!productId)
+    return;
+  store.dispatch({ type: actionTypes.GET_PRODUCT, productId });
+  api.get(`/Products('${productId}')`).then(resolveGetProduct, rejectGetProduct);
+}
+
+function resolveGetProduct(product) {
+  store.dispatch({ type: actionTypes.RESOLVE_GET_PRODUCT, product });
+}
+
+function rejectGetProduct(error) {
+  store.dispatch({ type: actionTypes.REJECT_GET_PRODUCT, error });
+}
+
 export function modifyProductOrder(order) {
   store.dispatch({ type: actionTypes.MODIFY_PRODUCT_ORDER, order });
   getProducts();
@@ -214,12 +247,13 @@ export function discardProductModifications() {
 export function saveProductModifications() {
   const productId = getSelectedProductId();
   store.dispatch({ type: actionTypes.SAVE_PRODUCT_CHANGES });
-  api.put(`/Products('${productId}')`, getProductModifications()).then(resolveSaveProductChanges, rejectSaveProductChanges);
+  api.put(`/Products('${productId}')`, getProductModifications())
+    .then(resolveSaveProductChanges.bind(null, productId), rejectSaveProductChanges);
 }
 
-function resolveSaveProductChanges() {
+function resolveSaveProductChanges(productId) {
   store.dispatch({ type: actionTypes.RESOLVE_SAVE_PRODUCT_CHANGES });
-  getProducts();
+  getProduct(productId);
 }
 
 function rejectSaveProductChanges(error) {
@@ -229,14 +263,40 @@ function rejectSaveProductChanges(error) {
 export function deleteProduct() {
   const productId = getSelectedProductId();
   store.dispatch({ type: actionTypes.DELETE_PRODUCT });
-  api.delete(`/Products('${productId}')`).then(resolveDeleteProduct, rejectDeleteProduct);
+  api.delete(`/Products('${productId}')`).then(resolveDeleteProduct.bind(null, productId), rejectDeleteProduct);
 }
 
-function resolveDeleteProduct() {
-  store.dispatch({ type: actionTypes.RESOLVE_DELETE_PRODUCT });
-  getProducts();
+function resolveDeleteProduct(productId) {
+  store.dispatch({ type: actionTypes.RESOLVE_DELETE_PRODUCT, productId });
 }
 
 function rejectDeleteProduct(error) {
   store.dispatch({ type: actionTypes.REJECT_DELETE_PRODUCT, error });
+}
+
+export function setProductCategory(categoryId) {
+  const product = store.getState().selectedProduct;
+  if (!product)
+    return;
+  const productId = product._id;
+  const prevCategoryId = product.CategoryId || null;
+  store.dispatch({ type: actionTypes.SET_PRODUCT_CATEGORY, productId, categoryId, prevCategoryId });
+  if (categoryId) {
+    api.post(`/Products('${productId}')/Category/$ref`, { "@odata.id": `${window.location.href}api/Categories('${categoryId}')` })
+      .then(resolveSetProductCategory.bind(null, productId, categoryId, prevCategoryId), rejectSetProductCategory);
+  } else {
+    api.delete(`/Products('${productId}')/Category/$ref`)
+      .then(resolveSetProductCategory.bind(null, productId, categoryId, prevCategoryId), rejectSetProductCategory);
+  }
+}
+
+function resolveSetProductCategory(productId, categoryId, prevCategoryId) {
+  store.dispatch({ type: actionTypes.RESOLVE_SET_PRODUCT_CATEGORY, productId, categoryId });
+  getProduct(productId);
+  getCategoryProducts(categoryId);
+  getCategoryProducts(prevCategoryId);
+}
+
+function rejectSetProductCategory(error) {
+  store.dispatch({ type: actionTypes.REJECT_SET_PRODUCT_CATEGORY, error });
 }

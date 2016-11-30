@@ -1,69 +1,37 @@
 import React from "react";
-import AutoComplete from 'material-ui/AutoComplete';
+//import AutoComplete from 'material-ui/AutoComplete';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { setProductCategory } from "../actions";
 
 export default class AssignCategoryToProductCard extends React.Component {
 
-	constructor(props) {
-		super(props);
-		this.state = {
-			searchText: this.getSelectedCategoryName(),
-			dataSource: props.categories
-		};
-	}
-
-	getSelectedCategoryName() {
-		const category = this.props.categories.find(category => category._id === this.props.selectedProduct.CategoryId)
-		return category.Name || "";
-	}
-
-	getDataSource(value) {
-		const searchText = value || this.refs.autocomplete.state.searchText;
-		console.log(searchText);
+	renderMenuItems() {
 		return this.props.categories
-			.filter(category => new RegExp(searchText, 'i').test(category.Name));
-	}
-
-	handleUpdateInput(value) {
-		this.setState({
-			searchText: value,
-			dataSource: this.getDataSource(value)
-		});
-	}
-
-	handleNewRequest(choosen) {
-		setProductCategory(choosen.value);
-	}
-
-	componentDidUpdate(prevProps) {
-		if (prevProps.categories !== this.props.categories)
-			this.setState({ dataSource: this.getDataSource() });
-		if (prevProps.selectedProduct !== this.props.selectedProduct)
-			this.setState({ searchText: this.getSelectedCategoryName() });
+			.map(category => (
+				<MenuItem key={category._id} value={category._id} primaryText={category.Name} /> 
+			));
 	}
 
 	render() {
 		return (
-			<Card style={{ flex: "1 1 0", margin: "20px 5px 20px 20px", minWidth: "400px" }}>
+			<Card style={{ flex: "2 1 0", margin: "20px" }}>
 				<CardHeader
 					title="Category"
 					subtitle="Here you can set the category of product"
 					titleStyle={{ fontSize: "20px" }} />
 				<CardText style={{ display: "flex", flexDirection: "column", padding: "20px" }}>
-					<AutoComplete
-						ref="autocomplete"
+					<SelectField
 						floatingLabelText="Category"
-						filter={AutoComplete.noFilter}
-						openOnFocus={true}
-						dataSource={this.state.dataSource}
-						dataSourceConfig={{ text: 'Name', value: '_id' }}
-						searchText={this.state.searchText}
 						fullWidth={true}
-						maxSearchResults={5}
-						onUpdateInput={value => this.handleUpdateInput(value)}
-						onNewRequest={choosen => this.handleNewRequest(choosen)}
-						/>
+						value={this.props.categoryId}
+						onChange={(_, __, value) => setProductCategory(value)}
+						maxHeight={300}
+						>
+						<MenuItem value={null} primaryText="" />
+						{this.renderMenuItems()}
+					</SelectField>
 				</CardText>
 			</Card>
 		);

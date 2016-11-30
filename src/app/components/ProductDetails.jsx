@@ -18,7 +18,7 @@ export default class ProductDetails extends React.Component {
     return (
       <div style={{ display: "flex", flex: "1 1 0", alignItems: "flex-start", overflowY: "auto" }}>
         <ProductProperties selectedProduct={this.props.selectedProduct} />
-        <AssignCategoryToProductCard selectedProduct={this.props.selectedProduct} categories={this.props.categories} />
+        <AssignCategoryToProductCard categoryId={this.props.selectedProduct.CategoryId} categories={this.props.categories} />
       </div>
     );
   }

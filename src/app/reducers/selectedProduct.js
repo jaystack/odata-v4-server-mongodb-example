@@ -6,11 +6,11 @@ function discardChanges(state) {
 	return Object.assign({}, state, original);
 }
 
-function updateSelectedProduct(state, newProducts) {
-	const updatedProduct = newProducts.find(product => product._id === state._id);
+function updateSelectedProduct(state, data) {
+	const updatedProduct = Array.isArray(data) ? data.find(product => product._id === state._id) : data;
 	if (!updatedProduct)
 		return null;
-	return Object.assign({}, state, updatedProduct);
+	return Object.assign({}, updatedProduct);
 }
 
 export default function (state = null, action) {
@@ -23,6 +23,8 @@ export default function (state = null, action) {
 			return state ? discardChanges(state) : null;
 		case actionTypes.RESOLVE_GET_PRODUCTS:
 			return state ? updateSelectedProduct(state, action.items) : null;
+		case actionTypes.RESOLVE_GET_PRODUCT:
+			return state ? updateSelectedProduct(state, action.product) : null;
 		default:
 			return state;
 	}
