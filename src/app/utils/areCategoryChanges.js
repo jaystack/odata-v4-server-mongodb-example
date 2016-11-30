@@ -12,7 +12,7 @@ export default function () {
 
 	const original = state.categories.find(category => category._id === modified._id);
 	if (!original)
-		return fasle;
+		return false;
 
 	return !deepEqual(original, modified);
 }

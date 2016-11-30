@@ -1,6 +1,6 @@
 import React from "react";
 import ProductList from "./ProductList";
-//import ProductDetails from './ProductDetails';
+import ProductDetails from './ProductDetails';
 
 export default function ProductsPage({products, selectedProduct, productFilter, productOrder}) {
 
@@ -10,7 +10,7 @@ export default function ProductsPage({products, selectedProduct, productFilter, 
 			flexGrow: 1
 		}}>
 			<ProductList products={products} productFilter={productFilter} productOrder={productOrder} />
-			{selectedProduct ? <ProductDetails selectedCategory={selectedProduct} /> : null}
+			{selectedProduct ? <ProductDetails selectedProduct={selectedProduct} /> : null}
 
 		</div>
 	);

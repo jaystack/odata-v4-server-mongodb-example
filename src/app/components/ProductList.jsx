@@ -10,7 +10,7 @@ import SearchIcon from 'material-ui/svg-icons/action/search';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 //import CreateCategoryDialog from "./CreateCategoryDialog";
-import { modifyProductFilter, modifyProductOrder, filterProducts } from "../actions";
+import { modifyProductFilter, modifyProductOrder, filterProducts, selectProduct } from "../actions";
 
 function renderListItem(product) {
 	return (

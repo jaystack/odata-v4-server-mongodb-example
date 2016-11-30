@@ -49,7 +49,7 @@ export function filterCategories() {
 
 export function selectCategory(categoryId) {
   const state = store.getState();
-  if (state.selectedCategory && store.getState().selectedCategory._id === categoryId)
+  if (state.selectedProduct && store.getState().selectedProduct._id === categoryId)
     return;
   const category = state.categories.find(category => category._id === categoryId) || null;
   store.dispatch({ type: actionTypes.SELECT_CATEGORY, category });
@@ -189,4 +189,12 @@ export function modifyProductFilter(filter) {
 
 export function filterProducts() {
   getProducts();
+}
+
+export function selectProduct(productId) {
+  const state = store.getState();
+  if (state.selectedProduct && store.getState().selectedProduct._id === productId)
+    return;
+  const product = state.products.find(product => product._id === productId) || null;
+  store.dispatch({ type: actionTypes.SELECT_PRODUCT, product });
 }

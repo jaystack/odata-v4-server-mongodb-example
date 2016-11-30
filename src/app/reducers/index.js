@@ -6,6 +6,7 @@ import categoryFilter from "./categoryFilter";
 import selectedCategory from "./selectedCategory";
 import productFilter from "./productFilter";
 import productOrder from "./productOrder";
+import selectedProduct from "./selectedProduct";
 
 export default combineReducers({
 	categories,
@@ -14,5 +15,6 @@ export default combineReducers({
 	selectedCategory,
 	productFilter,
 	productOrder,
+	selectedProduct,
 	logger: (state = null, action) => {console.debug(action); return state;}
 });
