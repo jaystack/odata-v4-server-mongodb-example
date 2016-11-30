@@ -28,7 +28,7 @@ function updateProductCategory(state, productId, categoryId) {
 export default function (state = null, action) {
 	switch (action.type) {
 		case actionTypes.SELECT_PRODUCT:
-			return Object.assign({}, action.product);
+			return action.product ? Object.assign({}, action.product) : null;
 		case actionTypes.MODIFY_PRODUCT:
 			return state ? Object.assign({}, state, {[action.propName]: action.propValue}) : null;
 		case actionTypes.DISCARD_PRODUCT_MODIFICATIONS:
@@ -43,6 +43,8 @@ export default function (state = null, action) {
 			return state ? updateProductCategory(state, action.productId, action.categoryId) : null;
 		case actionTypes.RESOLVE_DELETE_PRODUCT_FROM_CATEGORY:
 			return state ? updateProductCategory(state, action.productId, null) : null;
+		case actionTypes.RESOLVE_DELETE_PRODUCT:
+			return state && state._id === action.productId ? null : state;
 		default:
 			return state;
 	}

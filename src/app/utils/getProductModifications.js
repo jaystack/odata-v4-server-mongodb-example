@@ -8,6 +8,7 @@ export default function () {
 		Name: selectedProduct.Name,
 		QuantityPerUnit: selectedProduct.QuantityPerUnit,
 		UnitPrice: selectedProduct.UnitPrice,
-		Discontinued: selectedProduct.Discontinued
+		Discontinued: selectedProduct.Discontinued,
+		CategoryId: selectedProduct.CategoryId
 	};
 }
