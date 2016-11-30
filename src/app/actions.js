@@ -182,3 +182,11 @@ export function modifyProductOrder(order) {
   store.dispatch({ type: actionTypes.MODIFY_PRODUCT_ORDER, order });
   getProducts();
 }
+
+export function modifyProductFilter(filter) {
+  store.dispatch({ type: actionTypes.MODIFY_PRODUCT_FILTER, filter });
+}
+
+export function filterProducts() {
+  getProducts();
+}

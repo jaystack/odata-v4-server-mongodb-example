@@ -10,7 +10,7 @@ import SearchIcon from 'material-ui/svg-icons/action/search';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 //import CreateCategoryDialog from "./CreateCategoryDialog";
-import { modifyProductOrder } from "../actions";
+import { modifyProductFilter, modifyProductOrder, filterProducts } from "../actions";
 
 function renderListItem(product) {
 	return (
@@ -27,11 +27,24 @@ function renderListItem(product) {
 }
 
 function renderList(products) {
-	return (
-		<List style={{ flex: "1 1 0", overflowY: "auto" }}>
-			{products.map(renderListItem)}
-		</List>
-	);
+
+}
+
+class ProductList extends React.Component {
+
+	shouldComponentUpdate(nextProps) {
+		if (nextProps.products !== this.props.products)
+			return true;
+		return false;
+	}
+
+	render() {
+		return (
+			<List style={{ flex: "1 1 0", overflowY: "auto" }}>
+				{this.props.products.map(renderListItem)}
+			</List>
+		);
+	}
 }
 
 function renderSearchBar(productFilter, productOrder) {
@@ -51,7 +64,7 @@ function renderSearchBar(productFilter, productOrder) {
 					<RaisedButton
 						icon={<SearchIcon />}
 						primary={true}
-						onTouchTap={() => filterProducts()}
+						onTouchTap={filterProducts}
 						/>
 				</div>
 			</div>
@@ -60,7 +73,7 @@ function renderSearchBar(productFilter, productOrder) {
 					floatingLabelText="Order by"
 					autoWidth={true}
 					value={productOrder}
-					onChange={(_, __, value) => modifyProductOrder(value) }
+					onChange={(_, __, value) => modifyProductOrder(value)}
 					>
 					<MenuItem value={null} primaryText="" />
 					<MenuItem value="Name" primaryText="Name" />
@@ -71,7 +84,7 @@ function renderSearchBar(productFilter, productOrder) {
 	);
 }
 
-export default class ProductList extends React.Component {
+export default class extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -106,7 +119,7 @@ export default class ProductList extends React.Component {
 			<Paper zDepth={3} style={{ display: "flex", flexDirection: "column", flex: "0 0 auto", width: "25%", minWidth: "300px", overflow: "hidden" }}>
 				{renderSearchBar(this.props.productFilter, this.props.productOrder)}
 				<div style={{ position: "relative", display: "flex", flexDirection: "column", flex: "1 1 0" }}>
-					{renderList(this.props.products)}
+					<ProductList products={this.props.products} />
 					<FloatingActionButton
 						style={{ position: "absolute", bottom: "20px", right: "20px" }}
 						onTouchTap={() => this.handleCreate()}
