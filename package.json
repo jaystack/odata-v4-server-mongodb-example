@@ -50,6 +50,7 @@
     "@types/mongodb": "^2.1.34",
     "@types/mysql": "0.0.30",
     "babel-polyfill": "^6.16.0",
+    "cors": "^2.8.1",
     "deep-equal": "^1.0.1",
     "express": "^4.14.0",
     "material-ui": "^0.16.4",
@@ -63,6 +64,7 @@
     "redux": "^3.6.0"
   },
   "devDependencies": {
+    "@types/cors": "0.0.33",
     "@types/mocha": "^2.2.32",
     "autoprefixer-loader": "^3.2.0",
     "babel-cli": "^6.18.0",
