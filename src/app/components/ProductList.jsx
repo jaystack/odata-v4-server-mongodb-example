@@ -7,6 +7,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import SearchIcon from 'material-ui/svg-icons/action/search';
+import DiscontinuedIcon from 'material-ui/svg-icons/av/not-interested';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 //import CreateCategoryDialog from "./CreateCategoryDialog";
@@ -20,6 +21,7 @@ function renderListItem(product) {
 				secondaryText={`$${product.UnitPrice}`}
 				onTouchTap={() => selectProduct(product._id)}
 				style={{ height: "72px" }}
+				rightIcon={product.Discontinued ? <DiscontinuedIcon /> : null}
 				/>
 			<Divider />
 		</div>
