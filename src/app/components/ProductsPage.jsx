@@ -9,7 +9,7 @@ export default function ProductsPage({products, selectedProduct, productFilter, 
 			display: "flex",
 			flexGrow: 1
 		}}>
-			<ProductList products={products} productFilter={productFilter} productOrder={productOrder} />
+			<ProductList products={products} productFilter={productFilter} productOrder={productOrder} categories={categories} />
 			{selectedProduct ? <ProductDetails selectedProduct={selectedProduct} categories={categories} /> : null}
 
 		</div>

@@ -173,7 +173,7 @@ function resolveCreateCategory(category) {
 }
 
 function rejectCreateCategory(error) {
-  store.dispatch({ type: actionTypes.REJECT_CREATE_CATEGORY });
+  store.dispatch({ type: actionTypes.REJECT_CREATE_CATEGORY, error });
 }
 
 // Products
@@ -298,4 +298,19 @@ function resolveSetProductCategory(productId, categoryId, prevCategoryId) {
 
 function rejectSetProductCategory(error) {
   store.dispatch({ type: actionTypes.REJECT_SET_PRODUCT_CATEGORY, error });
+}
+
+export function createProduct(product) {
+  store.dispatch({ type: actionTypes.CREATE_PRODUCT, product });
+  api.post("/Products", product).then(resolveCreateProduct, rejectCreateProduct);
+}
+
+function resolveCreateProduct(product) {
+  store.dispatch({ type: actionTypes.RESOLVE_CREATE_PRODUCT, product });
+  selectProduct(product._id);
+  getCategoryProducts(product.CategoryId);
+}
+
+function rejectCreateProduct(error) {
+  store.dispatch({ type: actionTypes.REJECT_CREATE_PRODUCT, error });
 }

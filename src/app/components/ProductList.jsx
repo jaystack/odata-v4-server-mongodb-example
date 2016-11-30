@@ -10,8 +10,8 @@ import SearchIcon from 'material-ui/svg-icons/action/search';
 import DiscontinuedIcon from 'material-ui/svg-icons/av/not-interested';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-//import CreateCategoryDialog from "./CreateCategoryDialog";
-import { modifyProductFilter, modifyProductOrder, filterProducts, selectProduct } from "../actions";
+import CreateProductDialog from "./CreateProductDialog";
+import { modifyProductFilter, modifyProductOrder, filterProducts, selectProduct, createProduct } from "../actions";
 
 function renderListItem(product) {
 	return (
@@ -98,6 +98,7 @@ export default class extends React.Component {
 			nextProps.products !== this.props.products ||
 			nextProps.productFilter !== this.props.productFilter ||
 			nextProps.productOrder !== this.props.productOrder ||
+			nextProps.categories !== this.props.categories ||
 			nextState.isOpenProductCreateDialog !== this.state.isOpenProductCreateDialog
 		) return true;
 		return false;
@@ -113,7 +114,7 @@ export default class extends React.Component {
 
 	handleSubmitCreateProduct(product) {
 		this.setState({ isOpenProductCreateDialog: false });
-		//createProduct(product);
+		createProduct(product);
 	}
 
 	render() {
@@ -128,11 +129,12 @@ export default class extends React.Component {
 						>
 						<ContentAdd />
 					</FloatingActionButton>
-					{/*<CreateCategoryDialog
+					<CreateProductDialog
             open={this.state.isOpenProductCreateDialog}
             onCancel={() => this.handleCancelCreateProduct()}
             onSubmit={product => this.handleSubmitCreateProduct(product)}
-            />*/}
+						categories={this.props.categories}
+            />
 				</div>
 			</Paper>
 		);
