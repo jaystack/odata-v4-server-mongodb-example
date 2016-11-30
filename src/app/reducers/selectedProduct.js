@@ -15,7 +15,7 @@ function updateSelectedProduct(state, data) {
 
 function updateProductCategory(state, productId, categoryId) {
 	if (state._id !== productId)
-		return;
+		return state;
 	
 	const newState =  Object.assign({}, state, {CategoryId: categoryId});
 	
