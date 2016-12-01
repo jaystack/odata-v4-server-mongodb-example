@@ -66,7 +66,7 @@ export default class CreateProductDialog extends React.Component {
 
 		return (
 			<Dialog
-				title="Create new category"
+				title="Create new product"
 				actions={actions}
 				open={this.props.open || false}
 				>
