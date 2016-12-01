@@ -3,7 +3,7 @@
 const path = require("path");
 
 module.exports = {
-  context: path.join(__dirname, "/src/app"),
+  context: path.join(__dirname, "/src/react-app"),
   entry: "./index.js",
   output: {
     path: path.join(__dirname, "/public"),

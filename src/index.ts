@@ -2,7 +2,7 @@ import * as path from "path";
 import * as express from "express";
 import * as cors from "cors";
 
-import api from "./ts";
+import api from "./ts-api";
 
 const app = express();
 
