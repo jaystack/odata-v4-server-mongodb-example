@@ -78,6 +78,7 @@ export class ProductsController extends ODataController {
     async upsert( @odata.key key: string, @odata.body data: any, @odata.context context: any): Promise<Product> {
         const db = await connect();
         if (data.CategoryId) data.CategoryId = new ObjectID(data.CategoryId);
+        if (data._id) delete data._id;
         return await db.collection("Products").updateOne({ _id: new ObjectID(key) }, data, {
             upsert: true
         }).then((result) => {
@@ -90,6 +91,7 @@ export class ProductsController extends ODataController {
     async update( @odata.key key: string, @odata.body delta: any): Promise<number> {
         const db = await connect();
         if (delta.CategoryId) delta.CategoryId = new ObjectID(delta.CategoryId);
+        if (delta._id) delete delta._id;
         return await db.collection("Products").updateOne({ _id: new ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);
     }
 
