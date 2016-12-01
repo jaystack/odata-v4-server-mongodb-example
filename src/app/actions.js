@@ -29,7 +29,7 @@ export function getCategories() {
   const params = {};
   const categoryFilter = store.getState().categoryFilter;
   if (categoryFilter)
-    params.$filter = `contains(Name, '${categoryFilter}')`;
+    params.$filter = `contains(Name,'${categoryFilter}')`;
   store.dispatch({ type: actionTypes.GET_CATEGORIES });
   api.get("/Categories", params).then(resolveGetCategories, rejectGetCategories);
 }
@@ -184,7 +184,7 @@ export function getProducts() {
   const productFilter = state.productFilter;
   const productOrder = state.productOrder;
   if (productFilter)
-    params.$filter = `contains(Name, '${productFilter}')`;
+    params.$filter = `contains(Name,'${productFilter}')`;
   if (productOrder)
     params.$orderby = productOrder;
 
