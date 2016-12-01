@@ -135,7 +135,7 @@ export function discardCategoryModifications() {
 export function saveCategoryModifications() {
   const categoryId = getSelectedCategoryId();
   store.dispatch({ type: actionTypes.SAVE_CATEGORY_CHANGES });
-  api.put(`/Categories('${categoryId}')`, getCategoryModifications())
+  api.patch(`/Categories('${categoryId}')`, getCategoryModifications())
     .then(resolveSaveCategoryChanges.bind(null, categoryId), rejectSaveCategoryChanges);
 }
 
@@ -247,7 +247,7 @@ export function discardProductModifications() {
 export function saveProductModifications() {
   const productId = getSelectedProductId();
   store.dispatch({ type: actionTypes.SAVE_PRODUCT_CHANGES });
-  api.put(`/Products('${productId}')`, getProductModifications())
+  api.patch(`/Products('${productId}')`, getProductModifications())
     .then(resolveSaveProductChanges.bind(null, productId), rejectSaveProductChanges);
 }
 
