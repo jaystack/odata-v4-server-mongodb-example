@@ -12,7 +12,7 @@
   "exclude": [
     "node_modules",
     "lib",
-    "src/js-api",
-    "src/react-app"
+    "src/js",
+    "src/angular-app"
   ]
 }
