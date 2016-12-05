@@ -6,6 +6,7 @@ import { Category } from "./model";
 import categories from "./categories";
 import products from "./products";
 
+@odata.cors
 @odata.namespace("Northwind")
 @odata.controller(ProductsController, true)
 @odata.controller(CategoriesController, true)
