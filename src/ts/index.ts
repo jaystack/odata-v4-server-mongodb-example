@@ -1,4 +1,4 @@
 import * as express from "express";
 import { NorthwindServer } from "./server";
 
-NorthwindServer.create("/api", 3000);
+NorthwindServer.create(3000);
