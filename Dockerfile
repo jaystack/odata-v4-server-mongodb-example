@@ -24,4 +24,4 @@ ENV NODE_ENV production
 
 CMD /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
 
-EXPOSE 80
+EXPOSE 3000
