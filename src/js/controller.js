@@ -159,12 +159,13 @@ export class CategoriesController extends ODataController{
         const db = await connect();
         const mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
-        return await db.collection("Categories").find(
-                mongodbQuery.query,
-                mongodbQuery.projection,
-                mongodbQuery.skip,
-                mongodbQuery.limit
-            ).toArray();
+        return db.collection("Categories")
+                .find(mongodbQuery.query)
+                .project(mongodbQuery.projection)
+                .skip(mongodbQuery.skip || 0)
+                .limit(mongodbQuery.limit || 0)
+                .sort(mongodbQuery.sort)
+                .toArray();
     }
 
     @odata.GET
