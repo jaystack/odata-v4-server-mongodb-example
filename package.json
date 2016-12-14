@@ -48,7 +48,7 @@
     "express": "^4.14.0",
     "mongodb": "^2.2.11",
     "odata-v4-mongodb": "^0.1.9",
-    "odata-v4-server": "latest"
+    "odata-v4-server": "^0.1.19"
   },
   "devDependencies": {
     "@types/cors": "0.0.33",
