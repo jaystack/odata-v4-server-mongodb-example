@@ -2,7 +2,14 @@ import { ObjectID } from "mongodb";
 import { Edm, odata } from "odata-v4-server";
 import connect from "./connect";
 
-@odata.namespace("NorthwindES")
+export class Details{
+    @Edm.String
+    Title
+
+    @Edm.Int32
+    Nr
+}
+
 @Edm.Annotate({
     term: "UI.DisplayName",
     string: "Products"
@@ -24,7 +31,7 @@ export class Product{
     @Edm.Required
     CategoryId
 
-    @Edm.EntityType("Category")
+    @Edm.EntityType(Edm.ForwardRef(() => Category))
     @Edm.Partner("Products")
     Category
 
@@ -86,6 +93,9 @@ export class Product{
                 {_id: result._id},
                 {$set: {Discontinued: value}});
     }
+
+    @Edm.ComplexType(Details)
+    Details
 }
 
 @odata.namespace("NorthwindES")
@@ -121,7 +131,7 @@ export class Category{
     })
     Name
 
-    @Edm.Collection(Edm.EntityType("Product"))
+    @Edm.Collection(Edm.EntityType(Product))
     @Edm.Partner("Category")
     Products
 }

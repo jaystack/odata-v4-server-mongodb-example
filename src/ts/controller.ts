@@ -12,20 +12,29 @@ export class ProductsController extends ODataController {
         const mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
         if (typeof mongodbQuery.query.CategoryId == "string") mongodbQuery.query.CategoryId = new ObjectID(mongodbQuery.query.CategoryId);
-        return db.collection("Products")
+        let result = typeof mongodbQuery.limit == "number" && mongodbQuery.limit === 0 ? [] : await db.collection("Products")
                 .find(mongodbQuery.query)
                 .project(mongodbQuery.projection)
                 .skip(mongodbQuery.skip || 0)
                 .limit(mongodbQuery.limit || 0)
                 .sort(mongodbQuery.sort)
                 .toArray();
+        if (mongodbQuery.inlinecount){
+            (<any>result).inlinecount = await db.collection("Products")
+                    .find(mongodbQuery.query)
+                    .project(mongodbQuery.projection)
+                    .count(false);
+        }
+        return result;
     }
 
     @odata.GET
     async findOne( @odata.key key: string, @odata.query query: ODataQuery): Promise<Product> {
         const db = await connect();
         const mongodbQuery = createQuery(query);
-        return db.collection("Products").findOne({ _id: new ObjectID(key) }, {
+        let keyId;
+        try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
+        return db.collection("Products").findOne({ _id: keyId }, {
             fields: mongodbQuery.projection
         });
     }
@@ -34,19 +43,26 @@ export class ProductsController extends ODataController {
     async getCategory( @odata.result result: Product, @odata.query query: ODataQuery): Promise<Category> {
         const db = await connect();
         const mongodbQuery = createQuery(query);
-        return db.collection("Categories").findOne({ _id: new ObjectID(result.CategoryId) }, {
+        let catId;
+        try{ catId = new ObjectID(result.CategoryId); }catch(err){ catId = result.CategoryId; }
+        return db.collection("Categories").findOne({ _id: catId }, {
             fields: mongodbQuery.projection
         });
     }
 
     @odata.POST("Category").$ref
     @odata.PUT("Category").$ref
+    @odata.PATCH("Category").$ref
     async setCategory( @odata.key key: string, @odata.link link: string): Promise<number> {
         const db = await connect();
+        let keyId;
+        try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
+        let linkId;
+        try{ linkId = new ObjectID(link); }catch(err){ linkId = link; }
         return await db.collection("Products").updateOne({
-            _id: new ObjectID(key)
+            _id: keyId
         }, {
-                $set: { CategoryId: new ObjectID(link) }
+                $set: { CategoryId: linkId }
             }).then((result) => {
                 return result.modifiedCount;
             });
@@ -55,8 +71,10 @@ export class ProductsController extends ODataController {
     @odata.DELETE("Category").$ref
     async unsetCategory( @odata.key key: string): Promise<number> {
         const db = await connect();
+        let keyId;
+        try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
         return await db.collection("Products").updateOne({
-            _id: new ObjectID(key)
+            _id: keyId
         }, {
                 $unset: { CategoryId: 1 }
             }).then((result) => {
@@ -67,7 +85,7 @@ export class ProductsController extends ODataController {
     @odata.POST
     async insert( @odata.body data: any): Promise<Product> {
         const db = await connect();
-        if (data.CategoryId) data.CategoryId = new ObjectID(data.CategoryId);
+        try{ if (data.CategoryId) data.CategoryId = new ObjectID(data.CategoryId); }catch(err){}
         return await db.collection("Products").insertOne(data).then((result) => {
             data._id = result.insertedId;
             return data;
@@ -77,28 +95,34 @@ export class ProductsController extends ODataController {
     @odata.PUT
     async upsert( @odata.key key: string, @odata.body data: any, @odata.context context: any): Promise<Product> {
         const db = await connect();
-        if (data.CategoryId) data.CategoryId = new ObjectID(data.CategoryId);
+        try{ if (data.CategoryId) data.CategoryId = new ObjectID(data.CategoryId); }catch(err){}
         if (data._id) delete data._id;
-        return await db.collection("Products").updateOne({ _id: new ObjectID(key) }, data, {
+        let keyId;
+        try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
+        return await db.collection("Products").updateOne({ _id: keyId }, data, {
             upsert: true
         }).then((result) => {
             data._id = result.upsertedId
-            return data;
+            return data._id ? data : null;
         });
     }
 
     @odata.PATCH
     async update( @odata.key key: string, @odata.body delta: any): Promise<number> {
         const db = await connect();
-        if (delta.CategoryId) delta.CategoryId = new ObjectID(delta.CategoryId);
+        try{ if (delta.CategoryId) delta.CategoryId = new ObjectID(delta.CategoryId); }catch(err){}
         if (delta._id) delete delta._id;
-        return await db.collection("Products").updateOne({ _id: new ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);
+        let keyId;
+        try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
+        return await db.collection("Products").updateOne({ _id: keyId }, { $set: delta }).then(result => result.modifiedCount);
     }
 
     @odata.DELETE
     async remove( @odata.key key: string): Promise<number> {
         const db = await connect();
-        return await db.collection("Products").deleteOne({ _id: new ObjectID(key) }).then(result => result.deletedCount);
+        let keyId;
+        try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
+        return await db.collection("Products").deleteOne({ _id: keyId }).then(result => result.deletedCount);
     }
 
     @Edm.Function
@@ -141,20 +165,29 @@ export class CategoriesController extends ODataController {
         const db = await connect();
         const mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
-        return db.collection("Categories")
+        let result = typeof mongodbQuery.limit == "number" && mongodbQuery.limit === 0 ? [] : await db.collection("Categories")
                 .find(mongodbQuery.query)
                 .project(mongodbQuery.projection)
                 .skip(mongodbQuery.skip || 0)
                 .limit(mongodbQuery.limit || 0)
                 .sort(mongodbQuery.sort)
                 .toArray();
+        if (mongodbQuery.inlinecount){
+            (<any>result).inlinecount = await db.collection("Categories")
+                    .find(mongodbQuery.query)
+                    .project(mongodbQuery.projection)
+                    .count(false);
+        }
+        return result;
     }
 
     @odata.GET
     async findOne( @odata.key key: string, @odata.query query: ODataQuery): Promise<Category> {
         const db = await connect();
         const mongodbQuery = createQuery(query);
-        return db.collection("Categories").findOne({ _id: new ObjectID(key) }, {
+        let keyId;
+        try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
+        return db.collection("Categories").findOne({ _id: keyId }, {
             fields: mongodbQuery.projection
         });
     }
@@ -165,12 +198,20 @@ export class CategoriesController extends ODataController {
         const mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
         if (typeof mongodbQuery.query.CategoryId == "string") mongodbQuery.query.CategoryId = new ObjectID(mongodbQuery.query.CategoryId);
-        return db.collection("Products").find(
-            { $and: [{ CategoryId: result._id }, mongodbQuery.query] },
-            mongodbQuery.projection,
-            mongodbQuery.skip,
-            mongodbQuery.limit
-        ).toArray();
+        let products = typeof mongodbQuery.limit == "number" && mongodbQuery.limit === 0 ? [] : await db.collection("Products")
+            .find({ $and: [{ CategoryId: result._id }, mongodbQuery.query] })
+            .project(mongodbQuery.projection)
+            .skip(mongodbQuery.skip || 0)
+            .limit(mongodbQuery.limit || 0)
+            .sort(mongodbQuery.sort)
+            .toArray();
+        if (mongodbQuery.inlinecount){
+            (<any>products).inlinecount = await db.collection("Products")
+                    .find({ $and: [{ CategoryId: result._id }, mongodbQuery.query] })
+                    .project(mongodbQuery.projection)
+                    .count(false);
+        }
+        return products;
     }
 
     @odata.GET("Products")
@@ -179,8 +220,10 @@ export class CategoriesController extends ODataController {
         const mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
         if (typeof mongodbQuery.query.CategoryId == "string") mongodbQuery.query.CategoryId = new ObjectID(mongodbQuery.query.CategoryId);
+        let keyId;
+        try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
         return db.collection("Products").findOne({
-            $and: [{ _id: new ObjectID(key), CategoryId: result._id }, mongodbQuery.query]
+            $and: [{ _id: keyId, CategoryId: result._id }, mongodbQuery.query]
         }, {
                 fields: mongodbQuery.projection
             });
@@ -188,12 +231,17 @@ export class CategoriesController extends ODataController {
 
     @odata.POST("Products").$ref
     @odata.PUT("Products").$ref
+    @odata.PATCH("Products").$ref
     async setCategory( @odata.key key: string, @odata.link link: string): Promise<number> {
         const db = await connect();
+        let keyId;
+        try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
+        let linkId;
+        try{ linkId = new ObjectID(link); }catch(err){ linkId = link; }
         return await db.collection("Products").updateOne({
-            _id: new ObjectID(link)
+            _id: linkId
         }, {
-                $set: { CategoryId: new ObjectID(key) }
+                $set: { CategoryId: keyId }
             }).then((result) => {
                 return result.modifiedCount;
             });
@@ -202,8 +250,10 @@ export class CategoriesController extends ODataController {
     @odata.DELETE("Products").$ref
     async unsetCategory( @odata.key key: string, @odata.link link: string): Promise<number> {
         const db = await connect();
+        let linkId;
+        try{ linkId = new ObjectID(link); }catch(err){ linkId = link; }
         return await db.collection("Products").updateOne({
-            _id: new ObjectID(link)
+            _id: linkId
         }, {
                 $unset: { CategoryId: 1 }
             }).then((result) => {
@@ -223,24 +273,30 @@ export class CategoriesController extends ODataController {
     @odata.PUT
     async upsert( @odata.key key: string, @odata.body data: any): Promise<Category> {
         const db = await connect();
-        return await db.collection("Categories").updateOne({ _id: new ObjectID(key) }, data, {
+        let keyId;
+        try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
+        return await db.collection("Categories").updateOne({ _id: keyId }, data, {
             upsert: true
         }).then((result) => {
             data._id = result.upsertedId
-            return data;
+            return data._id ? data : null;
         });
     }
 
     @odata.PATCH
     async update( @odata.key key: string, @odata.body delta: any): Promise<number> {
         const db = await connect();
-        if (delta.CategoryId) delta.CategoryId = new ObjectID(delta.CategoryId);
-        return await db.collection("Categories").updateOne({ _id: new ObjectID(key) }, { $set: delta }).then(result => result.modifiedCount);
+        try{ if (delta.CategoryId) delta.CategoryId = new ObjectID(delta.CategoryId); }catch(err){}
+        let keyId;
+        try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
+        return await db.collection("Categories").updateOne({ _id: keyId }, { $set: delta }).then(result => result.modifiedCount);
     }
 
     @odata.DELETE
     async remove( @odata.key key: string): Promise<number> {
         const db = await connect();
-        return await db.collection("Categories").deleteOne({ _id: new ObjectID(key) }).then(result => result.deletedCount);
+        let keyId;
+        try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
+        return await db.collection("Categories").deleteOne({ _id: keyId }).then(result => result.deletedCount);
     }
 }

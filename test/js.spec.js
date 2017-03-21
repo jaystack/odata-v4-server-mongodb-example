@@ -1,5 +1,3 @@
-"use strict";
-
 const { NorthwindServer } = require("../lib/js/server");
 const { Product, Category } = require("../lib/js/model");
 const products = require("../lib/js/products").default;
