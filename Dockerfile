@@ -17,7 +17,7 @@ COPY ./docker/supervisor.conf /etc/supervisor/conf.d/
 
 RUN npm config set @types:registry https://registry.npmjs.org
 RUN npm install -q
-RUN npm cache clean
+RUN npm cache clean --force
 RUN npm run build
 
 ENV NODE_ENV production
