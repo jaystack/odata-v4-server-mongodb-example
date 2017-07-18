@@ -1,5 +1,5 @@
 import { Collection, ObjectID } from "mongodb";
-import { createQuery } from "odata-v4-mongodb";
+import { createQuery } from "odata-v4-mongodb-pro";
 import { ODataController, Edm, odata, ODataQuery } from "odata-v4-server";
 import { Product, Category } from "./model";
 import connect from "./connect";
@@ -12,12 +12,14 @@ export class ProductsController extends ODataController {
         const mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
         if (typeof mongodbQuery.query.CategoryId == "string") mongodbQuery.query.CategoryId = new ObjectID(mongodbQuery.query.CategoryId);
+        console.log(mongodbQuery.aggregation);
         let result = typeof mongodbQuery.limit == "number" && mongodbQuery.limit === 0 ? [] : await db.collection("Products")
-                .find(mongodbQuery.query)
+                .aggregate(mongodbQuery.aggregation)
+                /*.find(mongodbQuery.query)
                 .project(mongodbQuery.projection)
                 .skip(mongodbQuery.skip || 0)
                 .limit(mongodbQuery.limit || 0)
-                .sort(mongodbQuery.sort)
+                .sort(mongodbQuery.sort)*/
                 .toArray();
         if (mongodbQuery.inlinecount){
             (<any>result).inlinecount = await db.collection("Products")

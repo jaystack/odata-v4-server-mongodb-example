@@ -68,6 +68,9 @@ export class Product{
     })
     UnitPrice:number
 
+    @Edm.DateTimeOffset
+    CreatedAt:Date
+
     @Edm.Function
     @Edm.Decimal
     getUnitPrice(@odata.result result:Product) {
@@ -129,4 +132,7 @@ export class Category{
     @Edm.Collection(Edm.EntityType(Product))
     @Edm.Partner("Category")
     Products:Product[]
+
+    @Edm.DateTimeOffset
+    CreatedAt:Date
 }

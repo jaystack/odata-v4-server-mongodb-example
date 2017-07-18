@@ -50,6 +50,7 @@
     "express": "^4.14.0",
     "mongodb": "^2.2.11",
     "odata-v4-mongodb": "^0.1.9",
+    "odata-v4-mongodb-pro": "file:../odata-v4-mongodb-pro",
     "odata-v4-server": "^0.1.38"
   },
   "devDependencies": {

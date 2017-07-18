@@ -15,7 +15,19 @@ export class NorthwindServer extends ODataServer{
     async initDb(){
         const db = await connect();
         await db.dropDatabase();
-        await db.collection("Categories").insertMany(categories);
-        await db.collection("Products").insertMany(products);
+
+        let now = new Date();
+        let cats = categories.map((c:any) => {
+            c.CreatedAt = now;
+            return c;
+        });
+        console.log(cats);
+        await db.collection("Categories").insertMany(cats);
+
+        let prods = products.map((p:any) => {
+            p.CreatedAt = now;
+            return p;
+        });
+        await db.collection("Products").insertMany(prods);
     }
 }
