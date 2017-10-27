@@ -10,6 +10,7 @@ export class Details{
     Nr:number
 }
 
+@Edm.OpenType
 @Edm.Annotate({
     term: "UI.DisplayName",
     string: "Products"

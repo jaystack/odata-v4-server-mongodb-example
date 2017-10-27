@@ -1,18 +1,17 @@
 import { Collection, ObjectID } from "mongodb";
-import { createQuery } from "odata-v4-mongodb-pro";
 import { ODataController, Edm, odata, ODataQuery } from "odata-v4-server";
+import { Visitor as ODataMongoDBQuery } from "odata-v4-mongodb-pro/lib/visitor";
 import { Product, Category } from "./model";
 import connect from "./connect";
 
 @odata.type(Product)
 export class ProductsController extends ODataController {
     @odata.GET
-    async find( @odata.query query: ODataQuery): Promise<Product[]> {
+    async find( @odata.query mongodbQuery: ODataMongoDBQuery): Promise<Product[]> {
         const db = await connect();
-        const mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
         if (typeof mongodbQuery.query.CategoryId == "string") mongodbQuery.query.CategoryId = new ObjectID(mongodbQuery.query.CategoryId);
-        console.log(mongodbQuery.aggregation);
+        console.log(JSON.stringify(mongodbQuery.aggregation, null, 2));
         let result = typeof mongodbQuery.limit == "number" && mongodbQuery.limit === 0 ? [] : await db.collection("Products")
                 .aggregate(mongodbQuery.aggregation)
                 /*.find(mongodbQuery.query)
@@ -27,13 +26,13 @@ export class ProductsController extends ODataController {
                     .project(mongodbQuery.projection)
                     .count(false);
         }
+        // console.log(result);
         return result;
     }
 
     @odata.GET
-    async findOne( @odata.key key: string, @odata.query query: ODataQuery): Promise<Product> {
+    async findOne( @odata.key key: string, @odata.query mongodbQuery: ODataMongoDBQuery): Promise<Product> {
         const db = await connect();
-        const mongodbQuery = createQuery(query);
         let keyId;
         try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
         return db.collection("Products").findOne({ _id: keyId }, {
@@ -42,9 +41,8 @@ export class ProductsController extends ODataController {
     }
 
     @odata.GET("Category")
-    async getCategory( @odata.result result: Product, @odata.query query: ODataQuery): Promise<Category> {
+    async getCategory( @odata.result result: Product, @odata.query mongodbQuery: ODataMongoDBQuery): Promise<Category> {
         const db = await connect();
-        const mongodbQuery = createQuery(query);
         let catId;
         try{ catId = new ObjectID(result.CategoryId); }catch(err){ catId = result.CategoryId; }
         return db.collection("Categories").findOne({ _id: catId }, {
@@ -163,9 +161,8 @@ export class ProductsController extends ODataController {
 @odata.type(Category)
 export class CategoriesController extends ODataController {
     @odata.GET
-    async find( @odata.query query: ODataQuery): Promise<Category[]> {
+    async find( @odata.query mongodbQuery: ODataMongoDBQuery): Promise<Category[]> {
         const db = await connect();
-        const mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
         let result = typeof mongodbQuery.limit == "number" && mongodbQuery.limit === 0 ? [] : await db.collection("Categories")
                 .find(mongodbQuery.query)
@@ -184,9 +181,8 @@ export class CategoriesController extends ODataController {
     }
 
     @odata.GET
-    async findOne( @odata.key key: string, @odata.query query: ODataQuery): Promise<Category> {
+    async findOne( @odata.key key: string, @odata.query mongodbQuery: ODataMongoDBQuery): Promise<Category> {
         const db = await connect();
-        const mongodbQuery = createQuery(query);
         let keyId;
         try{ keyId = new ObjectID(key); }catch(err){ keyId = key; }
         return db.collection("Categories").findOne({ _id: keyId }, {
@@ -195,9 +191,8 @@ export class CategoriesController extends ODataController {
     }
 
     @odata.GET("Products")
-    async getProducts( @odata.result result: Category, @odata.query query: ODataQuery): Promise<Product[]> {
+    async getProducts( @odata.result result: Category, @odata.query mongodbQuery: ODataMongoDBQuery): Promise<Product[]> {
         const db = await connect();
-        const mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
         if (typeof mongodbQuery.query.CategoryId == "string") mongodbQuery.query.CategoryId = new ObjectID(mongodbQuery.query.CategoryId);
         let products = typeof mongodbQuery.limit == "number" && mongodbQuery.limit === 0 ? [] : await db.collection("Products")
@@ -217,9 +212,8 @@ export class CategoriesController extends ODataController {
     }
 
     @odata.GET("Products")
-    async getProduct( @odata.key key: string, @odata.result result: Category, @odata.query query: ODataQuery): Promise<Product> {
+    async getProduct( @odata.key key: string, @odata.result result: Category, @odata.query mongodbQuery: ODataMongoDBQuery): Promise<Product> {
         const db = await connect();
-        const mongodbQuery = createQuery(query);
         if (typeof mongodbQuery.query._id == "string") mongodbQuery.query._id = new ObjectID(mongodbQuery.query._id);
         if (typeof mongodbQuery.query.CategoryId == "string") mongodbQuery.query.CategoryId = new ObjectID(mongodbQuery.query.CategoryId);
         let keyId;

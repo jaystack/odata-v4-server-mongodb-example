@@ -1,5 +1,7 @@
 import { ObjectID } from "mongodb";
 import { ODataServer, ODataController, Edm, odata, ODataQuery } from "odata-v4-server";
+import * as ODataParserPro from "odata-v4-parser-pro";
+import * as ODataMongoDBPro from "odata-v4-mongodb-pro";
 import { ProductsController, CategoriesController } from "./controller";
 import connect from "./connect";
 import { Category } from "./model";
@@ -7,6 +9,8 @@ import categories from "./categories";
 import products from "./products";
 
 @odata.cors
+@odata.parser(ODataParserPro)
+@odata.connector(ODataMongoDBPro)
 @odata.namespace("Northwind")
 @odata.controller(ProductsController, true)
 @odata.controller(CategoriesController, true)
