@@ -28,12 +28,13 @@ export class Product{
     })
     _id:ObjectID
 
-    @Edm.String
     @Edm.Required
-    CategoryId:string
+    @Edm.TypeDefinition(ObjectID)
+    CategoryId:ObjectID
 
     @Edm.EntityType(Edm.ForwardRef(() => Category))
     @Edm.Partner("Products")
+    @Edm.ForeignKey("CategoryId")
     Category:Category
 
     @Edm.Boolean
